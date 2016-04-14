@@ -3,116 +3,33 @@ var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_te
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
-require("../../../css/distributed/vectorvideo.css");
-
+require("../../../js/distributed/vectorvideo/material.min.css");
+require("../../../js/distributed/vectorvideo/material.min.js");
+require("../../../css/distributed/vectorvideo.less");
 var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json");
 
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
-        "click .play-pause": "play_pause_clicked",
-        "click .sm2-progress-track": "progress_track_clicked",
-        "click .back_10_sec": "back_10_sec",
-        "click .papCanvas": "canvas_clicked",
-        "click .playback_rate": "change_playback_rate"
+        "click .papCanvas": "toggle_play_pause",
+        "click .vector_play_pause_btn": "toggle_play_pause",
+        "click .vector_replay_btn": "replay",
+        "input .vector_seek": "seek",
+        "click .vector_playback_rate_25": "change_playback_rate",
+        "click .vector_playback_rate_50": "change_playback_rate",
+        "click .vector_playback_rate_100": "change_playback_rate",
+        "click .vector_playback_rate_125": "change_playback_rate",
+        "click .vector_playback_rate_150": "change_playback_rate",
+        "click .vector_playback_rate_200": "change_playback_rate",
+        "click .vector_zoom_input": "toggle_zoom",
+        "click .vector_cc_input": "toggle_cc",
+        "click .vector_volume_input": "toggle_volume",
+        "click .vector_full_screen_input": "toggle_full_screen"
     },
 
+    /////////////EVENTS FUNCTIONS//////////////////////////////
 
-    initialize: function (options) {
-        ContentBaseView.prototype.initialize.call(this, options);
-        _.bindAll(this, "create_audio_object", "check_if_playing", "resize_canvas");
-        this.render();
-        this.paper_scope = new Paper.paper.PaperScope();
-    },
-
-
-    render: function () {
-        //_.bindAll(this, "on_resize");
-        this.$el.html(this.template(this.data_model.attributes));
-        this.latest_time = 0;
-        this.latest_obj = 0;
-        this.latest_stroke = 0;
-        this.latest_sub_stroke = 0;
-
-        this.$(".papCanvas").attr("id", Math.random().toString());
-        this.initialize_sound_manager();
-    },
-
-
-//////////////////////////AUDIO/////////////////////////////////
-
-    initialize_sound_manager: function () {
-        window.soundManager.setup({
-            url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
-            preferFlash: false,
-            onready: this.create_audio_object,
-            html5PollingInterval: 15
-        });
-        //this.on_resize();
-    },
-
-    create_audio_object: function () {
-        window.audio_object = this.audio_object = soundManager.createSound({
-            url: this.data_model.get("content_urls").stream,
-            onload: this.loaded.bind(this),
-            onplay: this.played.bind(this),
-            onresume: this.played.bind(this),
-            onpause: this.paused.bind(this),
-            onfinish: this.finished.bind(this),
-            whileplaying: this.progress.bind(this)
-        });
-        this.initialize_listeners();
-    },
-
-
-    initialize_listeners: function () {
-        this.$(".sm2-progress-ball").draggable({
-            axis: "x",
-            start: function () {
-                this.dragging = true;
-            },
-            stop: function (ev) {
-                this.dragging = false;
-                this.progress_track_clicked({offsetX: this.$(".sm2-progress-ball").position().left});
-            }
-        }).css("position", "absolute");
-        //$(window).resize(this.on_resize);
-    },
-
-    canvas_clicked: function () {
-        this.play_pause_clicked();
-    },
-
-
-    loaded: function () {
-        this.$(".sm2-inline-duration").text(this.get_time(this.audio_object.duration, true));
-        if ((this.log_model.get("last_percent") || 0) > 0) {
-            this.set_position_percent(this.log_model.get("last_percent"));
-        }
-    },
-
-
-    played: function () {
-        this.$el.addClass("playing");
-        this.activate();
-        this.data_model.set("is_playing", true);
-    },
-
-
-    paused: function () {
-        this.$el.removeClass("playing");
-        this.deactivate();
-        this.data_model.set("is_playing", false);
-    },
-
-
-    finished: function () {
-        this.audio_object.setPosition(0);
-        this.paused();
-    },
-
-
-    play_pause_clicked: function () {
+    toggle_play_pause: function () {
         if (this.audio_object.playState === 0) {
             this.audio_object.setPosition(0);
             this.audio_object.play();
@@ -124,18 +41,165 @@ var VectorVideoView = ContentBaseView.extend({
     },
 
 
-    progress: function () {
-        this.update_progress();
-        // display the current position time
-        this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
-        if (!this.dragging) {
-            this.$(".sm2-progress-ball")[0].style.left = this.get_position_percent() * this.$(".sm2-progress-track").width() + "px";
+    replay: function () {
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        curr_time = curr_time - 10;
+        if (curr_time < 0) {
+            curr_time = 0;
+        }
+        this.set_position(curr_time * 1000);
+    },
+
+
+    seek: function (ev) {
+        var seek_value = document.querySelector('.vector_seek').value;
+        if (seek_value) {
+            this.set_position_percent(seek_value / 1000);
         }
     },
 
 
-    progress_track_clicked: function (ev) {
-        this.set_position_percent(ev.offsetX / this.$(".sm2-progress-track").width());
+    change_playback_rate: function (e) {
+        var new_playback_rate;
+
+        if ($(e.target).hasClass('vector_playback_rate_25')) {
+            new_playback_rate = 0.25;
+        }
+        else if ($(e.target).hasClass('vector_playback_rate_50')) {
+            new_playback_rate = 0.5;
+        }
+        else if ($(e.target).hasClass('vector_playback_rate_125')) {
+            new_playback_rate = 1.25;
+        }
+        else if ($(e.target).hasClass('vector_playback_rate_150')) {
+            new_playback_rate = 1.5;
+        }
+        else if ($(e.target).hasClass('vector_playback_rate_200')) {
+            new_playback_rate = 2;
+        }
+        else{
+            new_playback_rate = 1;
+        }
+
+        this.audio_object.setPlaybackRate(new_playback_rate);
+    },
+
+
+    toggle_zoom: function () {
+        console.log("toggle_zoom");
+    },
+
+
+    toggle_cc: function () {
+        console.log("toggle_cc");
+    },
+
+
+    toggle_volume: function () {
+        if ($(document.querySelector('.vector_volume_label')).hasClass('is-checked')) {
+            this.audio_object.setVolume(100);
+        }
+        else {
+            this.audio_object.setVolume(0);
+        }
+    },
+
+
+    toggle_full_screen: function () {
+        console.log("toggle_full_screen");
+    },
+
+
+    ////////////////////INITIALIZATION////////////////////////////
+
+    initialize: function (options) {
+        ContentBaseView.prototype.initialize.call(this, options);
+        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas");
+        this.render();
+        this.paper_scope = new Paper.paper.PaperScope();
+
+
+        //TODO: MOVE THIS ELSEWHERE
+        var vector_bar_items;
+        window.onload = function () {
+            vector_bar_items = $('.vector_bar_items').width();
+            adjust_bar_width();
+            $('.mdl-slider__background-flex').css('width', 'calc(100% - 52px');
+        };
+        $(window).resize(function () {
+            adjust_bar_width();
+        });
+        function adjust_bar_width() {
+            $('.vector_seek_wrapper').width($('.vector_bar').width() - vector_bar_items - 1);
+        }
+    },
+
+
+    render: function () {
+        this.$el.html(this.template(this.data_model.attributes));
+        this.$(".papCanvas").attr("id", Math.random().toString());
+        this.init_sound_manager();
+
+        this.latest_time = 0;
+        this.latest_obj = 0;
+        this.latest_stroke = 0;
+        this.latest_sub_stroke = 0;
+    },
+
+
+//////////////////////////AUDIO/////////////////////////////////
+
+    init_sound_manager: function () {
+        window.soundManager.setup({
+            url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
+            preferFlash: false,
+            html5PollingInterval: 15,
+            onready: this.init_audio_object
+        });
+    },
+
+
+    init_audio_object: function () {
+        window.audio_object = this.audio_object = soundManager.createSound({
+            url: this.data_model.get("content_urls").stream,
+            onload: this.loaded.bind(this),
+            onplay: this.played.bind(this),
+            onpause: this.paused.bind(this),
+            onresume: this.played.bind(this),
+            whileplaying: this.playing.bind(this),
+            onfinish: this.finished.bind(this)
+        });
+    },
+
+
+    loaded: function () {
+        this.$(".vector_total_time").text(this.format_time(this.audio_object.duration, true));
+    },
+
+
+    played: function () {
+        this.data_model.set("is_playing", true);
+        $('.vector_play_pause_btn').addClass('vector_play_pause_btn_pause');
+    },
+
+
+    paused: function () {
+        this.data_model.set("is_playing", false);
+        $('.vector_play_pause_btn').removeClass('vector_play_pause_btn_pause');
+    },
+
+
+    playing: function () {
+        this.$(".vector_current_time").text(this.format_time(this.audio_object.position, true));
+        if (this.get_position_percent()) {
+            document.querySelector('.vector_seek').MaterialSlider.change(this.get_position_percent() * 1000);
+        }
+    },
+
+
+    finished: function () {
+        this.audio_object.setPosition(0);
+        this.paused();
     },
 
 
@@ -154,52 +218,21 @@ var VectorVideoView = ContentBaseView.extend({
     },
 
 
-    get_position_percent: function (percent) {
+    get_position_percent: function () {
         return this.audio_object.position / this.audio_object.duration;
     },
 
 
-    get_time: function (msec, use_string) {
+    format_time: function (msec, use_string) {
         // convert milliseconds to hh:mm:ss, return as object literal or string
-        var nSec = Math.floor(msec / 1000),
-            hh = Math.floor(nSec / 3600),
-            min = Math.floor(nSec / 60) - Math.floor(hh * 60),
-            sec = Math.floor(nSec - (hh * 3600) - (min * 60));
+        var nSec = Math.floor(msec / 1000);
+        var hh = Math.floor(nSec / 3600);
+        var min = Math.floor(nSec / 60) - Math.floor(hh * 60);
+        var sec = Math.floor(nSec - (hh * 3600) - (min * 60));
         return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)) : {
             'min': min,
             'sec': sec
         });
-    },
-
-
-    back_10_sec: function () {
-        var curr_time = ((parseInt(this.get_position())) / 1000);
-        curr_time = curr_time - 15;
-        if (curr_time < 0) {
-            curr_time = 0;
-        }
-        this.set_position(curr_time * 1000);
-    },
-
-    change_playback_rate: function () {
-        var speed= parseFloat($('#playback_rate_half').html());
-        this.audio_object.setPlaybackRate(speed);
-    },
-
-
-    close: function () {
-        this.audio_object.stop();
-        this.audio_object.destruct();
-        window.ContentBaseView.prototype.close.apply(this);
-    },
-
-
-    content_specific_progress: function (event) {
-        var percent = this.audio_object.position / this.audio_object.duration;
-        this.log_model.set("last_percent", percent);
-        var progress = this.log_model.get("time_spent") / (this.audio_object.duration / 1000);
-        console.log("here" + progress);
-        return progress;
     },
 
 
@@ -210,19 +243,14 @@ var VectorVideoView = ContentBaseView.extend({
         this.modify_json();
         console.log(this.json_data);
 
-        var papCanvas = this.$(".papCanvas");
-        this.paper_scope.setup(papCanvas[0]);
-        //TODO - When there are two canvasses, paperscope references the second object
-        //It is a problem with paper.js itself. 
-
+        this.paper_scope.setup(this.$(".papCanvas")[0]);
         this.paper_scope.view.onFrame = this.check_if_playing;
         this.paper_scope.view.onResize = this.resize_canvas;
         this.resize_canvas();
     },
 
     resize_canvas: function () {
-        var size = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
-        this.paper_scope.view.viewSize = size;
+        this.paper_scope.view.viewSize = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
         this.reset_canvas();
     },
 
@@ -305,18 +333,11 @@ var VectorVideoView = ContentBaseView.extend({
                 for (var j = 0; j < data.operations[obj].strokes[i].length; j++) {
                     var stroke_start_time = parseFloat(data.operations[obj].strokes[i].stroke_start_time);
                     var ratio = j / parseFloat(data.operations[obj].strokes[i].length);
-                    //var eased_ratio = this.ease(ratio);
                     var sub_stroke_start_time = stroke_dur * ratio;
                     data.operations[obj].strokes[i][j].sub_stroke_start_time = stroke_start_time + sub_stroke_start_time;
                 }
             }
         }
-    },
-
-
-    ease: function (t) {
-        //TODO: Implement
-        return t;
     },
 
 
@@ -343,7 +364,6 @@ var VectorVideoView = ContentBaseView.extend({
 
         else {
             this.latest_time = curr_time;
-
 
             //UPDATE STROKES
             //LOOP THROUGH OBJECTS

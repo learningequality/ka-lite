@@ -2,57 +2,44 @@
     <canvas class="video-player papCanvas" keepalive="true" resize="true"></canvas>
 </div>
 
-<div class="sm2-bar-ui compact full-width textured flat">
-    <div class="bd sm2-main-controls">
-        <div class="sm2-inline-texture"></div>
-        <div class="sm2-inline-gradient"></div>
-
-        <div class="sm2-inline-element sm2-button-element">
-            <div class="sm2-button-bd">
-                <a href="#play" class="sm2-inline-button play-pause">{{_ "Play / pause" }}</a>
-            </div>
-        </div>
-
-        <div class="sm2-inline-element sm2-button-element">
-            <div class="sm2-button-bd">
-                <a href="#back_10_sec" class="sm2-inline-button back_10_sec">back_10_sec</a>
-            </div>
-        </div>
-
-        <div class="sm2-inline-element sm2-button-element">
-            <div class="sm2-button-bd">
-                <a href="#playback_rate" class="sm2-inline-button playback_rate" id="playback_rate_half">.5</a>
-            </div>
-        </div>
-
-        <div class="sm2-inline-element sm2-inline-status">
-            <div class="sm2-progress">
-                <div class="sm2-row">
-                    <div class="sm2-inline-time">{{_ "0:00" }}</div>
-                    <div class="sm2-progress-bd">
-                        <div class="sm2-progress-track">
-                            <div class="sm2-progress-bar"></div>
-                            <div class="sm2-progress-ball">
-                                <div class="icon-overlay"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="sm2-inline-duration">{{_ "0:00" }}</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sm2-inline-element sm2-button-element sm2-volume">
-            <div class="sm2-button-bd">
-                <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
-                <a href="#volume" class="sm2-inline-button sm2-volume-control">volume</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="bd sm2-playlist-drawer sm2-element">
-        <div class="sm2-inline-texture">
-            <div class="sm2-box-shadow"></div>
-        </div>
+<div class="vector_bar">
+    <div class="vector_bar_items">
+        <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_play_pause_btn"></button>
+        <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_replay_btn"></button>
+        <span class="vector_current_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <p class="vector_seek_wrapper ">
+            <input class="mdl-slider mdl-js-slider vector_seek" id="vector_seek" type="range" min="0" max="1000"
+                   value="0" step="1">
+        </p>
+        <span class="vector_total_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <button id="demo-menu-top-left"
+                class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_playback_rate_btn"></button>
+        <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_playback_rate_menu"
+            data-mdl-for="demo-menu-top-left">
+            <li class="mdl-menu__item vector_playback_rate_25">.25</li>
+            <li class="mdl-menu__item vector_playback_rate_50">.5</li>
+            <li class="mdl-menu__item vector_playback_rate_100">Normal</li>
+            <li class="mdl-menu__item vector_playback_rate_125">1.25</li>
+            <li class="mdl-menu__item vector_playback_rate_150">1.5</li>
+            <li class="mdl-menu__item vector_playback_rate_200">2</li>
+        </ul>
+        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_zoom_label" for="vector_zoom_btn">
+            <input type="checkbox" id="vector_zoom_btn" class="mdl-icon-toggle__input vector_zoom_input">
+            <i class="mdl-icon-toggle__label material-icons vector_zoom_btn"></i>
+        </label>
+        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_cc_label" for="vector_cc_btn">
+            <input type="checkbox" id="vector_cc_btn" class="mdl-icon-toggle__input vector_cc_input">
+            <i class="mdl-icon-toggle__label material-icons vector_cc_btn"></i>
+        </label>
+        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_volume_label"
+               for="vector_volume_btn">
+            <input type="checkbox" id="vector_volume_btn" class="mdl-icon-toggle__input vector_volume_input">
+            <i class="mdl-icon-toggle__label material-icons vector_volume_btn"></i>
+        </label>
+        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_full_screen_label"
+               for="vector_full_screen_btn">
+            <input type="checkbox" id="vector_full_screen_btn" class="mdl-icon-toggle__input vector_full_screen_input">
+            <i class="mdl-icon-toggle__label material-icons vector_full_screen_btn"></i>
+        </label>
     </div>
 </div>
