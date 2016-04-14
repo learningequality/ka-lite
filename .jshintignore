@@ -7,3 +7,4 @@ kalite/*/static/js/*/bundles/*
 static-libraries/**
 kalite/i18n/static/js/i18n
 bower_components/**
+kalite/distributed/static/js/distributed/vectorvideo/material.min.js
