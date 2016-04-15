@@ -1,6 +1,5 @@
 var $ = require("base/jQuery");
 var file = require("vectorvideo/views");
-var Paper = require("../../../../../../node_modules/paper/dist/paper-full.js");
 var Models = require("content/models");
 
 var data_model = new Models.ContentDataModel({
@@ -11,6 +10,6 @@ var data_model = new Models.ContentDataModel({
 window.vectorVideoView = new file.VectorVideoView({data_model: data_model});
 
 $(function () {
-    $("#content-area").append(vectorVideoView.el);
-    vectorVideoView.initialize_canvas();
+    document.getElementById('content-area').appendChild(vectorVideoView.el);
+    vectorVideoView.init_canvas();
 });
