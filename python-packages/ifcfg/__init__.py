@@ -1,5 +1,6 @@
 
 import platform
+import re
 from . import meta
 from . import parser
 from . import tools
@@ -31,10 +32,12 @@ def get_parser(**kw):
     if not parser:
         distro = kw.get('distro', platform.system())
         full_kernel = kw.get('kernel', platform.uname()[2])
-        kernel = '.'.join(full_kernel.split('.')[0:2]) 
-        
+        split_kernel = full_kernel.split('.')[0:2]
+        kernel_version = int(split_kernel[0])
+        kernel_major_rev = int(re.match('\d+', split_kernel[1]).group())
+
         if distro == 'Linux':
-            if float(kernel) < 3.3:
+            if kernel_version < 3 and kernel_major_rev < 3:
                 from .parser import Linux2Parser as LinuxParser
             else:
                 from .parser import LinuxParser
