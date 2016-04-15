@@ -11,7 +11,7 @@ var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json"
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
-        "click .papCanvas": "toggle_play_pause",
+        "click .vector_canvas": "toggle_play_pause",
         "click .vector_play_pause_btn": "toggle_play_pause",
         "click .vector_replay_btn": "replay",
         "input .vector_seek": "seek",
@@ -51,7 +51,7 @@ var VectorVideoView = ContentBaseView.extend({
     },
 
 
-    seek: function (ev) {
+    seek: function () {
         var seek_value = document.querySelector('.vector_seek').value;
         if (seek_value) {
             this.set_position_percent(seek_value / 1000);
@@ -77,7 +77,7 @@ var VectorVideoView = ContentBaseView.extend({
         else if ($(e.target).hasClass('vector_playback_rate_200')) {
             new_playback_rate = 2;
         }
-        else{
+        else {
             new_playback_rate = 1;
         }
 
@@ -86,7 +86,18 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     toggle_zoom: function () {
-        console.log("toggle_zoom");
+        if (this.zoom_enabled) {
+            this.zoom_level = 1;
+            this.paper_scope.view.zoom = this.zoom_level;
+            this.zoom_enabled = false;
+            this.paper_scope.view.center = new this.paper_scope.Point(this.paper_scope.view.viewSize.width / 2, this.paper_scope.view.viewSize.height / 2);
+            this.resize_canvas();
+        }
+        else {
+            this.zoom_level = 2;
+            this.paper_scope.view.zoom = this.zoom_level;//depend on zoom level
+            this.zoom_enabled = true;
+        }
     },
 
 
@@ -114,7 +125,7 @@ var VectorVideoView = ContentBaseView.extend({
 
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
-        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas");
+        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas", "toggle_zoom");
         this.render();
         this.paper_scope = new Paper.paper.PaperScope();
 
@@ -137,13 +148,15 @@ var VectorVideoView = ContentBaseView.extend({
 
     render: function () {
         this.$el.html(this.template(this.data_model.attributes));
-        this.$(".papCanvas").attr("id", Math.random().toString());
         this.init_sound_manager();
 
         this.latest_time = 0;
         this.latest_obj = 0;
         this.latest_stroke = 0;
         this.latest_sub_stroke = 0;
+
+        this.zoom_enabled = false;
+        this.zoom_level = 1;
     },
 
 
@@ -153,6 +166,7 @@ var VectorVideoView = ContentBaseView.extend({
         window.soundManager.setup({
             url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
             preferFlash: false,
+            debugMode: false,
             html5PollingInterval: 15,
             onready: this.init_audio_object
         });
@@ -173,7 +187,7 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     loaded: function () {
-        this.$(".vector_total_time").text(this.format_time(this.audio_object.duration, true));
+        $(".vector_total_time").text(this.format_time(this.audio_object.duration, true));
     },
 
 
@@ -190,7 +204,7 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     playing: function () {
-        this.$(".vector_current_time").text(this.format_time(this.audio_object.position, true));
+        $(".vector_current_time").text(this.format_time(this.audio_object.position, true));
         if (this.get_position_percent()) {
             document.querySelector('.vector_seek').MaterialSlider.change(this.get_position_percent() * 1000);
         }
@@ -238,23 +252,22 @@ var VectorVideoView = ContentBaseView.extend({
 
 ////////////////////CANVAS///////////////////////////////
 
-    initialize_canvas: function () {
+    init_canvas: function () {
         this.json_data = sample_json;
         this.modify_json();
-        console.log(this.json_data);
 
-        this.paper_scope.setup(this.$(".papCanvas")[0]);
+        this.paper_scope.setup($(".vector_canvas")[0]);
         this.paper_scope.view.onFrame = this.check_if_playing;
         this.paper_scope.view.onResize = this.resize_canvas;
         this.resize_canvas();
     },
 
     resize_canvas: function () {
-        this.paper_scope.view.viewSize = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
-        this.reset_canvas();
+        this.paper_scope.view.viewSize = new Paper.Size($(".vector_canvas_wrapper").width(), $(".vector_canvas_wrapper").height());
+        this.clear_canvas();
     },
 
-    reset_canvas: function () {
+    clear_canvas: function () {
         this.latest_obj = 0;
         this.latest_stroke = 0;
         this.latest_sub_stroke = 0;
@@ -266,7 +279,6 @@ var VectorVideoView = ContentBaseView.extend({
 
     modify_json: function () {
         var data = this.json_data;
-
 
         //TODO: ORIGINAL DIMENSIONS SHOULD BE IN THE JSON. HERE I AM ASSUMING 1280 x 720
         var orig_width = 1280;
@@ -353,17 +365,38 @@ var VectorVideoView = ContentBaseView.extend({
 
 
         //GET CURRENT WIDTH AND HEIGHT
-        var width_adjust = ($(".canvas-wrapper").width()) / this.data_model.get("orig_width");
-        var height_adjust = ($(".canvas-wrapper").height()) / this.data_model.get("orig_height");
+        var width_adjust = ($(".vector_canvas_wrapper").width()) / this.data_model.get("orig_width");
+        var height_adjust = ($(".vector_canvas_wrapper").height()) / this.data_model.get("orig_height");
 
 
         //IF REWINDED
         if (curr_time < this.latest_time) {
-            this.reset_canvas();
+            this.clear_canvas();
         }
 
         else {
             this.latest_time = curr_time;
+
+
+            //UPDATE CURSOR
+            var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
+            var cursor_x = (parseInt(this.json_data.cursor[cursor_index][0])) * width_adjust;
+            var cursor_y = (parseInt(this.json_data.cursor[cursor_index][1])) * height_adjust;
+
+            if (!this.cursor) {
+                this.cursor = new this.paper_scope.Path.Circle({
+                    center: new this.paper_scope.Point(cursor_x, cursor_y),
+                    radius: 1,
+                    fillColor: 'white'
+                });
+            }
+            else {
+                this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
+                if (this.zoom_enabled) {
+                    this.paper_scope.view.center = new this.paper_scope.Point(this.adjust_center_x(cursor_x), this.adjust_center_y(cursor_y));
+                }
+            }
+
 
             //UPDATE STROKES
             //LOOP THROUGH OBJECTS
@@ -400,9 +433,6 @@ var VectorVideoView = ContentBaseView.extend({
                                     sub_stroke_path.strokeCap = 'round';
                                     sub_stroke_path.strokeJoin = 'round';
 
-                                    //TESTING
-                                    //console.log(obj, stroke, sub_stroke);
-
                                     //IF LAST SUBSTROKE AND LAST STROKE
                                     if ((sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) && (stroke == this.json_data.operations[obj].strokes.length - 1)) {
                                         this.latest_sub_stroke = 0;
@@ -423,23 +453,58 @@ var VectorVideoView = ContentBaseView.extend({
                     }
                 }
             }
-
-            //UPDATE CURSOR
-            var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
-            var cursor_x = (parseInt(this.json_data.cursor[cursor_index][0])) * width_adjust;
-            var cursor_y = (parseInt(this.json_data.cursor[cursor_index][1])) * height_adjust;
-            if (!this.cursor) {
-                this.cursor = new this.paper_scope.Path.Circle({
-                    center: new this.paper_scope.Point(cursor_x, cursor_y),
-                    radius: 2,
-                    fillColor: 'white'
-                });
-            }
-            else {
-                this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
-            }
-
         }
+    },
+
+
+    adjust_center_x: function (cursor_x) {
+        var new_center_x = cursor_x;
+        if (new_center_x < (this.paper_scope.view.viewSize.width * 0.25)) {//depend on zoom level
+            new_center_x = (this.paper_scope.view.viewSize.width * 0.25);//depend on zoom level
+        } else if (new_center_x > (this.paper_scope.view.viewSize.width * 0.75)) {//depend on zoom level
+            new_center_x = (this.paper_scope.view.viewSize.width * 0.75);//depend on zoom level
+        }
+        var current_center_x = this.paper_scope.view.center.x;
+        var dist = Math.abs(new_center_x - current_center_x);
+        var zoomed_view_width = this.paper_scope.view.viewSize.width / 2;//depend on zoom level
+        var ratio = dist / zoomed_view_width;
+        var eased_ratio = this.ease_num(ratio);
+        var dist_change = dist * eased_ratio;
+        var adjusted_new_center_x;
+        if (new_center_x - current_center_x >= 0) {
+            adjusted_new_center_x = current_center_x + dist_change;
+        } else {
+            adjusted_new_center_x = current_center_x - dist_change;
+        }
+        return adjusted_new_center_x;
+    },
+
+
+    adjust_center_y: function (cursor_y) {
+        var new_center_y = cursor_y;
+        if (new_center_y < (this.paper_scope.view.viewSize.height * 0.25)) {//depend on zoom level
+            new_center_y = (this.paper_scope.view.viewSize.height * 0.25);//depend on zoom level
+        } else if (new_center_y > (this.paper_scope.view.viewSize.height * 0.75)) {//depend on zoom level
+            new_center_y = (this.paper_scope.view.viewSize.height * 0.75);//depend on zoom level
+        }
+        var current_center_y = this.paper_scope.view.center.y;
+        var dist = Math.abs(new_center_y - current_center_y);
+        var zoomed_view_height = this.paper_scope.view.viewSize.height / 2;//depend on zoom level
+        var ratio = dist / zoomed_view_height;
+        var eased_ratio = this.ease_num(ratio);
+        var dist_change = dist * eased_ratio;
+        var adjusted_new_center_y;
+        if (new_center_y - current_center_y >= 0) {
+            adjusted_new_center_y = current_center_y + dist_change;
+        } else {
+            adjusted_new_center_y = current_center_y - dist_change;
+        }
+        return adjusted_new_center_y;
+    },
+
+
+    ease_num: function (t) {
+        return t * t * t;
     }
 });
 
@@ -447,3 +512,4 @@ var VectorVideoView = ContentBaseView.extend({
 module.exports = {
     VectorVideoView: VectorVideoView
 };
+
