@@ -9,7 +9,7 @@ Information on how to install KA Lite is available via our :doc:`user guides </i
 How much does KA Lite cost to install?
 --------------------------------------
 
-It is **FREE** -- both free as in "free speech" and free as in "free beer"! To learn more about free software, see this `Free Software Foundation article <http://www.fsf.org/about/what-is-free-software>`_
+It is **FREE** -- both free as in "free speech" and free as in "free beer"! To learn more about free software, see this `Free Software Foundation article <http://www.fsf.org/about/what-is-free-software>`_.
 
 How do I report a problem?
 --------------------------
@@ -52,7 +52,15 @@ Yes! Please see the instructions for ":ref:`bulk-video-downloads`".
 How can I install a language pack without a reliable internet connection?
 -------------------------------------------------------------------------
 
-To install, a language pack on a computer without internet access, look up the language code for the language you wish to download:
+In version 0.16 we changed the proces for making KA Lite available in other languages. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
+
+You can download from our server the new `contentpacks for all the languages <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/>`_, and carry around the zip file to computers you want to install the contentpack to.
+
+Once you have downloaded the contentpack for install on a computer without a reliable internet access, use the following command::
+
+    kalite manage retrievecontentpack local <language code> <path to zip file>
+
+Use the language code indicated below:
 
     ================ ======
      Language name    Code
@@ -76,23 +84,9 @@ To install, a language pack on a computer without internet access, look up the l
      Zulu             zul
     ================ ======
 
-Once you've determined the right language code, you can download the right language pack using this url::
+An example invocation for installing the French `contentpack` on Windows would be::
 
-  http://keep.learningequality.org/media/language_packs/0.15/<code>.zip
-
-where <code> is replaced by the right language code. You can now carry around that zip file to computers you want to install the language pack to.
-
-You can install the language pack with the following command (for Debian and OS X)::
-
-  kalite manage languagepackdownload --from-file=<path to zip file> -l<language code> --commandline
-
-Or for Windows::
-
-  <path to KA Lite installation>\bin\windows\kalite.bat languagepackdownload --from-file=<path to zip file> -l<language code> --commandline
-
-An example invocation for Windows would be::
-
-  C:\Program Files\KA Lite\ka-lite\bin\windows\kalite.bat languagepackdownload --from-file="C:\Downloads\es.zip" -les --commandline
+    C:\Python27\Scripts\kalite manage retrievecontentpack local fr fr.zip
 
 
 After starting up your server, you should now see your new language in the Manage > Language page.
@@ -160,19 +154,19 @@ KA Lite is an independent, open-source project maintained by `Learning Equality`
 How can local curriculum be generated?
 --------------------------------------
 
-Local content creation is something that Learning Equality intends to build into future platforms. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to help fund this project, please `click here <https://learningequality.org/give/>`_.
+Local content creation is something that Learning Equality intends to build into future `platforms <https://learningequality.org/kolibri/>`_. If you would like to be notified when it is available, subscribe for `updates <https://github.com/learningequality/ka-lite/wiki/Communication%20and%20Coordination>`_, or if you would like to help fund this project, please `click here <https://learningequality.org/give/>`_.
 
 .. _home page: http://kalite.learningequality.org/
 
 How is it possible to compress the content into KA Lite?
 --------------------------------------------------------
 
-First, users are able to select which videos they wish to download through the user-interface, allowing the users to customize the amount of space used.
+Users are able to select which videos they wish to download through the user-interface, allowing to customize the amount of space used.
 
 What languages is KA Lite available in?
 ---------------------------------------
 
-KA Lite was `released with internationalization support`_ on 2014/03/07, including support for a translated interface, dubbed videos, subtitles, and translated exercises. Currently we have varying levels of support Portuguese, Danish, French, Polish, Spanish. Please `visit our blog`_ for the latest information about language support.
+KA Lite was `released with internationalization support`_ on 2014/03/07, including support for a translated interface, dubbed videos, subtitles, and translated exercises. Currently we have varying levels of support Portuguese, Danish, French, Polish, Spanish, and many others. Please `visit our blog`_ for the latest information about language support.
 
 .. _released with internationalization support: https://learningequality.org/blog/2014/i18n-released/
 
@@ -228,17 +222,14 @@ Note that online data back-ups occur if you "register" your KA Lite installation
 If you only want to backup the database, locate the ``.kalite/database/`` folder
 and copy and restore that one.
 
-I skipped the step for downloading the assessment items during install, how can I do it now?
---------------------------------------------------------------------------------------------
-
-Run the following command (beware it can take a while, the download size is over 500 MB):
-
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip -f``
-
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
-
 I can't get KA Lite to work on Windows! The installation succeeded, but nothing happens!
 ----------------------------------------------------------------------------------------
 
 KA Lite on Windows is controlled through a task-tray program.
 See the :doc:`installation guide <installguide/install_all>` for some more info.
+
+
+I can't see videos in Firefox on Ubuntu/Debian!
+-----------------------------------------------
+
+Install `Ubuntu restricted extras package <https://apps.ubuntu.com/cat/applications/ubuntu-restricted-extras/>`_ in the Ubuntu Software Center.

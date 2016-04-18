@@ -14,8 +14,8 @@ from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    download_content_pack, update_jsi18n_file, get_srt_path as get_subtitle_path, \
-    extract_content_db
+    download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
+    extract_content_db, get_localized_exercise_dirpath
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
 logging = django_settings.LOG
@@ -114,12 +114,33 @@ class Command(UpdatesStaticCommand):
         extract_subtitles(zf, lang)
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
+        extract_html_exercises(zf, lang)
 
         if not self.is_template:
             self.next_stage(_("Looking for available content items."))
             call_command("annotate_content_items", language=lang)
 
         self.complete(_("Finished processing content pack."))
+
+
+def extract_html_exercises(zf, lang):
+    exercise_dest_path = get_localized_exercise_dirpath(lang)
+    zip_exercise_path = "exercises/"
+
+    items = [s for s in zf.namelist() if zip_exercise_path in s]
+
+    if not items:  # no html exercises to extract
+        return
+
+    extract_path = tempfile.mkdtemp()
+    full_extract_path = os.path.join(extract_path, zip_exercise_path)
+    try:
+        zf.extractall(extract_path, items)
+
+        shutil.rmtree(exercise_dest_path, ignore_errors=True)
+        shutil.move(full_extract_path, exercise_dest_path)
+    finally:                    # no matter what happens, remove the extract path
+        shutil.rmtree(extract_path)
 
 
 def extract_content_pack_metadata(zf, lang):

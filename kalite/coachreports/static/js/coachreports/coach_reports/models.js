@@ -33,6 +33,18 @@ var GroupCollection = Backbone.Collection.extend({
     url: window.GROUP_RESOURCE_URL
 });
 
+function normalizeEndDate(end_date) {
+    // We want our date ranges to be inclusive, so send the day + 1
+    // to the server in order to do this.
+    var output;
+    if (end_date) {
+        output = new Date(end_date);
+        output.setDate(output.getDate() + 1);
+        output = output.getFullYear() + "/" + (output.getMonth() + 1) + "/" + output.getDate();
+    }
+    return output;
+}
+
 var CoachReportModel = Backbone.Model.extend({
     initialize: function(options) {
         this.facility = options.facility;
@@ -47,7 +59,7 @@ var CoachReportModel = Backbone.Model.extend({
             facility_id: this.facility,
             group_id: this.group,
             start_date: this.start_date,
-            end_date: this.end_date,
+            end_date: normalizeEndDate(this.end_date),
             topic_ids: this.topic_ids
         });
     }
@@ -63,20 +75,12 @@ var CoachReportAggregateModel = Backbone.Model.extend({
     },
 
     url: function() {
-        // We want our date ranges to be inclusive, so send the day + 1
-        // to the server in order to do this.
 
-        var end_date;
-        if (this.end_date) {
-            end_date = new Date(this.end_date);
-            end_date.setDate(end_date.getDate() + 1);
-            end_date = end_date.getFullYear() + "/" + (end_date.getMonth() + 1) + "/" + end_date.getDate();
-        }
         return setGetParamDict(Urls.aggregate_learner_logs(), {
             facility_id: this.facility,
             group_id: this.group,
             start_date: this.start_date,
-            end_date: end_date,
+            end_date: normalizeEndDate(this.end_date),
             topic_ids: this.topic_ids
         });
     }

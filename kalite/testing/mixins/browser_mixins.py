@@ -86,18 +86,21 @@ class BrowserActionMixins(object):
         try:
             if not elem:
                 if id:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.ID, id)))
+                    locator = (By.ID, id)
                 elif name:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.NAME, name)))
+                    locator = (By.NAME, name)
                 elif tag_name:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
+                    locator = (By.TAG_NAME, tag_name)
                 elif css_class:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
+                    locator = (By.CLASS_NAME, css_class)
                 elif xpath:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                    locator = (By.XPATH, xpath)
+            elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located(locator))
         except TimeoutException:
             raise KALiteTimeout("browser_activate_element timed out with keyword arguments: {0}".format(kwargs))
-        elem.click()
+        else:
+            WebDriverWait(browser, max_wait).until(EC.element_to_be_clickable(locator))
+            elem.click()
 
     def browser_send_keys(self, keys, browser=None):
         """Convenience method to send keys to active_element in the browser"""
@@ -113,6 +116,9 @@ class BrowserActionMixins(object):
             messages = WebDriverWait(self.browser, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
         else:
             messages = []
+
+        if isinstance(contains, str):  # make sure we only look at messages we're looking for.
+            messages = [message for message in messages if contains in message.text]
 
         # Check that we got as many as expected
         if num_messages is not None:

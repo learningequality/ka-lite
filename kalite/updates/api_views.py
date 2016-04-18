@@ -128,7 +128,7 @@ def start_video_download(request):
 
     lang = json.loads(request.body or "{}").get("lang", "en")
 
-    youtube_ids = get_download_youtube_ids(paths, language=lang)
+    youtube_ids = get_download_youtube_ids(paths, language=lang, downloaded=False)
 
     queue = VideoQueue()
 
@@ -150,7 +150,7 @@ def delete_videos(request):
 
     lang = json.loads(request.body or "{}").get("lang", "en")
 
-    youtube_ids = get_download_youtube_ids(paths, language=lang)
+    youtube_ids = get_download_youtube_ids(paths, language=lang, downloaded=True)
 
     num_deleted = 0
 

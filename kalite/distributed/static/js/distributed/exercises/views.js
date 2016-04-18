@@ -728,7 +728,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     initialize_subviews: function() {
         this.exercise_view = this.add_subview(ExerciseView, {
             el: this.el,
-            exercise_id: this.options.data_model.get("exercise_id"),
+            exercise_id: this.options.data_model.get("id"),
             data_model: this.options.data_model,
             log_model: this.options.log_model
         });
@@ -749,7 +749,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     load_user_data: function() {
 
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("exercise_id"), context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("id"), context_type__in: ["playlist", "exercise"]});
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
