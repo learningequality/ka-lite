@@ -104,12 +104,7 @@ def set_database(function):
     """
 
     def wrapper(*args, **kwargs):
-        # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-        # TODO(jamalex): BURN IT ALL DOWN!
         language = kwargs.get("language", "en")
-
-        if language == "pt-BR":
-            language = "pt"
 
         path = kwargs.pop("database_path", None)
         if not path:
@@ -286,6 +281,7 @@ def get_topic_update_nodes(parent=None, **kwargs):
             Item.total_files,
             Item.id,
             Item.path,
+            Item.youtube_id,
         ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.total_files != 0))
         return values
 
@@ -399,18 +395,24 @@ def get_topic_contents(kinds=None, topic_id=None, **kwargs):
 
 
 @set_database
-def get_download_youtube_ids(paths=None, **kwargs):
+def get_download_youtube_ids(paths=None, downloaded=False, **kwargs):
     """
     Convenience function for taking a list of content ids and returning
     all associated youtube_ids for downloads, regardless of whether the input
     paths are paths for content nodes or topic nodes
     :param paths: A list of paths to nodes - used to ensure uniqueness.
+    :param downloaded: Boolean to select whether to return files that have been downloaded already or not.
     :return: A unique list of youtube_ids as strings.
     """
     if paths:
         youtube_ids = dict()
         for path in paths:
             selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
+
+            if downloaded:
+                selector &= Item.files_complete > 0
+            else:
+                selector &= Item.files_complete == 0
 
             youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
@@ -510,14 +512,59 @@ def bulk_insert(items, **kwargs):
 
 
 @set_database
+def create(item, **kwargs):
+    """
+    Wrapper around create that allows us to specify a database
+    and also parse the model data to compress extra fields.
+    :param item: A dictionary containing content metadata for one node.
+    :return Item
+    """
+    if item:
+        return Item.create(**parse_model_data(item))
+
+
+@set_database
+def get(item, **kwargs):
+    """
+    Fetch a content item, automatically choosing the correct content database (because of the set_database
+    decorator).
+
+    :param item: A dictionary containing content metadata for one node. "extra_fields" should not be inflated!
+    :return: Item, or None if no such item is found
+    """
+    if item:
+        selector = None
+        for attr, value in item.iteritems():
+            if not selector:
+                selector = (getattr(Item, attr) == value)
+            else:
+                selector &= (getattr(Item, attr) == value)
+        return Item.get(selector)
+
+
+@set_database
+def delete_instances(ids, **kwargs):
+    """
+    Given a list of Item ids, deletes all instances with that id.
+
+    :param item: A list of `Item.id`s
+    :return: None
+    """
+    if ids:
+        for item in Item.select().where(Item.id.in_(ids)):
+            item.delete_instance()
+
+
+@set_database
 def get_or_create(item, **kwargs):
     """
     Wrapper around get or create that allows us to specify a database
     and also parse the model data to compress extra fields.
     :param item: A dictionary containing content metadata for one node.
+    :return tuple of Item and Boolean for whether created or not.
     """
     if item:
-        Item.create_or_get(**parse_model_data(item))
+        return Item.create_or_get(**parse_model_data(item))
 
 
 @set_database
@@ -546,7 +593,7 @@ def update_item(update=None, path=None, **kwargs):
             item.save()
 
 
-def iterator_content_items(ids=None, **kwargs):
+def iterator_content_items(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by ids,
     run update content availability on that item and then yield the
@@ -560,13 +607,13 @@ def iterator_content_items(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
 
 
-def iterator_content_items_by_youtube_id(ids=None, **kwargs):
+def iterator_content_items_by_youtube_id(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by youtube ids,
     run update content availability on that item and then yield the
@@ -580,7 +627,7 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
@@ -620,7 +667,7 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
 
     db = kwargs.get("db")
     if db:
-        content_models = iterator_content_items(ids=ids)
+        content_models = iterator_content_items(ids=ids, channel=channel, language=language)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
                 if not node.parent:

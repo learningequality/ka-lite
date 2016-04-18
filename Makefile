@@ -99,10 +99,10 @@ assets:
 	cp kalite/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
-release: clean clean-dev-db docs assets man
-	python setup.py sdist --formats=$(format) upload --sign
-	python setup.py sdist --formats=$(format) upload --sign --static
+release: dist man
 	ls -l dist
+	echo "uploading above to PyPi, using twine"
+	twine upload -s dist/*
 
 dist: clean clean-dev-db docs assets
 	python setup.py sdist --formats=$(format)

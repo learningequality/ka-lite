@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
+from kalite.i18n.base import outdated_langpacks
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
@@ -47,10 +48,10 @@ def check_setup_status(handler):
             # TODO(bcipolli): move this to the client side?
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
-                messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
+                messages.warning(request, mark_safe(_("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server.") % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
                 zone_id = (Zone.objects.all() and Zone.objects.all()[0].id) or "None"
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility", kwargs={"zone_id": zone_id})))
+                messages.warning(request, mark_safe(_("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility.") % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
         elif not request.is_logged_in:
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
@@ -64,7 +65,7 @@ def check_setup_status(handler):
                 redirect_url = None
             if redirect_url:
                 messages.warning(request, mark_safe(
-                    "Please login with the admin account you created, then create your facility and register this device to complete the setup."))
+                    _("Please login with the admin account you created, then create your facility and register this device to complete the setup.")))
 
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
@@ -88,6 +89,13 @@ def homepage(request):
     """
     Homepage.
     """
+    def _alert_outdated_languages(langpacks):
+        pretty_lang_names = " --- ".join(lang.get("name", "") for lang in langpacks)
+        messages.warning(request, _("Dear Admin, please log in and upgrade the following languages as soon as possible: {}").format(pretty_lang_names))
+
+    outdated_langpack_list = list(outdated_langpacks())
+    if outdated_langpack_list:
+        _alert_outdated_languages(outdated_langpack_list)
     return {}
 
 

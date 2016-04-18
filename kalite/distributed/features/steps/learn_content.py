@@ -1,7 +1,7 @@
-from behave import given, then
+from behave import given, then, when
 
 from kalite.testing.behave_helpers import build_url, reverse, alert_in_page, find_css_class_with_wait, \
-    assert_no_element_by_css_selector
+    assert_no_element_by_css_selector, wait_for_video_player_ready
 
 TIMEOUT = 30
 
@@ -33,3 +33,15 @@ def impl(context):
     # Wait for .content, a rule-of-thumb for ajax stuff to finish, and thus for .alerts to appear (if any).
     find_css_class_with_wait(context, "content")
     assert_no_element_by_css_selector(context, ".alert")
+
+
+@when(u'I visit a video with subtitles')
+def impl(context):
+    context.browser.get(build_url(context, reverse("learn") + context.video.path))
+    wait_for_video_player_ready(context)
+
+
+@then(u'the video player is aware of the subtitles')
+def impl(context):
+    text_tracks = context.browser.execute_script('return player.textTracks().length;')
+    assert text_tracks > 0, "The video didn't have any text tracks!"

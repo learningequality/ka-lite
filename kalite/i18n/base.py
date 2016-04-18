@@ -1,10 +1,12 @@
 import errno
 import os
 import re
-import requests
 import shutil
-from fle_utils.collections_local_copy import OrderedDict
+import urllib
+import zipfile
+from distutils.version import LooseVersion
 from fle_utils.internet.webcache import invalidate_web_cache
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.http import HttpRequest
 from django.utils import translation
@@ -12,11 +14,16 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
-from kalite.version import SHORTVERSION
+from kalite.version import VERSION, SHORTVERSION
+from kalite.topic_tools import settings as topic_settings
 
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
-from kalite.version import VERSION
+
+
+CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
+                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
+
 
 CACHE_VARS = []
 
@@ -29,8 +36,7 @@ class LanguageNotFoundError(Exception):
 
 
 def get_localized_exercise_dirpath(lang_code):
-    ka_lang_code = lang_code.lower()
-    return os.path.join(settings.USER_STATIC_FILES, "js", "distributed", "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
+    return os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke", "exercises", lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -66,11 +72,11 @@ def get_langcode_map(lang_name=None, force=False):
     return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 
-def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
+def get_subtitle_url(youtube_id, code):
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
 
 
-def get_srt_path(lang_code=None, youtube_id=None):
+def get_subtitle_file_path(lang_code=None, youtube_id=None):
     """Both central and distributed servers must make these available
     at a web-accessible location.
 
@@ -83,7 +89,7 @@ def get_srt_path(lang_code=None, youtube_id=None):
     if lang_code:
         srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
     if youtube_id:
-        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+        srt_path = os.path.join(srt_path, youtube_id + ".vtt")
 
     return srt_path
 
@@ -160,6 +166,23 @@ def convert_language_code_format(lang_code, for_django=True):
     return lang_code
 
 
+def outdated_langpacks():
+    """
+    Function that returns a list of languages (full metadata) that needs to be
+    upgraded to the latest version. Returns an empty list if all languages are
+    upgraded to this release's version.
+    """
+
+    langpacks = get_installed_language_packs(force=True)
+
+    for langpack in langpacks.itervalues():
+        langpackversion = LooseVersion(langpack.get("software_version") or SHORTVERSION)
+        current_software_version = LooseVersion(SHORTVERSION)
+
+        if current_software_version > langpackversion:
+            yield langpack
+
+
 INSTALLED_LANGUAGES_CACHE = None
 CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
 def get_installed_language_packs(force=False):
@@ -176,7 +199,7 @@ def _get_installed_language_packs():
     # There's always English...
     installed_language_packs = [{
         'code': 'en',
-        'software_version': VERSION,
+        'software_version': SHORTVERSION,
         'language_pack_version': 0,
         'percent_translated': 100,
         'subtitle_count': 0,
@@ -316,7 +339,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code) ]
 
     for langpack_resource_path in langpack_resource_paths:
         try:
@@ -352,10 +375,49 @@ def translate_block(language):
     translation.deactivate()
 
 
-def get_language_pack_url(lang_code, version=SHORTVERSION):
-    """As published"""
-    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
-        "host": settings.CENTRAL_SERVER_HOST,
-        "lang_code": lang_code,
-        "version": version,
-    }
+def download_content_pack(fobj, lang, minimal=False):
+    """Given a file object where the content pack lang will be stored, return a
+    zipfile object pointing to the content pack.
+
+    If minimal is set to True, append the "-minimal" flag when downloading the
+    contentpack.
+
+    """
+    url = CONTENT_PACK_URL_TEMPLATE.format(
+        version=SHORTVERSION,
+        langcode=lang,
+        suffix="-minimal" if minimal else "",
+    )
+
+    logging.info("Downloading content pack from {}".format(url))
+    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+
+    shutil.copyfileobj(httpf, fobj)
+    fobj.seek(0)
+    zf = zipfile.ZipFile(fobj)
+
+    httpf.close()
+
+    return zf
+
+
+def extract_content_db(zf, lang, is_template=False):
+    """
+    :param: as_template: Extracts the result to the template destination,
+                         intended for source distribution
+    """
+    if not is_template:
+        content_db_path = topic_settings.CONTENT_DATABASE_PATH.format(
+            channel=topic_settings.CHANNEL,
+            language=lang,
+        )
+    else:
+        content_db_path = topic_settings.CONTENT_DATABASE_TEMPLATE_PATH.format(
+            channel=topic_settings.CHANNEL,
+            language=lang,
+        )
+
+    with open(content_db_path, "wb") as f:
+        dbfobj = zf.open("content.db")
+        shutil.copyfileobj(dbfobj, f)
+

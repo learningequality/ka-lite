@@ -193,7 +193,7 @@ var SidebarView = BaseView.extend({
         this.render();
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
-        this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
+        this.listenTo(this.state_model, "change:current_level", this.update_sidebar_visibility);
     },
 
     render: function() {
@@ -236,60 +236,63 @@ var SidebarView = BaseView.extend({
         }
     },
 
-    resize_for_narrow: _.debounce(function() {
-        var current_level = this.state_model.get("current_level");
-        var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = this.$(".topic-container-inner:last-child").width();
-        // Hack to give the last child of .topic-container-inner to be 1.5 times the 
-        // width of their parents. Also, sidebar overflow out of the left side of screen
-        // is computed and set here.
+    resize_for_narrow: function() {
+        if (this.state_model.get("open")) {
+            var current_level = this.state_model.get("current_level");
+            var column_width = this.$(".topic-container-inner").width();
+            var last_column_width = this.$(".topic-container-inner:last-child").width();
+            // Hack to give the last child of .topic-container-inner to be 1.5 times the
+            // width of their parents. Also, sidebar overflow out of the left side of screen
+            // is computed and set here.
 
-        // THE magic variable that controls number of visible panels
-        var numOfPanelsToShow = 4;
+            // THE magic variable that controls number of visible panels
+            var numOfPanelsToShow = 4;
 
-        if ($(window).width() < 1120)
-            numOfPanelsToShow = 3;
+            if ($(window).width() < 1120)
+                numOfPanelsToShow = 3;
 
-        if ($(window).width() < 920)
-            numOfPanelsToShow = 2;
+            if ($(window).width() < 920)
+                numOfPanelsToShow = 2;
 
-        if ($(window).width() < 620)
+            if ($(window).width() < 620)
             numOfPanelsToShow = 1;
+            // Used to get left value in number form
+            var sidebarPanelPosition = this.sidebar.position();
+            var sidebarPanelLeft = sidebarPanelPosition.left;
 
-        // Used to get left value in number form
-        var sidebarPanelPosition = this.sidebar.position();
-        var sidebarPanelLeft = sidebarPanelPosition.left;
+            this.width = (current_level - 1) * column_width + last_column_width + 10;
+            this.sidebar.width(this.width);
+            var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
+            if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        this.width = (current_level - 1) * column_width + last_column_width + 10;
-        this.sidebar.width(this.width);
-        var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
-        if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
+            // Signature color flash (also hides a slight UI glitch)
+            var originalBackColor = this.sidebarBack.css('background-color');
+            this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
 
-        // Signature color flash (also hides a slight UI glitch)
-        var originalBackColor = this.sidebarBack.css('background-color');
-        this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
-        
-        var self = this;
-        this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
-            self.set_sidebar_back();
-        });
+            var self = this;
+            this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function () {
+                self.set_sidebar_back();
+            });
 
-        this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
-    }, 100),
+            this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
+        }
+    },
 
     // Pretty much the code for pre-back-button sidebar resize
-    resize_for_wide: _.debounce(function() {
-        var current_level = this.state_model.get("current_level");
-        var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = 400;
-        
-        this.width = (current_level-1) * column_width + last_column_width + 10;
-        this.sidebar.width(this.width);
-        this.sidebar.css({left: 0});
-        this.sidebarTab.css({left: this.width});
-        
-        this.set_sidebar_back();
-    }, 100),
+    resize_for_wide: function() {
+       if (this.state_model.get("open")) {
+           var current_level = this.state_model.get("current_level");
+           var column_width = this.$(".topic-container-inner").width();
+           var last_column_width = 400;
+
+           this.width = (current_level-1) * column_width + last_column_width + 10;
+           this.sidebar.width(this.width);
+           this.sidebar.css({left: 0});
+           this.sidebarTab.css({left: this.width});
+
+            this.set_sidebar_back();
+       }
+    },
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
@@ -309,10 +312,10 @@ var SidebarView = BaseView.extend({
 
     update_sidebar_visibility: _.debounce(function() {
         if (this.state_model.get("open")) {
-            // Used to get left value in number form
-            var sidebarPanelPosition = this.sidebar.position();
             this.sidebar.css({left: 0});
             this.resize_sidebar();
+            // Used to get left value in number form
+            var sidebarPanelPosition = this.sidebar.position();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
         } else {
@@ -322,8 +325,6 @@ var SidebarView = BaseView.extend({
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
         }
-
-        this.set_sidebar_back();
     }, 100),
 
     set_sidebar_back: function() {
@@ -371,11 +372,15 @@ var SidebarView = BaseView.extend({
     },
 
     show_sidebar: function() {
-        this.state_model.set("open", true);
+        if (!this.state_model.get("open")) {
+            this.state_model.set("open", true);
+        }
     },
 
     hide_sidebar: function() {
-        this.state_model.set("open", false);
+        if (this.state_model.get("open")) {
+            this.state_model.set("open", false);
+        }
     },
 
     show_sidebar_tab: function() {

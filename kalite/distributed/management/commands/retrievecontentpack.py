@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import urllib
 import zipfile
 
 from optparse import make_option
@@ -15,16 +14,11 @@ from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    update_jsi18n_file, get_srt_path as get_subtitle_path
-from kalite.topic_tools import settings
+    download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
+    extract_content_db, get_localized_exercise_dirpath
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
-from kalite.version import SHORTVERSION
 
 logging = django_settings.LOG
-
-
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
-                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
 
 
 class Command(UpdatesStaticCommand):
@@ -120,6 +114,7 @@ class Command(UpdatesStaticCommand):
         extract_subtitles(zf, lang)
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
+        extract_html_exercises(zf, lang)
 
         if not self.is_template:
             self.next_stage(_("Looking for available content items."))
@@ -128,30 +123,32 @@ class Command(UpdatesStaticCommand):
         self.complete(_("Finished processing content pack."))
 
 
+def extract_html_exercises(zf, lang):
+    exercise_dest_path = get_localized_exercise_dirpath(lang)
+    zip_exercise_path = "exercises/"
+
+    items = [s for s in zf.namelist() if zip_exercise_path in s]
+
+    if not items:  # no html exercises to extract
+        return
+
+    extract_path = tempfile.mkdtemp()
+    full_extract_path = os.path.join(extract_path, zip_exercise_path)
+    try:
+        zf.extractall(extract_path, items)
+
+        shutil.rmtree(exercise_dest_path, ignore_errors=True)
+        shutil.move(full_extract_path, exercise_dest_path)
+    finally:                    # no matter what happens, remove the extract path
+        shutil.rmtree(extract_path)
+
+
 def extract_content_pack_metadata(zf, lang):
     metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
     pack_metadata_name = "metadata.json"
 
     with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
         shutil.copyfileobj(mf, f)
-
-
-def download_content_pack(fobj, lang, minimal=False):
-    url = CONTENT_PACK_URL_TEMPLATE.format(
-        version=SHORTVERSION,
-        langcode=lang,
-        suffix="-minimal" if minimal else "",
-    )
-
-    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
-
-    shutil.copyfileobj(httpf, fobj)
-    fobj.seek(0)
-    zf = zipfile.ZipFile(fobj)
-
-    httpf.close()
-
-    return zf
 
 
 def extract_catalog_files(zf, lang):
@@ -168,27 +165,6 @@ def extract_catalog_files(zf, lang):
         logging.debug("writing to %s" % mopath)
         with open(mopath, "wb") as djangomof:
             shutil.copyfileobj(zipmof, djangomof)
-
-
-def extract_content_db(zf, lang, is_template=False):
-    """
-    :param: as_template: Extracts the result to the template destination,
-                         intended for source distribution
-    """
-    if not is_template:
-        content_db_path = settings.CONTENT_DATABASE_PATH.format(
-            channel=settings.CHANNEL,
-            language=lang,
-        )
-    else:
-        content_db_path = settings.CONTENT_DATABASE_TEMPLATE_PATH.format(
-            channel=settings.CHANNEL,
-            language=lang,
-        )
-
-    with open(content_db_path, "wb") as f:
-        dbfobj = zf.open("content.db")
-        shutil.copyfileobj(dbfobj, f)
 
 
 def extract_subtitles(zf, lang):

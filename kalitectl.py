@@ -89,10 +89,18 @@ import re
 import cherrypy
 
 # We do not understand --option value, only --option=value.
-# Match all patterns of "--option value" and fail if they exist
-__validate_cmd_options = re.compile(r"--?[^\s]+\s+(?:(?!--|-[\w]))")
+# Similarly, we don't understand -o Foo, only -oFoo
+# Match all patterns as above and fail if they exist
+# With single-dash options, there's a corner case if a dash appears in a positional argument, like so:
+#     kalite manage retrievecontentpack local es-ES foo.zip
+# Be sure to match whitespace *before* the option starts, so that dashes *inside* arguments are okay!
+# (?!...) is a negative lookahead assertion. It only matches if the ... pattern *isn't* found!
+__validate_cmd_options = re.compile(r"\s--?[^\s]+\s+(?!--|-[\w])")
 if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. The option parser gets confused if you do otherwise.\n\nWill be fixed in a future release.")
+    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. "
+                     "The option parser gets confused if you do otherwise."
+                     "\nAdditionally, please put all Django management command options *after* positional arguments."
+                     "\n\nWill be fixed in a future release.")
     sys.exit(1)
 
 from threading import Thread
@@ -178,7 +186,7 @@ def update_default_args(defaults, updates):
     looking into django.
     """
     # Returns either the default or an updated argument
-    arg_name = re.compile(r"^-?-?\s*=?([^\s=-]+)")
+    arg_name = re.compile(r"^-?-?\s*=?([^\s=]+)")
     # Create a dictionary of defined defaults and updates where '-somearg' is
     # always the key, update the defined defaults dictionary with the updates
     # dictionary thus overwriting the defaults.
@@ -762,7 +770,6 @@ def diagnose():
         diag("content root", settings.CONTENT_ROOT)
         diag("content size", filesizeformat(get_size(settings.CONTENT_ROOT)))
         diag("user database", settings.DATABASES['default']['NAME'])
-        diag("assessment database", settings.DATABASES['assessment_items']['NAME'])
         try:
             from securesync.models import Device
             device = Device.get_own_device()

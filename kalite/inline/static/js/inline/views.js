@@ -79,6 +79,7 @@ var ButtonView = BaseView.extend({
 
             error: function(model, response, options) {
                 console.log("Unable to load inline tutorial narrative!");
+                self.$("#inline-btn").prop("disabled", true);
             }
         });
     },
