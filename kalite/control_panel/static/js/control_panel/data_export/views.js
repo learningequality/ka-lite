@@ -104,7 +104,7 @@ var ZoneSelectView = Backbone.View.extend({
 
     template: require('./hbtemplates/zone-select.handlebars'),
 
-    initialize: function() {
+    initialize: function(options) {
         // Create collections
         this.zone_list = new Models.ZoneCollection();
 
@@ -117,7 +117,7 @@ var ZoneSelectView = Backbone.View.extend({
             // Fetch collection by org_id
             this.zone_list.fetch({
                 data: $.param({
-                    "org_id": this.options.org_id,
+                    "org_id": options.org_id,
                     "limit": 0
                 })
             });
