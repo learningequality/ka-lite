@@ -6,7 +6,7 @@
   bottom: 0;
   left: 0;
   -webkit-user-select: initial !important;
-  background: #000000 url('../static/js/distributed/vectorvideo/sample_background.jpg') no-repeat;
+  background: #000000;
   background-size: contain;
   touch-action: initial !important;
   -webkit-user-drag: initial !important;
@@ -28,7 +28,8 @@
   width: 100%;
   padding-top: 5px;
   color: white;
-  background-color: #212121;
+  background-color: rgba(255, 153, 0, 0);
+  top: -44px;
 }
 
 .vector_bar_items {
@@ -102,3 +103,29 @@
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_fullscreen_exit_white_24px.svg) center;
   background-size: contain;
 }
+
+.vector_wrapper:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-ms-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
