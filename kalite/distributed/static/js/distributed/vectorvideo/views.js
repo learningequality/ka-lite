@@ -91,7 +91,7 @@ var VectorVideoView = ContentBaseView.extend({
             this.paper_scope.view.zoom = this.zoom_level;
             this.zoom_enabled = false;
             this.paper_scope.view.center = new this.paper_scope.Point(this.paper_scope.view.viewSize.width / 2, this.paper_scope.view.viewSize.height / 2);
-            this.resize_canvas();
+            this.resize_canvas(false);
         }
         else {
             this.zoom_level = 2;
@@ -117,7 +117,34 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     toggle_full_screen: function () {
-        console.log("toggle_full_screen");
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+
+            this.full_screen_enabled = true;
+            var el = document.querySelector('.vector_wrapper');
+
+            if (el.requestFullscreen) {
+                el.requestFullscreen();
+            } else if (el.msRequestFullscreen) {
+                el.msRequestFullscreen();
+            } else if (el.mozRequestFullScreen) {
+                el.mozRequestFullScreen();
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        } else {
+             
+            this.full_screen_enabled = false;
+
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
     },
 
 
@@ -157,6 +184,7 @@ var VectorVideoView = ContentBaseView.extend({
 
         this.zoom_enabled = false;
         this.zoom_level = 1;
+        this.full_screen_enabled = false;
     },
 
 
@@ -262,18 +290,32 @@ var VectorVideoView = ContentBaseView.extend({
         this.resize_canvas();
     },
 
-    resize_canvas: function () {
+
+    resize_canvas: function (call_clear_canvas) {
         this.paper_scope.view.viewSize = new Paper.Size($(".vector_canvas_wrapper").width(), $(".vector_canvas_wrapper").height());
-        this.clear_canvas();
+
+        if (call_clear_canvas) {
+            this.clear_canvas();
+        }
     },
+
 
     clear_canvas: function () {
         this.latest_obj = 0;
         this.latest_stroke = 0;
         this.latest_sub_stroke = 0;
         this.latest_time = 0;
-        this.paper_scope.project.clear();
         this.cursor = null;
+        this.paper_scope.project.clear();
+        this.add_desc();
+    },
+
+
+    add_desc: function () {
+        var text = new this.paper_scope.PointText(new this.paper_scope.Point(30, 40));
+        text.fillColor = 'yellow';
+        text.content = 'Find the value of 5^3';
+        text.fontSize = 20;
     },
 
 
@@ -389,8 +431,7 @@ var VectorVideoView = ContentBaseView.extend({
                     radius: 1,
                     fillColor: 'white'
                 });
-            }
-            else {
+            } else {
                 this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
                 if (this.zoom_enabled) {
                     this.paper_scope.view.center = new this.paper_scope.Point(this.adjust_center_x(cursor_x), this.adjust_center_y(cursor_y));
@@ -465,18 +506,18 @@ var VectorVideoView = ContentBaseView.extend({
             new_center_x = (this.paper_scope.view.viewSize.width * 0.75);//depend on zoom level
         }
         var current_center_x = this.paper_scope.view.center.x;
-        var dist = Math.abs(new_center_x - current_center_x);
+        var dist = Math.abs(new_center_x - current_center_x);//remove abs
         var zoomed_view_width = this.paper_scope.view.viewSize.width / 2;//depend on zoom level
-        var ratio = dist / zoomed_view_width;
+        var ratio = dist / zoomed_view_width;//abs on dist
         var eased_ratio = this.ease_num(ratio);
         var dist_change = dist * eased_ratio;
         var adjusted_new_center_x;
         if (new_center_x - current_center_x >= 0) {
-            adjusted_new_center_x = current_center_x + dist_change;
+            adjusted_new_center_x = current_center_x + dist_change;//only keep this
         } else {
             adjusted_new_center_x = current_center_x - dist_change;
         }
-        return adjusted_new_center_x;
+        return adjusted_new_center_x;//-.5width < 0 -> -0.5
     },
 
 
@@ -504,6 +545,7 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     ease_num: function (t) {
+        //below zero return 0
         return t * t * t;
     }
 });
