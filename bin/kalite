@@ -102,7 +102,7 @@ if os.name == "posix" and os.path.isfile("/etc/ka-lite/username"):
             ).format(username))
             sys.stderr.write((
                 "To run the command as the default user, run this instead:\n\n"
-                "    sudo su {user} -s /bin/sh -c {command}\n\n"
+                "    sudo su {user} -c {command}\n\n"
             ).format(user=username, command=" ".join(sys.argv)))
             cont = input("Do you wish to continue? [y/N] ")
             if not cont.lower() == "y":
