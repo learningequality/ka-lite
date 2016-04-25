@@ -132,14 +132,14 @@ Raspberry Pi
 ____________
 
 For a Raspberry Pi running a Debian system, you can install the special Debian
-package ``ka-lite-raspberry-pi``.
+package ``ka-lite-raspberry-pi`` (`Download .deb <https://learningequality.org/r/deb-pi-installer-0-16>`_).
 
 It can be installed by downloading the latest .deb on the Pi and installing it::
 
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate --content-disposition 
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-16 --no-check-certificate --content-disposition 
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
