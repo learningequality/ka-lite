@@ -7,6 +7,7 @@ require("../../../js/distributed/vectorvideo/material.min.css");
 require("../../../js/distributed/vectorvideo/material.min.js");
 require("../../../css/distributed/vectorvideo.less");
 var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json");
+var vtt = require("../../../js/distributed/vectorvideo/vtt.min");
 
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
@@ -103,6 +104,23 @@ var VectorVideoView = ContentBaseView.extend({
 
     toggle_cc: function () {
         console.log("toggle_cc");
+
+
+        $.get('timedtext.vtt', function (caption) {
+            vtt_loaded(caption);
+            console.log(caption);
+        });
+
+        var cues = [];
+        function vtt_loaded(caption) {
+            var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
+            parser.oncue = function (cue) {
+                cues.push(cue);
+            };
+            parser.parse(caption);
+            console.log(cues);
+        }
+
     },
 
 
@@ -132,7 +150,7 @@ var VectorVideoView = ContentBaseView.extend({
                 el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }
         } else {
-             
+
             this.full_screen_enabled = false;
 
             if (document.exitFullscreen) {
