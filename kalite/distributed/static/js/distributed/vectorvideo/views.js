@@ -8,7 +8,7 @@ require("../../../js/distributed/vectorvideo/material.min.js");
 require("../../../css/distributed/vectorvideo.less");
 var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json");
 var vtt = require("../../../js/distributed/vectorvideo/vtt.min");
-var Voice = require("../../../js/distributed/vectorvideo/responsivevoice.src.js");
+//var Voice = require("../../../js/distributed/vectorvideo/responsivevoice.src.js");
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
@@ -141,8 +141,7 @@ var VectorVideoView = ContentBaseView.extend({
     },
 
     speak_caption: function (text) {
-        console.log(Voice);
-        //Voice.voice(text);
+        responsiveVoice.speak(text);
         //SHOULD WORK BUT DOES NOT SMH
     },
 
@@ -522,6 +521,7 @@ var VectorVideoView = ContentBaseView.extend({
                                     sub_stroke_path.strokeColor = new this.paper_scope.Color(red, green, blue);
                                     sub_stroke_path.strokeCap = 'round';
                                     sub_stroke_path.strokeJoin = 'round';
+                                    sub_stroke_path.strokeWidth = 2;
 
                                     //IF LAST SUBSTROKE AND LAST STROKE
                                     if ((sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) && (stroke == this.json_data.operations[obj].strokes.length - 1)) {

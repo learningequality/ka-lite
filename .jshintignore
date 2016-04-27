@@ -11,3 +11,4 @@ kalite/distributed/static/js/distributed/vectorvideo/material.min.js
 kalite/distributed/static/js/distributed/vectorvideo/vtt.min.js
 kalite/distributed/static/js/distributed/vectorvideo/responsivevoice.js
 kalite/distributed/static/js/distributed/vectorvideo/responsivevoice.src.js
+kalite/distributed/static/js/distributed/vectorvideo/soundmanager2_tester.js
