@@ -8,7 +8,7 @@ require("../../../js/distributed/vectorvideo/material.min.js");
 require("../../../css/distributed/vectorvideo.less");
 var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json");
 var vtt = require("../../../js/distributed/vectorvideo/vtt.min");
-
+var Voice = require("../../../js/distributed/vectorvideo/responsivevoice.src.js");
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
@@ -103,24 +103,47 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     toggle_cc: function () {
-        console.log("toggle_cc");
-
-
-        $.get('timedtext.vtt', function (caption) {
-            vtt_loaded(caption);
-            console.log(caption);
-        });
-
-        var cues = [];
-        function vtt_loaded(caption) {
-            var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
-            parser.oncue = function (cue) {
-                cues.push(cue);
-            };
-            parser.parse(caption);
-            console.log(cues);
+        var that = this;
+        if (this.cc_on) {
+            this.cc_on = false;
+        } else {
+            this.cc_on = true;
+            $.get('../static/timedtext.vtt', function (captions) {
+                that.cc_callback(captions);
+            });
         }
+    },
 
+    cc_callback: function (captions) {
+        var cues = [];
+        var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
+        parser.oncue = function (cue) {
+            cues.push(cue);
+        };
+        parser.parse(captions);
+        this.cc_cues = cues;
+    },
+
+
+    update_cc: function () {
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        if (curr_time > this.cc_current_cue_end_time) {
+            for (var i = this.cc_current_cue_index; i < this.cc_cues.length; i++) {
+                if (this.cc_cues[i].startTime < curr_time && this.cc_cues[i].endTime > curr_time) {
+                    document.querySelector('.captions').innerHTML = this.cc_cues[i].text;
+                    this.speak_caption(this.cc_cues[i].text);
+                    this.cc_current_cue_end_time = this.cc_cues[i].endTime;
+                    this.cc_current_cue_index = i;
+                    return;
+                }
+            }
+        }
+    },
+
+    speak_caption: function (text) {
+        console.log(Voice);
+        //Voice.voice(text);
+        //SHOULD WORK BUT DOES NOT SMH
     },
 
 
@@ -170,10 +193,9 @@ var VectorVideoView = ContentBaseView.extend({
 
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
-        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas", "toggle_zoom");
+        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas", "toggle_zoom", "speak_caption");
         this.render();
         this.paper_scope = new Paper.paper.PaperScope();
-
 
         //TODO: MOVE THIS ELSEWHERE
         var vector_bar_items;
@@ -203,6 +225,10 @@ var VectorVideoView = ContentBaseView.extend({
         this.zoom_enabled = false;
         this.zoom_level = 1;
         this.full_screen_enabled = false;
+        this.cc_on = false;
+        this.cc_cues = [];
+        this.cc_current_cue_index = 0;
+        this.cc_current_cue_end_time = 0;
     },
 
 
@@ -326,6 +352,8 @@ var VectorVideoView = ContentBaseView.extend({
         this.cursor = null;
         this.paper_scope.project.clear();
         this.add_desc();
+        this.cc_current_cue_index = 0;
+        this.cc_current_cue_end_time = 0;
     },
 
 
@@ -416,6 +444,9 @@ var VectorVideoView = ContentBaseView.extend({
     check_if_playing: function () {
         if (this.data_model.get("is_playing") === true) {
             this.update_canvas();
+            if (this.cc_on) {
+                this.update_cc();
+            }
         }
     },
 
