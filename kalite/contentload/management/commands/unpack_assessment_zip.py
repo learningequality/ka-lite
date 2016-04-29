@@ -107,10 +107,17 @@ def unpack_zipfile_to_content_folder(zf):
 
     ensure_dir(folder)
     zf.extractall(folder)
+    version_file = os.path.join(folder, 'assessmentitems.version')
+    version_file_copied_dest = os.path.join(
+        settings.ASSESSMENT_ITEM_ROOT,
+        'assessmentitems.version'
+    )
+    if os.path.isfile(version_file_copied_dest):
+        os.unlink(version_file_copied_dest)
     # Ensure that special files are in their configured locations
-    shutil.move(
-        os.path.join(folder, 'assessmentitems.version'),
-        settings.ASSESSMENT_ITEM_ROOT
+    shutil.copy(
+        version_file,
+        version_file_copied_dest
     )
 
 
