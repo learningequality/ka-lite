@@ -70,7 +70,6 @@ class Command(BaseCommand):
         unpack_thread = threading.Thread(target=unpack)
         unpack_thread.daemon = True
         unpack_thread.start()
-        logging.info("Unpacking...")
         while unpack_thread.is_alive():
             time.sleep(1)
             sys.stdout.write(".")
@@ -105,6 +104,8 @@ def unpack_zipfile_to_content_folder(zf):
         # 0.16 legacy assessment zip no longer comes with a channel.name file
         folder = settings.KHAN_ASSESSMENT_ITEM_ROOT
 
+    logging.info("Unpacking to folder {}...".format(folder))
+
     ensure_dir(folder)
     zf.extractall(folder)
 
@@ -116,16 +117,17 @@ def unpack_zipfile_to_content_folder(zf):
         settings.ASSESSMENT_ITEM_ROOT,
         'assessmentitems.version'
     )
-    if os.path.isfile(version_file_copied_dest):
-        os.unlink(version_file_copied_dest)
-    # Test that file exists because there's a test that mocks unzipping and
-    # then this would fail because a file that should exist doesn't (doh)
-    if os.path.isfile(version_file):
-        # Ensure that special files are in their configured locations
-        shutil.copy(
-            version_file,
-            version_file_copied_dest
-        )
+    if version_file_copied_dest != version_file:
+        if os.path.isfile(version_file_copied_dest):
+            os.unlink(version_file_copied_dest)
+        # Test that file exists because there's a test that mocks unzipping and
+        # then this would fail because a file that should exist doesn't (doh)
+        if os.path.isfile(version_file):
+            # Ensure that special files are in their configured locations
+            shutil.copy(
+                version_file,
+                version_file_copied_dest
+            )
 
 
 def is_valid_url(url):
