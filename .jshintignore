@@ -7,8 +7,7 @@ kalite/*/static/js/*/bundles/*
 static-libraries/**
 kalite/i18n/static/js/i18n
 bower_components/**
-kalite/distributed/static/js/distributed/vectorvideo/material.min.js
+kalite/distributed/static/js/distributed/vectorvideo/soundmanager2_dev.js
 kalite/distributed/static/js/distributed/vectorvideo/vtt.min.js
 kalite/distributed/static/js/distributed/vectorvideo/responsivevoice.js
-kalite/distributed/static/js/distributed/vectorvideo/responsivevoice.src.js
-kalite/distributed/static/js/distributed/vectorvideo/soundmanager2_tester.js
+kalite/distributed/static/js/distributed/vectorvideo/material.min.js

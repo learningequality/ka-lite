@@ -1,5 +1,6 @@
+// bin/kalite manage runserver --settings=kalite.project.settings.dev
 //var soundManager = require("soundmanager2").soundManager;
-var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_tester.js").soundManager;
+var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_dev.js").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
@@ -8,29 +9,26 @@ require("../../../js/distributed/vectorvideo/material.min.js");
 require("../../../css/distributed/vectorvideo.less");
 var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json");
 var vtt = require("../../../js/distributed/vectorvideo/vtt.min");
-//var Voice = require("../../../js/distributed/vectorvideo/responsivevoice.src.js");
+
+
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
-        "click .vector_canvas": "toggle_play_pause",
-        "click .vector_play_pause_btn": "toggle_play_pause",
+        "click .vector_canvas": "toggle_play",
+        "click .vector_play_pause_btn": "toggle_play",
         "click .vector_replay_btn": "replay",
-        "input .vector_seek": "seek",
-        "click .vector_playback_rate_25": "change_playback_rate",
-        "click .vector_playback_rate_50": "change_playback_rate",
-        "click .vector_playback_rate_100": "change_playback_rate",
-        "click .vector_playback_rate_125": "change_playback_rate",
-        "click .vector_playback_rate_150": "change_playback_rate",
-        "click .vector_playback_rate_200": "change_playback_rate",
-        "click .vector_zoom_input": "toggle_zoom",
-        "click .vector_cc_input": "toggle_cc",
+        "input .vector_seeker": "seek",
+        "click .vector_playback_rate_item": "change_playback_rate",
+        "click .vector_zoom_btn": "toggle_zoom",
+        "click .vector_cc_menu_item": "toggle_cc",
+        "click .vector_voice_menu_item": "toggle_voice",
         "click .vector_volume_input": "toggle_volume",
         "click .vector_full_screen_input": "toggle_full_screen"
     },
 
-    /////////////EVENTS FUNCTIONS//////////////////////////////
+    /////////////EVENTS HANDLERS//////////////////////////////
 
-    toggle_play_pause: function () {
+    toggle_play: function () {
         if (this.audio_object.playState === 0) {
             this.audio_object.setPosition(0);
             this.audio_object.play();
@@ -38,13 +36,13 @@ var VectorVideoView = ContentBaseView.extend({
             this.audio_object.play();
         } else {
             this.audio_object.pause();
+            responsiveVoice.cancel();
         }
     },
 
 
     replay: function () {
-        var curr_time = ((parseInt(this.get_position())) / 1000);
-        curr_time = curr_time - 10;
+        var curr_time = ((parseInt(this.get_position())) / 1000) - 10;
         if (curr_time < 0) {
             curr_time = 0;
         }
@@ -53,105 +51,85 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     seek: function () {
-        var seek_value = document.querySelector('.vector_seek').value;
-        if (seek_value) {
-            this.set_position_percent(seek_value / 1000);
-        }
+        this.set_position_percent(document.querySelector('.vector_seeker').value / 1000);
     },
 
 
     change_playback_rate: function (e) {
-        var new_playback_rate;
-
-        if ($(e.target).hasClass('vector_playback_rate_25')) {
-            new_playback_rate = 0.25;
-        }
-        else if ($(e.target).hasClass('vector_playback_rate_50')) {
-            new_playback_rate = 0.5;
-        }
-        else if ($(e.target).hasClass('vector_playback_rate_125')) {
-            new_playback_rate = 1.25;
-        }
-        else if ($(e.target).hasClass('vector_playback_rate_150')) {
-            new_playback_rate = 1.5;
-        }
-        else if ($(e.target).hasClass('vector_playback_rate_200')) {
-            new_playback_rate = 2;
-        }
-        else {
-            new_playback_rate = 1;
-        }
-
-        this.audio_object.setPlaybackRate(new_playback_rate);
+        //CURRENTLY SOUNDMANAGER 2 DOES NOT SUPPORT A PLAYBACK RATE OF < 0.5
+        this.audio_object.setPlaybackRate(parseFloat(e.target.dataset.rate));
     },
 
 
     toggle_zoom: function () {
         if (this.zoom_enabled) {
+            this.zoom_enabled = false;
             this.zoom_level = 1;
             this.paper_scope.view.zoom = this.zoom_level;
-            this.zoom_enabled = false;
             this.paper_scope.view.center = new this.paper_scope.Point(this.paper_scope.view.viewSize.width / 2, this.paper_scope.view.viewSize.height / 2);
             this.resize_canvas(false);
+            $('.vector_zoom_btn').removeClass('vector_zoom_btn_zoom_out');
         }
         else {
-            this.zoom_level = 2;
-            this.paper_scope.view.zoom = this.zoom_level;//depend on zoom level
             this.zoom_enabled = true;
+            this.zoom_level = 2; //depend on zoom level
+            this.paper_scope.view.zoom = this.zoom_level; //depend on zoom level
+            $('.vector_zoom_btn').addClass('vector_zoom_btn_zoom_out');
         }
     },
 
 
-    toggle_cc: function () {
+    toggle_cc: function (e) {
         var that = this;
-        if (this.cc_on) {
+        this.cc_lang = e.target.dataset.cc;
+        if (this.cc_lang == "off") {
             this.cc_on = false;
+            document.querySelector('.vector_captions').innerHTML = "";
+            $('.vector_cc_btn').removeClass('vector_cc_btn_on');
         } else {
+            document.querySelector('.vector_captions').innerHTML = "";
             this.cc_on = true;
-            $.get('../static/timedtext.vtt', function (captions) {
+            var cc_vtt_file = "../static/" + this.cc_lang + ".vtt";
+            $.get(cc_vtt_file, function (captions) {
                 that.cc_callback(captions);
             });
+            $('.vector_cc_btn').addClass('vector_cc_btn_on');
         }
     },
 
-    cc_callback: function (captions) {
-        var cues = [];
-        var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
-        parser.oncue = function (cue) {
-            cues.push(cue);
-        };
-        parser.parse(captions);
-        this.cc_cues = cues;
-    },
 
+    toggle_voice: function (e) {
+        var that = this;
+        this.voice_lang = e.target.dataset.cc;
 
-    update_cc: function () {
-        var curr_time = ((parseInt(this.get_position())) / 1000);
-        if (curr_time > this.cc_current_cue_end_time) {
-            for (var i = this.cc_current_cue_index; i < this.cc_cues.length; i++) {
-                if (this.cc_cues[i].startTime < curr_time && this.cc_cues[i].endTime > curr_time) {
-                    document.querySelector('.captions').innerHTML = this.cc_cues[i].text;
-                    this.speak_caption(this.cc_cues[i].text);
-                    this.cc_current_cue_end_time = this.cc_cues[i].endTime;
-                    this.cc_current_cue_index = i;
-                    return;
-                }
-            }
+        this.speak_queue = [];
+        responsiveVoice.cancel();
+
+        if (this.voice_lang == "off") {
+            this.voice_on = false;
+            $('.vector_voice_btn').removeClass('vector_voice_btn_on');
+            responsiveVoice.cancel();
+        } else {
+            this.voice_on = true;
+            $('.vector_voice_btn').addClass('vector_voice_btn_on');
+            responsiveVoice.cancel();
+
+            var voice_vtt_file = "../static/" + this.voice_lang + ".vtt";
+            $.get(voice_vtt_file, function (captions) {
+                that.voice_callback(captions);
+            });
         }
-    },
-
-    speak_caption: function (text) {
-        responsiveVoice.speak(text);
-        //SHOULD WORK BUT DOES NOT SMH
     },
 
 
     toggle_volume: function () {
         if ($(document.querySelector('.vector_volume_label')).hasClass('is-checked')) {
             this.audio_object.setVolume(100);
+            $('.vector_volume_btn').removeClass('vector_volume_btn_mute');
         }
         else {
             this.audio_object.setVolume(0);
+            $('.vector_volume_btn').addClass('vector_volume_btn_mute');
         }
     },
 
@@ -192,7 +170,7 @@ var VectorVideoView = ContentBaseView.extend({
 
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
-        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas", "toggle_zoom", "speak_caption");
+        _.bindAll(this, "init_audio_object", "check_if_playing", "resize_canvas", "toggle_zoom");
         this.render();
         this.paper_scope = new Paper.paper.PaperScope();
 
@@ -228,6 +206,13 @@ var VectorVideoView = ContentBaseView.extend({
         this.cc_cues = [];
         this.cc_current_cue_index = 0;
         this.cc_current_cue_end_time = 0;
+
+        this.voice_enabled = false;
+        this.voice_on = false;
+        this.voice_cues = [];
+        this.voice_current_cue_index = 0;
+        this.voice_current_cue_end_time = 0;
+        this.speak_queue = [];
     },
 
 
@@ -277,7 +262,7 @@ var VectorVideoView = ContentBaseView.extend({
     playing: function () {
         $(".vector_current_time").text(this.format_time(this.audio_object.position, true));
         if (this.get_position_percent()) {
-            document.querySelector('.vector_seek').MaterialSlider.change(this.get_position_percent() * 1000);
+            document.querySelector('.vector_seeker').MaterialSlider.change(this.get_position_percent() * 1000);
         }
     },
 
@@ -320,6 +305,88 @@ var VectorVideoView = ContentBaseView.extend({
         });
     },
 
+///////////////////CLOSED CAPTIONS////////////////////////////
+
+    cc_callback: function (captions) {
+        var cues = [];
+        var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
+        parser.oncue = function (cue) {
+            cues.push(cue);
+        };
+        parser.parse(captions);
+        this.cc_cues = cues;
+        this.cc_current_cue_end_time = 0;
+    },
+
+
+    update_cc: function () {
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        if (curr_time > this.cc_current_cue_end_time) {
+            for (var i = this.cc_current_cue_index; i < this.cc_cues.length; i++) {
+                if (this.cc_cues[i].startTime < curr_time && this.cc_cues[i].endTime > curr_time) {
+                    document.querySelector('.vector_captions').innerHTML = this.cc_cues[i].text;
+                    this.cc_current_cue_end_time = this.cc_cues[i].endTime;
+                    this.cc_current_cue_index = i;
+                    return;
+                }
+            }
+        }
+    },
+
+
+//////////////////////VOICE////////////////////////////////////
+
+    voice_callback: function (captions) {
+        var cues = [];
+        var parser = new vtt.WebVTT.Parser(window, vtt.WebVTT.StringDecoder());
+        parser.oncue = function (cue) {
+            cues.push(cue);
+        };
+        parser.parse(captions);
+        this.voice_cues = cues;
+    },
+
+
+    update_voice: function () {
+
+        if ((this.speak_queue.length > 0) && !responsiveVoice.isPlaying()) {
+            var new_cue = this.speak_queue.shift();
+            responsiveVoice.speak(new_cue['text'], new_cue['person'], {rate: 1.2});
+        }
+
+        //if nothing is playing then pop and read
+        //check if reading
+
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        if (curr_time > this.voice_current_cue_end_time) {
+            for (var i = this.voice_current_cue_index; i < this.voice_cues.length; i++) {
+                if (this.voice_cues[i].startTime < curr_time && this.voice_cues[i].endTime > curr_time) {
+                    this.audio_object.setVolume(0);
+                    var person;
+                    switch (this.voice_lang) {
+                        case "en":
+                            person = "US English Female";
+                            break;
+                        case "es":
+                            person = "Spanish Female";
+                            break;
+                        default:
+                            person = "US English Female";
+                            break;
+                    }
+                    this.speak_queue.push({
+                        text: this.voice_cues[i].text,
+                        person: person
+                    });
+                    //responsiveVoice.speak(this.voice_cues[i].text, person);
+                    this.voice_current_cue_end_time = this.voice_cues[i].endTime;
+                    this.voice_current_cue_index = i;
+                    return;
+                }
+            }
+        }
+    },
+
 
 ////////////////////CANVAS///////////////////////////////
 
@@ -353,6 +420,8 @@ var VectorVideoView = ContentBaseView.extend({
         this.add_desc();
         this.cc_current_cue_index = 0;
         this.cc_current_cue_end_time = 0;
+        this.speak_queue = [];
+        responsiveVoice.cancel();
     },
 
 
@@ -445,6 +514,9 @@ var VectorVideoView = ContentBaseView.extend({
             this.update_canvas();
             if (this.cc_on) {
                 this.update_cc();
+            }
+            if (this.voice_on) {
+                this.update_voice();
             }
         }
     },

@@ -1,3 +1,6 @@
+.vector_wrapper{
+  position: relative;
+}
 .vector_canvas {
   width: 100%;
   position: absolute;
@@ -24,12 +27,12 @@
 
 .vector_bar {
   font-family: monospace;
-  position: relative;
+  position: absolute;
   width: 100%;
   padding-top: 5px;
   color: white;
   background-color: rgba(255, 153, 0, 0);
-  top: -44px;
+  bottom: 0;
 }
 
 .vector_bar_items {
@@ -53,6 +56,7 @@
 
 .vector_play_pause_btn_pause {
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_pause_white_24px.svg) center;
+  background-size: contain;
 }
 
 .vector_replay_btn {
@@ -65,6 +69,11 @@
   background-size: contain;
 }
 
+.vector_playback_rate_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_av_timer_color_24px.svg) center;
+  background-size: contain;
+}
+
 .vector_zoom_btn {
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_in_white_24px.svg) center;
   background-size: contain;
@@ -72,6 +81,7 @@
 
 .vector_zoom_btn_zoom_out {
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_out_white_24px.svg) center;
+  background-size: contain;
 }
 
 .vector_cc_btn {
@@ -80,7 +90,17 @@
 }
 
 .vector_cc_btn_on {
-  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_white_24px.svg) center;
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_color_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_voice_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_voice_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_white_24px.svg) center;
   background-size: contain;
 }
 
@@ -90,7 +110,7 @@
 }
 
 .vector_volume_btn_mute {
-  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_mute_white_24px.svg) center;
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_off_white_24px.svg) center;
   background-size: contain;
 }
 
@@ -129,3 +149,13 @@
   height: 100%;
 }
 
+.vector_captions {
+  background: black;
+  color: white;
+  font-family: monospace;
+  position: absolute;
+  bottom: 44px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+}

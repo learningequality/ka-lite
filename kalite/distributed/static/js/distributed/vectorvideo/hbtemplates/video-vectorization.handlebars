@@ -2,42 +2,66 @@
     <div class="vector_canvas_wrapper">
         <canvas class="vector_canvas" keepalive="true" resize="true"></canvas>
     </div>
-
+    <div class="vector_captions"></div>
     <div class="vector_bar">
         <div class="vector_bar_items">
             <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_play_pause_btn"></button>
+
             <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_replay_btn"></button>
+
             <span class="vector_current_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+
             <p class="vector_seek_wrapper ">
-                <input class="mdl-slider mdl-js-slider vector_seek" id="vector_seek" type="range" min="0" max="1000"
+                <input class="mdl-slider mdl-js-slider vector_seeker" type="range" min="0" max="1000"
                        value="0" step="1">
             </p>
+
             <span class="vector_total_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <button id="demo-menu-top-left"
+
+            <button id="vector_playback_rate"
                     class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_playback_rate_btn"></button>
             <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_playback_rate_menu"
-                data-mdl-for="demo-menu-top-left">
-                <li class="mdl-menu__item vector_playback_rate_25">.25</li>
-                <li class="mdl-menu__item vector_playback_rate_50">.5</li>
-                <li class="mdl-menu__item vector_playback_rate_100">Normal</li>
-                <li class="mdl-menu__item vector_playback_rate_125">1.25</li>
-                <li class="mdl-menu__item vector_playback_rate_150">1.5</li>
-                <li class="mdl-menu__item vector_playback_rate_200">2</li>
+                data-mdl-for="vector_playback_rate">
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="0.25">.25</li>
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="0.5">.5</li>
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="1.0">Normal</li>
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="1.25">1.25</li>
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="1.5">1.5</li>
+                <li class="mdl-menu__item vector_playback_rate_item" data-rate="2">2</li>
             </ul>
+
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_zoom_label"
                    for="vector_zoom_btn">
-                <input type="checkbox" id="vector_zoom_btn" class="mdl-icon-toggle__input vector_zoom_input">
+                <input type="checkbox" id="vector_zoom_btn" class="mdl-icon-toggle__input vector_zoom_btn">
                 <i class="mdl-icon-toggle__label material-icons vector_zoom_btn"></i>
             </label>
-            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_cc_label" for="vector_cc_btn">
-                <input type="checkbox" id="vector_cc_btn" class="mdl-icon-toggle__input vector_cc_input">
-                <i class="mdl-icon-toggle__label material-icons vector_cc_btn"></i>
-            </label>
+
+            <button id="vector_cc"
+                    class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_cc_btn"></button>
+            <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_cc_menu"
+                data-mdl-for="vector_cc">
+                <li class="mdl-menu__item vector_cc_menu_item" data-cc="off">Off</li>
+                <li class="mdl-menu__item vector_cc_menu_item" data-cc="en">English</li>
+                <li class="mdl-menu__item vector_cc_menu_item" data-cc="es">Spanish</li>
+            </ul>
+
+            <button id="vector_voice"
+                    class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_voice_btn"></button>
+            <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_voice_menu"
+                data-mdl-for="vector_voice">
+                <li class="mdl-menu__item vector_voice_menu_item" data-cc="off">Off</li>
+                <li class="mdl-menu__item vector_voice_menu_item" data-cc="en">English</li>
+                <li class="mdl-menu__item vector_voice_menu_item" data-cc="es">Spanish</li>
+            </ul>
+
+
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_volume_label"
                    for="vector_volume_btn">
                 <input type="checkbox" id="vector_volume_btn" class="mdl-icon-toggle__input vector_volume_input">
                 <i class="mdl-icon-toggle__label material-icons vector_volume_btn"></i>
             </label>
+
+
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_full_screen_label"
                    for="vector_full_screen_btn">
                 <input type="checkbox" id="vector_full_screen_btn"
@@ -46,5 +70,4 @@
             </label>
         </div>
     </div>
-    <p class="captions"></p>
 </div>
