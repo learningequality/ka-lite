@@ -110,7 +110,7 @@ def unpack_zipfile_to_content_folder(zf):
     # Ensure that special files are in their configured locations
     shutil.move(
         os.path.join(folder, 'assessmentitems.version'),
-        folder
+        settings.ASSESSMENT_ITEM_ROOT
     )
 
 
