@@ -100,24 +100,17 @@ def should_upgrade_assessment_items():
 def unpack_zipfile_to_content_folder(zf):
     try:
         channel = zf.read("channel.name")
-    except KeyError:
-        channel = ""
-
-    if channel:
-
         folder = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel)
-
-    else:
-        folder = settings.ASSESSMENT_ITEM_ROOT
+    except KeyError:
+        # 0.16 legacy assessment zip no longer comes with a channel.name file
+        folder = settings.KHAN_ASSESSMENT_ITEM_ROOT
 
     ensure_dir(folder)
     zf.extractall(folder)
-
-    ensure_dir(settings.KHAN_ASSESSMENT_ITEM_ROOT)
     # Ensure that special files are in their configured locations
     shutil.move(
         os.path.join(folder, 'assessmentitems.version'),
-        settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
+        folder
     )
 
 
