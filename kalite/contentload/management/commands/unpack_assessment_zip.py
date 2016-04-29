@@ -70,7 +70,6 @@ class Command(BaseCommand):
         unpack_thread = threading.Thread(target=unpack)
         unpack_thread.daemon = True
         unpack_thread.start()
-        logging.info("Unpacking...")
         while unpack_thread.is_alive():
             time.sleep(1)
             sys.stdout.write(".")
@@ -100,25 +99,35 @@ def should_upgrade_assessment_items():
 def unpack_zipfile_to_content_folder(zf):
     try:
         channel = zf.read("channel.name")
-    except KeyError:
-        channel = ""
-
-    if channel:
-
         folder = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel)
+    except KeyError:
+        # 0.16 legacy assessment zip no longer comes with a channel.name file
+        folder = settings.KHAN_ASSESSMENT_ITEM_ROOT
 
-    else:
-        folder = settings.ASSESSMENT_ITEM_ROOT
+    logging.info("Unpacking to folder {}...".format(folder))
 
     ensure_dir(folder)
     zf.extractall(folder)
 
-    ensure_dir(settings.KHAN_ASSESSMENT_ITEM_ROOT)
-    # Ensure that special files are in their configured locations
-    shutil.move(
-        os.path.join(folder, 'assessmentitems.version'),
-        settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
+    # If assessmentitems.version exists, copy it to another location outside
+    # of the channel folder because for some reason a test expects it to be
+    # there.
+    version_file = os.path.join(folder, 'assessmentitems.version')
+    version_file_copied_dest = os.path.join(
+        settings.ASSESSMENT_ITEM_ROOT,
+        'assessmentitems.version'
     )
+    if version_file_copied_dest != version_file:
+        if os.path.isfile(version_file_copied_dest):
+            os.unlink(version_file_copied_dest)
+        # Test that file exists because there's a test that mocks unzipping and
+        # then this would fail because a file that should exist doesn't (doh)
+        if os.path.isfile(version_file):
+            # Ensure that special files are in their configured locations
+            shutil.copy(
+                version_file,
+                version_file_copied_dest
+            )
 
 
 def is_valid_url(url):
