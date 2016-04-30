@@ -351,7 +351,7 @@ var VectorVideoView = ContentBaseView.extend({
 
         if ((this.speak_queue.length > 0) && !responsiveVoice.isPlaying()) {
             var new_cue = this.speak_queue.shift();
-            responsiveVoice.speak(new_cue['text'], new_cue['person'], {rate: 1.2});
+            responsiveVoice.speak(new_cue['text'], new_cue['person'], {rate: 1.3});
         }
 
         //if nothing is playing then pop and read
@@ -454,8 +454,8 @@ var VectorVideoView = ContentBaseView.extend({
             var obj_offset_y = parseInt(data.operations[obj].offset_y);
             var obj_start_time = parseFloat(data.operations[obj].start);
             var obj_end_time = parseFloat(data.operations[obj].end);
-            //TODO: ADJUST THE OBJECT DURATION BY DIVIDING OR SUBTRACTING BY SOMETHING
-            var obj_dur = (obj_end_time - obj_start_time);
+            //TODO: ADJUST THE OBJECT DURATION BY DIVIDING OR SUBTRACTING BY SOMETHING 0.5 IS JUST A GUESS
+            var obj_dur = (obj_end_time - obj_start_time) * 0.5;
             var obj_dist = 0;
             var stroke_distances = [];
 
@@ -538,7 +538,6 @@ var VectorVideoView = ContentBaseView.extend({
 
         else {
             this.latest_time = curr_time;
-
 
             //UPDATE CURSOR
             var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
