@@ -1,0 +1,162 @@
+.vector_wrapper {
+  position: relative;
+}
+
+.vector_canvas {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  -webkit-user-select: initial !important;
+  background: #000000;
+  background-size: contain;
+  touch-action: initial !important;
+  -webkit-user-drag: initial !important;
+}
+
+.vector_canvas_wrapper {
+  position: relative;
+  width: 100%;
+  &:before {
+    display: block;
+    padding-top: 56.25%;
+    content: '';
+  }
+}
+
+.vector_bar {
+  font-family: monospace;
+  position: absolute;
+  width: 100%;
+  padding-top: 5px;
+  color: white;
+  background-color: rgba(255, 153, 0, 0);
+  bottom: 0;
+}
+
+.vector_bar_items {
+  display: inline-block;
+}
+
+.vector_seek_wrapper {
+  display: inline-block;
+  width: 0;
+}
+
+.vector_volume_wrapper {
+  display: inline-block;
+  width: 100px;
+}
+
+.vector_play_pause_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_play_arrow_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_play_pause_btn_pause {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_pause_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_replay_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_replay_10_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_playback_rate_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_av_timer_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_playback_rate_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_av_timer_color_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_zoom_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_in_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_zoom_btn_zoom_out {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_out_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_cc_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_cc_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_color_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_voice_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_voice_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_color_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_volume_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_up_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_volume_btn_mute {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_off_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_full_screen_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_fullscreen_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_full_screen_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_fullscreen_exit_white_24px.svg) center;
+  background-size: contain;
+}
+
+.vector_wrapper:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-ms-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_captions {
+  background: black;
+  color: white;
+  font-family: monospace;
+  position: absolute;
+  bottom: 44px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+}

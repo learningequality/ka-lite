@@ -84,6 +84,7 @@ kalite/distributed/static/django_js_reverse/js/reverse.js
 # Lacks documentation
 locale/
 node_modules/
+bower_components/
 tmp/
 virtualenv/
 writeup/
