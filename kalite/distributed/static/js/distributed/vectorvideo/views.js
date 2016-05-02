@@ -1,4 +1,3 @@
-// bin/kalite manage runserver --settings=kalite.project.settings.dev
 //var soundManager = require("soundmanager2").soundManager;
 var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_dev.js").soundManager;
 var ContentBaseView = require("content/baseview");
@@ -32,11 +31,16 @@ var VectorVideoView = ContentBaseView.extend({
         if (this.audio_object.playState === 0) {
             this.audio_object.setPosition(0);
             this.audio_object.play();
+
+            this.voice_current_cue_end_time = 0;
+            this.voice_current_cue_index = 0;
         } else if (this.audio_object.paused) {
             this.audio_object.play();
         } else {
             this.audio_object.pause();
             responsiveVoice.cancel();
+            this.voice_current_cue_end_time = 0;
+            this.voice_current_cue_index = 0;
         }
     },
 
@@ -52,11 +56,14 @@ var VectorVideoView = ContentBaseView.extend({
 
     seek: function () {
         this.set_position_percent(document.querySelector('.vector_seeker').value / 1000);
+        //IF SEEK NEED TO EMPTY QUEUE and RESET
+        this.reset_voice();
     },
 
 
     change_playback_rate: function (e) {
-        //CURRENTLY SOUNDMANAGER 2 DOES NOT SUPPORT A PLAYBACK RATE OF < 0.5
+
+        //NEED DEV VERSION OF SOUNDMANAGER 2 FOR THIS. CURRENTLY SOUNDMANAGER 2 DOES NOT SUPPORT A PLAYBACK RATE OF < 0.5
         this.audio_object.setPlaybackRate(parseFloat(e.target.dataset.rate));
     },
 
@@ -100,35 +107,47 @@ var VectorVideoView = ContentBaseView.extend({
 
     toggle_voice: function (e) {
         var that = this;
-        this.voice_lang = e.target.dataset.cc;
+        var voice_lang = e.target.dataset.cc;
 
-        this.speak_queue = [];
-        responsiveVoice.cancel();
-
-        if (this.voice_lang == "off") {
-            this.voice_on = false;
-            $('.vector_voice_btn').removeClass('vector_voice_btn_on');
+        if (voice_lang != this.voice_lang) {
+            this.voice_lang = voice_lang;
             responsiveVoice.cancel();
-        } else {
-            this.voice_on = true;
-            $('.vector_voice_btn').addClass('vector_voice_btn_on');
-            responsiveVoice.cancel();
+            this.voice_queue = [];
 
-            var voice_vtt_file = "../static/" + this.voice_lang + ".vtt";
-            $.get(voice_vtt_file, function (captions) {
-                that.voice_callback(captions);
-            });
+            if (this.voice_lang == "original") {
+                this.voice_on = false;
+                this.audio_object.setVolume(100);
+
+                $('.vector_voice_btn').removeClass('vector_voice_btn_on');
+            } else {
+                this.voice_on = true;
+                this.audio_object.setVolume(0);
+
+                $('.vector_voice_btn').addClass('vector_voice_btn_on');
+
+                var voice_vtt_file = "../static/" + this.voice_lang + ".vtt";
+                $.get(voice_vtt_file, function (captions) {
+                    that.voice_callback(captions);
+                });
+            }
         }
     },
 
 
     toggle_volume: function () {
         if ($(document.querySelector('.vector_volume_label')).hasClass('is-checked')) {
-            this.audio_object.setVolume(100);
+            if (this.voice_on) {
+                this.voice_volume = 1;
+                this.reset_voice();
+            } else {
+                this.audio_object.setVolume(100);
+            }
             $('.vector_volume_btn').removeClass('vector_volume_btn_mute');
         }
         else {
             this.audio_object.setVolume(0);
+            this.voice_volume = 0;
+            this.reset_voice();
             $('.vector_volume_btn').addClass('vector_volume_btn_mute');
         }
     },
@@ -201,18 +220,20 @@ var VectorVideoView = ContentBaseView.extend({
 
         this.zoom_enabled = false;
         this.zoom_level = 1;
+
         this.full_screen_enabled = false;
+        
         this.cc_on = false;
         this.cc_cues = [];
         this.cc_current_cue_index = 0;
         this.cc_current_cue_end_time = 0;
 
-        this.voice_enabled = false;
         this.voice_on = false;
         this.voice_cues = [];
         this.voice_current_cue_index = 0;
         this.voice_current_cue_end_time = 0;
-        this.speak_queue = [];
+        this.voice_volume = 1;
+        this.voice_queue = [];
     },
 
 
@@ -343,25 +364,20 @@ var VectorVideoView = ContentBaseView.extend({
             cues.push(cue);
         };
         parser.parse(captions);
+
         this.voice_cues = cues;
+        this.voice_current_cue_end_time = 0;
+        this.voice_current_cue_index = 0;
     },
 
 
     update_voice: function () {
 
-        if ((this.speak_queue.length > 0) && !responsiveVoice.isPlaying()) {
-            var new_cue = this.speak_queue.shift();
-            responsiveVoice.speak(new_cue['text'], new_cue['person'], {rate: 1.3});
-        }
-
-        //if nothing is playing then pop and read
-        //check if reading
-
         var curr_time = ((parseInt(this.get_position())) / 1000);
+
         if (curr_time > this.voice_current_cue_end_time) {
             for (var i = this.voice_current_cue_index; i < this.voice_cues.length; i++) {
-                if (this.voice_cues[i].startTime < curr_time && this.voice_cues[i].endTime > curr_time) {
-                    this.audio_object.setVolume(0);
+                if ((this.voice_cues[i].startTime < curr_time) && (this.voice_cues[i].endTime > curr_time)) {
                     var person;
                     switch (this.voice_lang) {
                         case "en":
@@ -374,17 +390,30 @@ var VectorVideoView = ContentBaseView.extend({
                             person = "US English Female";
                             break;
                     }
-                    this.speak_queue.push({
+                    this.voice_queue.push({
                         text: this.voice_cues[i].text,
                         person: person
                     });
-                    //responsiveVoice.speak(this.voice_cues[i].text, person);
                     this.voice_current_cue_end_time = this.voice_cues[i].endTime;
                     this.voice_current_cue_index = i;
                     return;
                 }
             }
         }
+
+        //IF QUEUE IS NOT EMPTY AND NOTHING IS PLAY, THEN DEQUEUE AND PLAY
+        if ((this.voice_queue.length > 0) && !responsiveVoice.isPlaying()) {
+            var new_cue = this.voice_queue.shift();
+            responsiveVoice.speak(new_cue['text'], new_cue['person'], {rate: 1.3, volume: this.voice_volume}); //SPEED IS JUST AN ESTIMATE
+        }
+    },
+
+
+    reset_voice: function () {
+        responsiveVoice.cancel();
+        this.voice_queue = [];
+        this.voice_current_cue_end_time = 0;
+        this.voice_current_cue_index = 0;
     },
 
 
@@ -420,7 +449,7 @@ var VectorVideoView = ContentBaseView.extend({
         this.add_desc();
         this.cc_current_cue_index = 0;
         this.cc_current_cue_end_time = 0;
-        this.speak_queue = [];
+        this.voice_queue = [];
         responsiveVoice.cancel();
     },
 
