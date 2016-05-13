@@ -32,7 +32,7 @@
   width: 100%;
   padding-top: 5px;
   color: white;
-  background-color: rgba(255, 153, 0, 0);
+  background-color: #009688;
   bottom: 0;
 }
 
@@ -41,8 +41,12 @@
 }
 
 .vector_seek_wrapper {
-  display: inline-block;
-  width: 0;
+  width: 100%;
+}
+
+.mdl-slider__background-flex{
+  width: 95%;
+  height: 4px;
 }
 
 .vector_volume_wrapper {
@@ -75,12 +79,12 @@
   background-size: contain;
 }
 
-.vector_zoom_btn {
+.vector_zoom_level_btn {
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_in_white_24px.svg) center;
   background-size: contain;
 }
 
-.vector_zoom_btn_zoom_out {
+.vector_zoom_level_btn_on {
   background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_out_white_24px.svg) center;
   background-size: contain;
 }
@@ -159,4 +163,26 @@
   width: 100%;
   text-align: center;
   font-size: 16px;
+}
+
+
+.vector_play_pause_btn_overlay {
+  position:absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.vector_settings_btn{
+position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.vector_settings{
+  display: none;
 }

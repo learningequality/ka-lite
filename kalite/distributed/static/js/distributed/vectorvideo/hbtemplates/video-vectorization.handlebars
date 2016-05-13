@@ -2,22 +2,36 @@
     <div class="vector_canvas_wrapper">
         <canvas class="vector_canvas" keepalive="true" resize="true"></canvas>
     </div>
+    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_settings_btn">S</button>
+    <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_play_pause_btn vector_play_pause_btn_overlay"></button>
     <div class="vector_captions"></div>
     <div class="vector_bar">
+        <p class="vector_seek_wrapper">
+            <input class="mdl-slider mdl-js-slider vector_seeker" type="range" min="0" max="1000"
+                   value="0" step="1">
+        </p>
         <div class="vector_bar_items">
-            <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_play_pause_btn"></button>
 
             <button class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_replay_btn"></button>
 
             <span class="vector_current_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-
-            <p class="vector_seek_wrapper ">
-                <input class="mdl-slider mdl-js-slider vector_seeker" type="range" min="0" max="1000"
-                       value="0" step="1">
-            </p>
-
+            <span> / </span>
             <span class="vector_total_time">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_volume_label"
+                   for="vector_volume_btn">
+                <input type="checkbox" id="vector_volume_btn" class="mdl-icon-toggle__input vector_volume_btn">
+                <i class="mdl-icon-toggle__label material-icons vector_volume_btn"></i>
+            </label>
+            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_full_screen_label"
+                   for="vector_full_screen_btn">
+                <input type="checkbox" id="vector_full_screen_btn"
+                       class="mdl-icon-toggle__input vector_full_screen_btn">
+                <i class="mdl-icon-toggle__label material-icons vector_full_screen_btn"></i>
+            </label>
 
+        </div>
+
+        <div class="vector_settings">
             <button id="vector_playback_rate"
                     class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_playback_rate_btn"></button>
             <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_playback_rate_menu"
@@ -30,11 +44,16 @@
                 <li class="mdl-menu__item vector_playback_rate_item" data-rate="2">2</li>
             </ul>
 
-            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_zoom_label"
-                   for="vector_zoom_btn">
-                <input type="checkbox" id="vector_zoom_btn" class="mdl-icon-toggle__input vector_zoom_btn">
-                <i class="mdl-icon-toggle__label material-icons vector_zoom_btn"></i>
-            </label>
+            <button id="vector_zoom_level"
+                    class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_zoom_level_btn"></button>
+            <ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect vector_zoom_level_menu"
+                data-mdl-for="vector_zoom_level">
+                <li class="mdl-menu__item vector_zoom_level_item" data-zoom="1.0">Normal</li>
+                <li class="mdl-menu__item vector_zoom_level_item" data-zoom="1.5">1.5</li>
+                <li class="mdl-menu__item vector_zoom_level_item" data-zoom="2.0">2</li>
+                <li class="mdl-menu__item vector_zoom_level_item" data-zoom="2.5">2.5</li>
+                <li class="mdl-menu__item vector_zoom_level_item" data-zoom="3.0">3</li>
+            </ul>
 
             <button id="vector_cc"
                     class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect vector_cc_btn"></button>
@@ -55,19 +74,6 @@
             </ul>
 
 
-            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_volume_label"
-                   for="vector_volume_btn">
-                <input type="checkbox" id="vector_volume_btn" class="mdl-icon-toggle__input vector_volume_input">
-                <i class="mdl-icon-toggle__label material-icons vector_volume_btn"></i>
-            </label>
-
-
-            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect vector_full_screen_label"
-                   for="vector_full_screen_btn">
-                <input type="checkbox" id="vector_full_screen_btn"
-                       class="mdl-icon-toggle__input vector_full_screen_input">
-                <i class="mdl-icon-toggle__label material-icons vector_full_screen_btn"></i>
-            </label>
         </div>
     </div>
 </div>

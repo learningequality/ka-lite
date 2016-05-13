@@ -13,3 +13,4 @@ $(function () {
     document.getElementById('content-area').appendChild(vectorVideoView.el);
     vectorVideoView.init_canvas();
 });
+ 
