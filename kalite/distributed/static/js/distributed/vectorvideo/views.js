@@ -12,7 +12,6 @@ var vtt = require("../../../js/distributed/vectorvideo/vtt.min");
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
     events: {
-        "click .vector_canvas": "clicked_canvas",
         "click .vector_play_pause_btn": "clicked_play_pause_btn",
         "click .vector_replay_btn": "clicked_replay_btn",
         "input .vector_seeker": "adjusted_seeker",
@@ -28,14 +27,6 @@ var VectorVideoView = ContentBaseView.extend({
     //TODO: REMOVE USE OF JQUERY IS POSSIBLE, REMOVE UNECESSARY CALLS IN THE RENDER CANVAS FUNCTION> SIMPLIFY THAT FUNCTION
 
     /********************EVENT HANDLERS********************/
-
-    /**
-     * Handles clicking the canvas.
-     */
-    clicked_canvas: function () {
-        this.clicked_play_pause_btn();
-    },
-
 
     /**
      * Handles clicking the play/pause button .
@@ -73,6 +64,7 @@ var VectorVideoView = ContentBaseView.extend({
      */
     clicked_settings_btn: function () {
         $(".vector_settings").toggle();
+        $(".vector_settings_btn").toggleClass("vector_settings_btn_exit");
     },
 
     /**
@@ -191,6 +183,8 @@ var VectorVideoView = ContentBaseView.extend({
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
 
             this.full_screen_enabled = true;
+            $('.vector_full_screen_btn').addClass('vector_full_screen_btn_on');
+
             var el = document.querySelector('.vector_wrapper');
 
             if (el.requestFullscreen) {
@@ -205,6 +199,7 @@ var VectorVideoView = ContentBaseView.extend({
         } else {
 
             this.full_screen_enabled = false;
+            $('.vector_full_screen_btn').removeClass('vector_full_screen_btn_on');
 
             if (document.exitFullscreen) {
                 document.exitFullscreen();
@@ -262,25 +257,6 @@ var VectorVideoView = ContentBaseView.extend({
 
     /********************UI********************/
 
-    /**
-     * Resize the bar.
-     */
-    resize_bar: function () {
-        /*
-         var vector_bar_items;
-         window.onload = function () {
-         vector_bar_items = $('.vector_bar_items').width();
-         adjust_bar_width();
-         $('.mdl-slider__background-flex').css('width', 'calc(100% - 52px');
-         };
-         $(window).resize(function () {
-         adjust_bar_width();
-         });
-         function adjust_bar_width() {
-         $('.vector_seek_wrapper').width($('.vector_bar').width() - vector_bar_items - 1);
-         }
-         */
-    },
 
 
     /**
@@ -333,7 +309,7 @@ var VectorVideoView = ContentBaseView.extend({
      * When the audio loads.
      */
     audio_loaded: function () {
-        $(".vector_total_time").text(this.format_time(this.get_audio_duration()));
+        $(".vector_total_time").text(" / " + this.format_time(this.get_audio_duration()));
     },
 
 
@@ -343,6 +319,14 @@ var VectorVideoView = ContentBaseView.extend({
     audio_played: function () {
         this.data_model.set("is_playing", true);
         $('.vector_play_pause_btn').addClass('vector_play_pause_btn_pause');
+        $('.vector_play_pause_btn_overlay').toggleClass('vector_hidden');
+    },
+
+    /**
+     * Hides the controls.
+     */
+    hide_controls: function () {
+
     },
 
 
@@ -352,6 +336,7 @@ var VectorVideoView = ContentBaseView.extend({
     audio_paused: function () {
         this.data_model.set("is_playing", false);
         $('.vector_play_pause_btn').removeClass('vector_play_pause_btn_pause');
+        $('.vector_play_pause_btn_overlay').toggleClass('vector_hidden');
     },
 
 
@@ -442,6 +427,11 @@ var VectorVideoView = ContentBaseView.extend({
      */
     set_audio_playback_rate: function (val) {
         this.audio_object.setPlaybackRate(val);
+        if (val == 1.0) {
+            $('.vector_playback_rate_btn').removeClass('vector_playback_rate_btn_on');
+        } else {
+            $('.vector_playback_rate_btn').addClass('vector_playback_rate_btn_on');
+        }
     },
 
 
@@ -467,7 +457,6 @@ var VectorVideoView = ContentBaseView.extend({
         this.paper_scope.view.onFrame = this.check_if_playing;
         this.paper_scope.view.onResize = this.resize_canvas;
         this.resize_canvas();
-        this.resize_bar();
     },
 
 
@@ -498,12 +487,14 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     /**
-     * Resizes the canvas.
+     * Resize the canvas.
      */
     resize_canvas: function () {
-        this.resize_bar();
         this.reset_canvas();
-        this.paper_scope.view.viewSize = new Paper.Size($(".vector_canvas_wrapper").width(), $(".vector_canvas_wrapper").height());
+        var vector_canvas_wrapper = $(".vector_canvas_wrapper");
+        this.vector_canvas_wrapper_width = vector_canvas_wrapper.width();
+        this.vector_canvas_wrapper_height = vector_canvas_wrapper.height();
+        this.paper_scope.view.viewSize = new Paper.Size(this.vector_canvas_wrapper_width, this.vector_canvas_wrapper_height);
     },
 
 
@@ -552,10 +543,8 @@ var VectorVideoView = ContentBaseView.extend({
         var data = this.json_data;
 
         //TODO: ORIGINAL DIMENSIONS SHOULD BE IN THE JSON. HERE I AM ASSUMING 1280 x 720
-        var orig_width = 1280;
-        var orig_height = 720;
-        this.data_model.set("orig_width", orig_width);
-        this.data_model.set("orig_height", orig_height);
+        this.orig_width = 1280;
+        this.orig_height = 720;
 
 
         //CALCULATE FPS AND HOW OFTEN, IN TERMS OF TIME, THE CURSOR SHOULD BE UPDATES
@@ -632,8 +621,8 @@ var VectorVideoView = ContentBaseView.extend({
 
 
         //GET CURRENT WIDTH AND HEIGHT
-        var width_adjust = ($(".vector_canvas_wrapper").width()) / this.data_model.get("orig_width");
-        var height_adjust = ($(".vector_canvas_wrapper").height()) / this.data_model.get("orig_height");
+        var width_adjust = this.vector_canvas_wrapper_width / this.orig_width;
+        var height_adjust = this.vector_canvas_wrapper_height / this.orig_height;
 
 
         //IF REWINDED
