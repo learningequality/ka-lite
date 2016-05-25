@@ -72,7 +72,8 @@ var VectorVideoView = ContentBaseView.extend({
      * @param e - The playback rate selected.
      */
     clicked_playback_rate_item: function (e) {
-        this.set_audio_playback_rate(parseFloat(e.target.dataset.rate));
+        this.play_back_rate = parseFloat(e.target.dataset.rate);
+        this.set_audio_playback_rate(this.play_back_rate);
     },
 
 
@@ -452,6 +453,7 @@ var VectorVideoView = ContentBaseView.extend({
     init_canvas: function () {
         this.json_data = sample_json;
         this.modify_json();
+        //console.log(this.json_data);
 
         this.paper_scope.setup($(".vector_canvas")[0]);
         this.paper_scope.view.onFrame = this.check_if_playing;
@@ -671,6 +673,9 @@ var VectorVideoView = ContentBaseView.extend({
                                     sub_stroke_path.strokeJoin = 'round';
                                     sub_stroke_path.strokeWidth = 2;
 
+                                    //FOR USEFUL DEBUGGING PURPOSES
+                                    //console.log(obj,stroke,sub_stroke);
+
                                     //IF LAST SUBSTROKE AND LAST STROKE
                                     if ((sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) && (stroke == this.json_data.operations[obj].strokes.length - 1)) {
                                         this.latest_sub_stroke = 0;
@@ -708,7 +713,7 @@ var VectorVideoView = ContentBaseView.extend({
         if (this.cursor) {
             this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
             if (this.zoom_enabled) {
-                this.paper_scope.view.center = new this.paper_scope.Point(this.adjust_center_point("x", cursor_x), this.adjust_center_point("y", cursor_y));
+                this.paper_scope.view.center = new this.paper_scope.Point(this.adjust_center_x(cursor_x), this.adjust_center_y(cursor_y));
             }
         } else {
             this.cursor = new this.paper_scope.Path.Circle(
@@ -721,50 +726,51 @@ var VectorVideoView = ContentBaseView.extend({
         }
     },
 
+    /**
+     * Finds appropriate values when it comes to adjusting the center x value to pass on to adjust_center_point.
+     * @param cursor_x - The new cursor position's x value.
+     */
+    adjust_center_x: function (cursor_x) {
+        var curr_center_val = this.paper_scope.view.center.x;
+        var total_length = this.paper_scope.view.viewSize.width;
+        var view_port_length = this.paper_scope.view.bounds.width;
+        return this.adjust_center_point(cursor_x, curr_center_val, total_length, view_port_length);
+    },
+
 
     /**
-     * Attempts to find the new best center values for x and y in order to smooth panning.
-     * @param x_or_y - Whether this is for x or y.
+     * Finds appropriate values when it comes to adjusting the center y value to pass on to adjust_center_point.
+     * @param cursor_y - The new cursor position's y value.
+     */
+    adjust_center_y: function (cursor_y) {
+        var curr_center_val = this.paper_scope.view.center.y;
+        var total_length = this.paper_scope.view.viewSize.height;
+        var view_port_length = this.paper_scope.view.bounds.height;
+        return this.adjust_center_point(cursor_y, curr_center_val, total_length, view_port_length);
+    },
+
+
+    /**
+     * Attempts to find the new best center value for x or y in order to smooth panning.
      * @param next_center_val - The new center value that needs to be adjusted.
+     * @param curr_center_val
+     * @param total_length
+     * @param view_port_length
      * @returns {number} - The new adjusted center value.
      */
-    adjust_center_point: function (x_or_y, next_center_val) {
-
-        //APPROPRIATE VALUES DEPENDING IF X OR Y
-        var curr_center_val, total_length, view_port_length;
-        if (x_or_y == "x") {
-            curr_center_val = this.paper_scope.view.center.x;
-            total_length = this.paper_scope.view.viewSize.width;
-            view_port_length = this.paper_scope.view.bounds.width;
-        } else {
-            curr_center_val = this.paper_scope.view.center.y;
-            total_length = this.paper_scope.view.viewSize.height;
-            view_port_length = this.paper_scope.view.bounds.height;
-        }
-
+    adjust_center_point: function (next_center_val, curr_center_val, total_length, view_port_length) {
         // CALCULATES WHAT THE NEW CENTER VALUE SHOULD BE.
         // THE CLOSER THE NEXT CENTER VAL IS TO THE CURRENT CENTER VAL,
         // THE CLOSER THE NEW CENTER SHOULD BE TO THE CURRENT CENTER.
+        var half_view_port_length = view_port_length / 2;
         var diff = next_center_val - curr_center_val;
         var abs_diff = Math.abs(diff);
         var ratio = abs_diff / view_port_length;
         var eased_ratio = this.ease_num(ratio);
         var eased_diff = diff * eased_ratio;
         var new_center_val = curr_center_val + eased_diff;
-
-        //CALCULATE THE END POINTS AND MAKE SURE THEY FALL WITHIN THE BOUNDS.
-        var new_view_port_start = new_center_val - (view_port_length / 2);
-        var new_view_port_end = new_center_val + (view_port_length / 2);
-
-        if (new_view_port_start < 0) {
-            new_view_port_start = 0;
-            new_view_port_end = new_view_port_start + view_port_length;
-        } else if (new_view_port_end > total_length) {
-            new_view_port_end = total_length;
-            new_view_port_start = new_view_port_end - view_port_length;
-        }
-
-        return (new_view_port_start + new_view_port_end) / 2;
+        var bounded_new_center_val = Math.min(Math.max(new_center_val, 0 + half_view_port_length), total_length - half_view_port_length);
+        return bounded_new_center_val;
     },
 
 
@@ -774,7 +780,13 @@ var VectorVideoView = ContentBaseView.extend({
      * @returns {number} The new eased number.
      */
     ease_num: function (t) {
-        return t * t * t;
+        var threshold = 0.2;//JUST AN ESTIMATE
+        if (t < threshold) {
+            return 0;
+        } else {
+            t -= threshold;
+            return t * t * t;
+        }
     },
 
 
@@ -874,7 +886,10 @@ var VectorVideoView = ContentBaseView.extend({
         //IF QUEUE IS NOT EMPTY AND NOTHING IS PLAY, THEN DEQUEUE AND PLAY
         if ((this.voice_queue.length > 0) && !this.is_voice_playing()) {
             var new_cue = this.voice_queue.shift();
-            this.speak(new_cue['text'], new_cue['person'], {rate: 1.3, volume: this.voice_volume}); //SPEED IS JUST AN ESTIMATE
+            this.speak(new_cue['text'], new_cue['person'], {
+                rate: (1.3 * this.play_back_rate),
+                volume: this.voice_volume
+            }); //SPEED IS JUST AN ESTIMATE
         }
     },
 
