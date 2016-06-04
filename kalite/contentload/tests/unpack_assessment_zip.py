@@ -114,14 +114,10 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
         zipfile_instance = zipfile.ZipFile(open(self.zipfile_path, "r"), "r")
 
-        zipfile_instance.extractall = MagicMock(side_effect=zipfile_instance.extractall)
-        
         from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
-        extract_dir = KHAN_ASSESSMENT_ITEM_ROOT
-
         mod.unpack_zipfile_to_content_folder(zipfile_instance)
 
-        zipfile_instance.extractall.assert_called_once_with(extract_dir)
+        self.assertEqual(os.listdir(KHAN_ASSESSMENT_ITEM_ROOT), ["assessmentitems.version"], "No assessment items unpacked")
 
     def test_is_valid_url_returns_false_for_invalid_urls(self):
         invalid_urls = [

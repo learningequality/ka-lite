@@ -7,7 +7,7 @@ include README.rst
 include setup.cfg
 include requirements.txt
 
-recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars
+recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars *.woff2
 
 # Get the empty DBs -- make sure they are properly generated!
 recursive-exclude kalite/database *
