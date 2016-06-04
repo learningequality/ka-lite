@@ -487,8 +487,8 @@ class Command(BaseCommand):
         # collectstatic(clear=True), due to being bundled with content packs,
         # and we thus have now way of getting them back.
         collectstatic_ignores = [
-            "*.vtt", "*.srt",              # subtitle files come with language packs -- don't delete
-            "*/perseus/ke/exercises/*", # exercises come with language packs, and we have no way to replicate
+            "*.vtt", "*.srt",  # subtitle files come with language packs -- don't delete
+            "*/perseus/ke/exercises/*",  # exercises come with language packs, and we have no way to replicate
         ]
         call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
                      clear=True)

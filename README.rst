@@ -1,7 +1,7 @@
 KA Lite
 =======
 
-by `Foundation for Learning Equality <https://learningequality.org/>`__
+by `Learning Equality <https://learningequality.org/>`__
 
 |Build Status| |Coverage Status| |Docs|
 
@@ -41,13 +41,19 @@ Primary use cases include:
    up with a central database (to download new content and upload
    analytics) when in an area with internet connectivity.
 
-We would love for you to get involved!
---------------------------------------
+Get involved!
+-------------
 
 -  Learn how you can contribute code on our `KA Lite GitHub Wiki <https://github.com/learningequality/ka-lite/wiki>`__
 -  Report bugs by `creating issues <https://github.com/learningequality/ka-lite/wiki/Report-Bugs-by-Creating-Issues>`__
 -  Read more about the project's motivation at `Introducing KA Lite, an offline version of Khan
    Academy <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
+
+Connect
+^^^^^^^
+
+- IRC: **#kalite** on Freenode
+- Twitter: `@kalite <http://twitter.com/kalite>`__
 
 Contact Us
 ^^^^^^^^^^
