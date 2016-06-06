@@ -97,7 +97,8 @@ def central_server_down_or_error(error_msg):
     error_msg: a string
     """
     if error_msg:
-        if requests.get(settings.CENTRAL_SERVER_URL).status_code != 200:
+        from kalite.version import user_agent
+        if requests.get(settings.CENTRAL_SERVER_URL, headers={"user-agent": user_agent()}).status_code != 200:
             return {"error_msg": _("Central Server is not reachable; please try again after some time.")}
         else:
             return {"error_msg": error_msg}

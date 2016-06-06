@@ -56,12 +56,12 @@ def download_file(url, dst=None, callback=None):
 
     # Assuming the KA Lite version is included in user agent because of an
     # intention to create stats on learningequality.org
-    from kalite.version import VERSION as KALITE_VERSION
+    from kalite.version import user_agent
     response = requests.get(
         url,
         allow_redirects=True,
         stream=True,
-        headers={"user-agent": "ka-lite/%s " % KALITE_VERSION + default_user_agent()}
+        headers={"user-agent": user_agent()}
     )
     # If a destination is set, then we'll write a file and send back updates
     if dst:
