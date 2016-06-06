@@ -45,7 +45,7 @@ or use the command-line ``kalite`` program, which in typical installations can b
 ``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
 .. warning::
-    Using existing KA Lite application and download non English language with another ``computer account`` will cause improper loading of exercise images.
+    If you need to download and `install contentpacks locally <http://ka-lite.readthedocs.io/en/0.16.x/faq.html#how-can-i-install-a-language-pack-without-a-reliable-internet-connection>`_ for languages other than English, make sure you are doing it **as the same user that installed KA Lite** in the first place. If you perform the contentpack installation as a different user, some content will not load properly.
 
 
 Mac OS X
