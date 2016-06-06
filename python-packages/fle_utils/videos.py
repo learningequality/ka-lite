@@ -13,6 +13,7 @@ OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default
 
 logger = logging.getLogger(__name__)
 
+
 def get_outside_video_urls(youtube_id, download_url=OUTSIDE_DOWNLOAD_URL, format="mp4"):
 
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
@@ -22,6 +23,7 @@ def get_outside_video_urls(youtube_id, download_url=OUTSIDE_DOWNLOAD_URL, format
     thumb_url = download_url % (video_filename, thumb_filename)
 
     return (url, thumb_url)
+
 
 def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
@@ -36,18 +38,18 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
     thumb_filepath = os.path.join(download_path, thumb_filename)
 
     try:
-        path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
         if (
                 not os.path.isfile(filepath) or
-                "Content-Length" not in response or
-                not str(len(open(filepath, "rb").read())) == response["Content-Length"]):
+                "content-length" not in response.headers or
+                not len(open(filepath, "rb").read()) == int(response.headers['content-length'])):
             raise URLNotFound("Video was not found, tried: {}".format(url))
 
-        path, response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
         if (
                 not os.path.isfile(thumb_filepath) or
-                "Content-Length" not in response or
-                not str(len(open(thumb_filepath, "rb").read())) == response["Content-Length"]):
+                "content-length" not in response.headers or
+                not len(open(thumb_filepath, "rb").read()) == int(response.headers['content-length'])):
             raise URLNotFound("Thumbnail was not found, tried: {}".format(thumb_url))
 
     except DownloadCancelled:
@@ -64,6 +66,7 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
         logging.exception(e)
         delete_downloaded_files(youtube_id, download_path)
         raise
+
 
 def delete_downloaded_files(youtube_id, download_path):
     files_deleted = 0

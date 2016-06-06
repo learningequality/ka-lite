@@ -11,3 +11,4 @@ peewee==2.6.3
 python-dateutil==2.4.2
 django-dbbackup==2.3.2
 ifcfg==0.9.3
+requests==2.10.0
