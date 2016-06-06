@@ -44,6 +44,10 @@ For more advanced use of KA Lite, such as changing the default port, see :ref:`r
 or use the command-line ``kalite`` program, which in typical installations can be found at the path
 ``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
+.. warning::
+    Using existing KA Lite application and download non English language with another ``computer account`` will cause improper loading of exercise images.
+
+
 Mac OS X
 ========
 
