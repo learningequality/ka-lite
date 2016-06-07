@@ -19,11 +19,13 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
     """
     assert not (search_string and expected_val is not None), "Search string and expected value cannot both be set"
 
+    from kalite.version import user_agent
+
     try:
         if not search_string and expected_val is None:
-            response = requests.head(url)
+            response = requests.head(url, headers={"user-agent": user_agent()})
         else:
-            response = requests.get(url, timeout=timeout, allow_redirects=allow_redirects)
+            response = requests.get(url, timeout=timeout, allow_redirects=allow_redirects, headers={"user-agent": user_agent()})
 
         # Validate that response came from the requested url
         if response.status_code != 200:
@@ -52,7 +54,7 @@ def generate_all_paths(path, base_path="/"):
 
     all_paths = []
     cur_path = base_path[0:-1]
-    for dirname in path[len(base_path)-1:].split("/"): # start AFTER the base path
+    for dirname in path[len(base_path) - 1:].split("/"):  # start AFTER the base path
         cur_path += dirname + "/"
         all_paths.append(cur_path)
     return all_paths
