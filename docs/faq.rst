@@ -49,6 +49,9 @@ I would like to download the videos for KA Lite via BitTorrent, is this possible
 
 Yes! Please see the instructions for ":ref:`bulk-video-downloads`".
 
+
+.. _content_pack_retrieve_offline:
+
 How can I install a language pack without a reliable internet connection?
 -------------------------------------------------------------------------
 
