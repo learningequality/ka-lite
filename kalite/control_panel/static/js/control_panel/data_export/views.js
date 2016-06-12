@@ -182,22 +182,12 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     render: function() {
-        var template_context;
 
-        if (this.model.get("facility_id") !== "") {
-            template_context = {
-                facilities: this.facility_list.toJSON(),
-                selection: this.model.get("facility_id"),
-                is_disabled: true
-            };
-        } else {
-            template_context = {
-                facilities: this.facility_list.toJSON(),
-                selection: this.model.get("facility_id"),
-                // Facility select is enabled only if zone_id has been set
-                is_disabled: this.is_disabled()
-            };
-        }
+        var template_context = {
+            facilities: this.facility_list.toJSON(),
+            selection: this.model.get("facility_id"),
+            is_disabled: this.is_disabled()
+        };
 
         this.$el.html(this.template(template_context));
 
@@ -205,9 +195,13 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     is_disabled: function() {
-        // Helper function to quickly check whether the facility select input
-        // should be enabled or disabled based on conditions that matter to it.
-        if (this.model.get("resource_id") === "device_log") {
+        /*
+        * Determines whether FacilitySelect should be enabled or disabled. It should be enabled if:
+        * The resource selected is a DeviceLog -- devices don't have an associated Facility,
+        * OR The requesting user is a FacilityUser -- then the Facility is set (enforced by the Django view),
+        * OR the last condition (MCGallaspy: which I'm not sure where it comes from)
+         */
+        if (this.model.get("resource_id") === "device_log" || window.IS_FACILITY_USER) {  // IS_FACILITY_USER exposed in template.
             return true;
         }
         return ((this.model.get("zone_id") === undefined || this.model.get("zone_id") === "") && this.model.get("is_central"));
