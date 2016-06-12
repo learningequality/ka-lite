@@ -44,6 +44,15 @@ For more advanced use of KA Lite, such as changing the default port, see :ref:`r
 or use the command-line ``kalite`` program, which in typical installations can be found at the path
 ``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
+.. warning::
+    If you need to download and install contentpacks locally for languages other
+    than English, make sure you are doing it
+    **as the same user that installed KA Lite** in the first place. If you
+    perform the contentpack installation as a different user, some content will
+    not load properly. For downloading and installing content packs for offline
+    methods and automatic deployments, see :ref:`content_pack_retrieve_offline`.
+
+
 Mac OS X
 ========
 

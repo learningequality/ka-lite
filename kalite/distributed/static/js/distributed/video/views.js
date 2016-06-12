@@ -224,8 +224,8 @@ var VideoPlayerView = ContentBaseView.extend({
         this.data_model.set({ player_state: state });
 
         if (state === VideoPlayerState.ENDED) {
-            // save the points if the video has completed
-            this.log_model.saveNow();
+            // be sure to save the progress if the video has completed
+            this.update_progress();
         }
 
     },
