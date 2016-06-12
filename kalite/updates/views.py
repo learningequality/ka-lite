@@ -28,9 +28,6 @@ def update_context(request):
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     context = update_context(request)
-    if getattr(settings, 'USING_RASPBERRY_PI', False):
-        messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
-
     return context
 
 
