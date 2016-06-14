@@ -1,3 +1,36 @@
+0.16.6:
+  release_date: "2016/06/14"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Allow logins during LOCKDOWN #5117
+      - Remove useless warning message that no longer serves a purpose #4982
+      - Make ROOT_DATA_PATH consider the KALITE_DIR environment variable #5143
+      - Restore downloading on RPI w/ m2crypto: Unbundle requests and use requests.get instead of urllib.urlretrieve #5138
+      - Docs: Add warning message on KA Lite windows application docs ()
+      - Treat socket.error as if no server is running #5135 
+      - Docs: Connect to ka-lite on IRC #ka-lite (Freenode) - #5127 
+      - Notify student when all exercises in a series are completed (level has been mastered) #4875
+      - Use current year in parts of footer #5112
+      - Handle socket.error: Fix some cases where KA Lite fails to start due to a previous unclean shutdown #5132
+    students: []
+    coaches: []
+    admins: []
+
+
+0.16.5:
+  release_date: "2016/05/02"
+  git_commit: "cfcedf2"
+  new_features: []
+  bugs_fixed:
+    all:
+      - Missing fonts for some icons and math symbols #5110
+    students: []
+    coaches: []
+    admins: []
+
+
 0.16.4:
   release_date: "2016/04/29"
   git_commit: ""
