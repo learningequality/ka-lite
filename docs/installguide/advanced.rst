@@ -72,7 +72,9 @@ Portable tarballs / zip files with setup.py
 If you can't install KA Lite on systems with the standard Windows/Mac/Linux installers,
 you can fetch the KA Lite python package from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`_.
 
-To unpack the package for installation, run::
+To unpack the package for installation, run:
+
+.. parsed-literal::
 
    $> tar -xf ka-lite-static-|release|.tar.gz
 
