@@ -136,7 +136,7 @@ url_deb_pi_installer = url_redirect_download_base + (
 )
 
 extlinks = {
-    'url-issue': ('https://github.com/learningequality/ka-lite/issues/5119/%s', 'issue #'),
+    'url-issue': ('https://github.com/learningequality/ka-lite/issues/%s', '#'),
     'url-pantry': (url_pantry_base + '%s', None),
     'url-windows-installer': (url_windows_installer + '%s', None),
     'url-osx-installer': (url_windows_installer + '%s', None),
