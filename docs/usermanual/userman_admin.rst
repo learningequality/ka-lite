@@ -465,7 +465,7 @@ __________________________
 
 The full set of videos, if downloaded through the KA Lite interface, will occupy more than 150GB.
 If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
-the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.16/content/>`_.
+the videos, :url-pantry:`download and open the appropriate torrent file <content/>`.
 
 Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, that
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
@@ -502,8 +502,6 @@ Adding Languages
 KA Lite content is offered in several languages. If your language is available you can download the **contentpack** for it with all the available subtitles and user interface translations. After you download and install the **contentpack** for a desired language, KA Lite will give you the option to download individual dubbed videos from that language's Khan Academy YouTube channel. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
 
 .. warning:: If you are upgrading from a previous KA Lite version, you **MUST** update all the languages you had previously **AND** restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
-
-.. note:: If you are working on a fresh installation of version 0.16, you do not need to restart the server after downloading **contentpacks** in other languages.
 
 
 Download Language Packs

@@ -74,14 +74,14 @@ you can fetch the KA Lite python package from `PyPi <https://pypi.python.org/pyp
 
 To unpack the package for installation, run::
 
-   $> tar -xf ka-lite-static-0.16.0.tar.gz
+   $> tar -xf ka-lite-static-|release|.tar.gz
 
 Once it's unpacked, install it by entering the extracted directory and running::
 
     $> sudo python setup.py install.
 
 Beware that the PyPi sources do not contain assessment items, so you need to
-`download the contentpack en.zip manually <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/en.zip>`_ (~650 MB).
+:url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB)..
 
 
 Specific system setups
