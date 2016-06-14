@@ -1,6 +1,70 @@
 Release Notes
 =============
 
+0.16.6
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Content packs updated, bulk of broken exercises fixed and all languages rebuilt (and should be re-downloaded), pay attention to a couple of known issues!
+ * Allow logins during LOCKDOWN :url-issue:`5117`
+ * Remove RPI warning message about max number of concurrent downloads, there's no longer a limit on small platforms :url-issue:`4982`
+ * Make ROOT_DATA_PATH consider the KALITE_DIR environment variable :url-issue:`5143`
+ * Restore downloading on RPI w/ m2crypto: Unbundle requests and use requests.get instead of urllib.urlretrieve :url-issue:`5138`
+ * Docs: Add warning message on KA Lite windows application docs :url-issue:`5137`
+ * Treat socket.error as if no server is running :url-issue:`5135` 
+ * Docs: Connect to ka-lite on IRC #ka-lite (Freenode) - :url-issue:`5127`
+ * Notify student when all exercises in a series are completed (level has been mastered) :url-issue:`4875`
+ * Use current year in parts of footer :url-issue:`5112`
+ * Handle socket.error: Fix some cases where KA Lite fails to start due to a previous unclean shutdown :url-issue:`5132`
+
+
+0.16.5
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Missing fonts for some icons and math symbols :url-issue:`5110`
+
+0.16.4
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Update Perseus JS modules resulting in many broken exercises :url-issue:`5105` :url-issue:`5036` :url-issue:`5099`
+ * Fix broken unpacking of legacy assessment items zip :url-issue:`5108`
+
+0.16.3
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Fix for 'nix based systems with unconventional kernel versioning :url-issue:`5087`
+
+0.16.2
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Fix attempt log filtering :url-issue:`5082`
+
+
+0.16.1
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Tweaks to our documentation :url-issue:`5067`
+ * Refactor assessment item asking logic in the setup command :url-issue:`5065`
+ * Properly copy over docs pages while preserving content pack assets :url-issue:`5074`
+      
+
 0.16.0
 ------
 

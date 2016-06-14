@@ -343,7 +343,7 @@ def get_pid():
     try:
         conn.request("GET", PING_URL)
         response = conn.getresponse()
-    except timeout:
+    except (timeout, socket.error):
         raise NotRunning(STATUS_NOT_RESPONDING)
     except (httplib.HTTPException, URLError):
         if os.path.isfile(STARTUP_LOCK):

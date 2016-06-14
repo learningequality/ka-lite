@@ -23,7 +23,7 @@
                     <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
                 </p>
                 <p class="footer-text">
-                    {% trans "KA Lite version" %} {{ VERSION }} &copy; {% trans "2015" %}
+                    {% trans "KA Lite version" %} {{ VERSION }} &copy; {% now "Y" %}
                 </p>
                 {% if channel_data.footer_text %}
                     <p class="footer-text">

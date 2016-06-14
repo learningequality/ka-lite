@@ -39,13 +39,13 @@
             <nav>
               <ul class="pagination">
                 <li {% if page == 1 %}class="disabled"{% endif %}>
-                  <a href="{{ previous_url }}" aria-label="Previous">
+                  <a aria-label="Previous" {% if page == 1 %}class="disabled"{% else %}href="{{ previous_url }}"{% endif %}>
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
                 <li class="active"><a href="#">{{ page }} <span class="sr-only">({% trans "current" %})</span></a></li>
                 <li {% if not more %}class="disabled"{% endif %}>
-                  <a href="{{ next_url }}" aria-label="Next">
+                  <a aria-label="Next" {% if not more %}class="disabled"{% else %}href="{{ next_url }}"{% endif %}>
                     <span aria-hidden="true">&raquo;</span>
                   </a>
                 </li>
