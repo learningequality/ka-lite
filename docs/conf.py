@@ -139,9 +139,9 @@ extlinks = {
     'url-issue': ('https://github.com/learningequality/ka-lite/issues/%s', '#'),
     'url-pantry': (url_pantry_base + '%s', None),
     'url-windows-installer': (url_windows_installer + '%s', None),
-    'url-osx-installer': (url_windows_installer + '%s', None),
-    'url-deb-installer': (url_windows_installer + '%s', None),
-    'url-deb-pi-installer': (url_windows_installer + '%s', None),
+    'url-osx-installer': (url_osx_installer + '%s', None),
+    'url-deb-installer': (url_deb_installer + '%s', None),
+    'url-deb-pi-installer': (url_deb_pi_installer + '%s', None),
 }
 
 # -- Options for HTML output ----------------------------------------------
