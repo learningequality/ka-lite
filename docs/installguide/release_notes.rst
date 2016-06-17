@@ -29,8 +29,9 @@ Watch
 `dev@learningequality.org <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
 for announcements.
 
- * **Content packs** 1800 questions (assessment items) inside exercises (English version) have been removed due to an upstream data bug. The count is lower in other languages. There are 29,839 assessment items, so it's 6% of all exercises that are missing.
+ * **Content packs** 1800 questions (assessment items) inside exercises (English version) have been removed due to an upstream data bug. The count is lower in other languages. There are 29,839 assessment items, so it's 6% of questions (not exercises) that are missing. In terms of exercises, they are all there.
  * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making several languages like Swahili, Xhosa, Zulu have empty content databases. Issue tracking in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120` :url-issue:`5091`
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
  * Login counts and session times in Learner progress reports are wrong :url-issue:`5157`
  * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
  * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
