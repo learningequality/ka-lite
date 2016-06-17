@@ -54,6 +54,7 @@ Connect
 
 - IRC: **#kalite** on Freenode
 - Twitter: `@kalite <http://twitter.com/kalite>`__
+- Mailing list: `dev@learningequality.org on Google Groups <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
 
 Contact Us
 ^^^^^^^^^^
