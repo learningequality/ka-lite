@@ -18,19 +18,19 @@ Bug fixes
  * Notify student when all exercises in a series are completed (level has been mastered) :url-issue:`4875`
  * Use current year in parts of footer :url-issue:`5112`
  * Handle socket.error: Fix some cases where KA Lite fails to start due to a previous unclean shutdown :url-issue:`5132`
+ * **Content packs** 1800 outdated questions (assessment items) inside exercises (English version) used to cause problems due to their widgets and have been removed - not only by KA Lite, but also on KhanAcademy.org. This does not affect the number of exercises and there are still 29,839 assessment items left, so it's not a big concern! :url-issue:`5131`
 
 Known issues
 ^^^^^^^^^^^^
 
 Please note that issues with **content packs** are not related to the software
-itself but is being fixed and updated along side our release.
+itself but are being fixed and updated along side our release.
 
-Watch
+Watch individual issues on Github or
 `dev@learningequality.org <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
-for announcements.
+for announcements and updates.
 
- * **Content packs** 1800 questions (assessment items) inside exercises (English version) have been removed due to an upstream data bug. The count is lower in other languages. There are 29,839 assessment items, so it's 6% of questions (not exercises) that are missing. In terms of exercises, they are all there.
- * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making several languages like Swahili, Xhosa, Zulu have empty content databases. Issue tracking in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120` :url-issue:`5091`
+ * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making several languages like Swahili, Xhosa, Zulu have empty content databases. These issues can be tracked in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120` :url-issue:`5091`
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
  * Login counts and session times in Learner progress reports are wrong :url-issue:`5157`
  * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
