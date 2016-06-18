@@ -30,7 +30,7 @@ Watch individual issues on Github or
 `dev@learningequality.org <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
 for announcements and updates.
 
- * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making several languages like Swahili, Xhosa, Zulu have empty content databases. These issues can be tracked in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120` :url-issue:`5091`
+ * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making the following languages have empty content databases: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. These issues can be tracked in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
  * Login counts and session times in Learner progress reports are wrong :url-issue:`5157`
  * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
