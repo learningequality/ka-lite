@@ -289,14 +289,21 @@ class UserLogSummary(DeferredCountSyncedModel):
             device=device,
             user=user_log.user,
             activity_type=user_log.activity_type,
-            start_datetime__lte=user_log.end_datetime,
+            start_datetime__lt=user_log.end_datetime,
             end_datetime__gte=user_log.end_datetime,
         )
 
-        # TODO(anuragkanungo): Figure out and fix the issue for duplicate entries and enable assert check with if condition removed.
-        #assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+        # Delete overlapping summaries because we know no better action. They
+        # are not supposed to be there, but there are no database constraints.
+        #
+        # Added behavior in 0.16.7: We accumulate their counts and total_seconds
+        # into the remaining log.
+        overlapping_counts = 0
+        overlapping_total_seconds = 0
         if log_summary.count() > 1:
             for log in log_summary[1:]:
+                overlapping_counts += log.count
+                overlapping_total_seconds += log.total_seconds
                 log.soft_delete()
 
         # Get (or create) the log item
@@ -305,7 +312,7 @@ class UserLogSummary(DeferredCountSyncedModel):
             user=user_log.user,
             activity_type=user_log.activity_type,
             language=user_log.language,
-            start_datetime=cls.get_period_start_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
+            start_datetime=cls.get_period_start_datetime(user_log.start_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             end_datetime=cls.get_period_end_datetime(user_log.end_datetime, settings.USER_LOG_SUMMARY_FREQUENCY),
             total_seconds=0,
             count=0,
@@ -314,8 +321,8 @@ class UserLogSummary(DeferredCountSyncedModel):
         logging.debug("Adding %d seconds for %s/%s/%d/%s, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, user_log.language, log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
-        log_summary.total_seconds += user_log.total_seconds
-        log_summary.count += 1
+        log_summary.total_seconds += overlapping_total_seconds + user_log.total_seconds
+        log_summary.count += overlapping_counts + 1
         log_summary.last_activity_datetime = user_log.last_active_datetime
         log_summary.save()
 
@@ -334,8 +341,20 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    total_seconds = models.IntegerField(blank=True, null=True)
+    end_datetime = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text=(
+            "This field remains None until the time when the session ends then "
+            "it's added to UserLogSummary."),
+    )
+    total_seconds = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text=(
+            "This field remains None until the time when the session ends then "
+            "it's added to UserLogSummary."),
+    )
 
     @staticmethod
     def is_enabled():
@@ -348,8 +367,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             return u"%s (%s): logged in @ %s; last active @ %s" % (self.user.username, self.language, self.start_datetime, self.last_active_datetime)
 
     def save(self, *args, **kwargs):
-        """When this model is saved, check if the activity is ended.
-        If so, compute total_seconds and update the corresponding summary log."""
 
         # Do nothing if the max # of records is zero
         # (i.e. this functionality is disabled)
@@ -564,6 +581,7 @@ class ContentLog(DeferredCountSyncedModel):
         return uuid.uuid5(namespace, hashtext.encode("utf-8")).hex
 
 
+# issue #5157
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
@@ -578,14 +596,15 @@ def add_to_summary(sender, **kwargs):
     if instance.end_datetime and not instance.total_seconds:
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
-        instance.full_clean()
+        # #5157 - why do we call this, is it superstition?
+        # instance.full_clean()
 
-        # The top computation is more lenient: user activity is just time logged in, literally.
-        # The bottom computation is more strict: user activity is from start until the last "action"
-        #   recorded--in the current case, that means from login until the last moment an exercise or
-        #   video log was updated.
-        #instance.total_seconds = datediff(instance.end_datetime, instance.start_datetime, units="seconds")
-        instance.total_seconds = 0 if not instance.last_active_datetime else datediff(instance.last_active_datetime, instance.start_datetime, units="seconds")
+        # #5157
+        end_time = instance.last_active_datetime or instance.end_datetime
+        if end_time:
+            instance.total_seconds = (end_time - instance.start_datetime).total_seconds()
+        else:
+            instance.total_seconds = 0
 
         # Confirm the result (output info first for easier debugging)
         if instance.total_seconds < 0:
