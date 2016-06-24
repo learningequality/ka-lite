@@ -62,6 +62,7 @@ class VideoLog(DeferredCountSyncedModel):
     def save(self, update_userlog=False, *args, **kwargs):
         # To deal with backwards compatibility,
         #   check video_id, whether imported or not.
+        print("videolog save got called")
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
@@ -97,33 +98,6 @@ class VideoLog(DeferredCountSyncedModel):
     @classmethod
     def calc_points(cls, seconds_watched, video_length):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
-
-    @classmethod
-    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, complete, completion_timestamp, points=0):
-        assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
-
-        ds = load_dynamic_settings(user=facility_user)
-
-        # retrieve the previous video log for this user for this video, or make one if there isn't already one
-        (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
-
-        # combine the previously watched counts with the new counts
-        #
-        # Set total_seconds_watched directly, rather than incrementally, for robustness
-        #   as sometimes an update request fails, and we'd miss the time update!
-        videolog.total_seconds_watched = total_seconds_watched
-        videolog.points = min(max(points, videolog.points), ds["distributed"].points_per_video)
-        videolog.language = language
-        videolog.youtube_id = youtube_id
-        videolog.complete = complete
-        videolog.completion_timestamp = completion_timestamp
-
-        # write the video log to the database, overwriting any old video log with the same ID
-        # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
-        videolog.full_clean()
-        videolog.save(update_userlog=True)
-
-        return videolog
 
 
 class ExerciseLog(DeferredCountSyncedModel):
@@ -398,9 +372,9 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         assert not args
         assert "end_datetime" not in kwargs
 
-        logs = cls.objects \
-            .filter(end_datetime__isnull=True, **kwargs) \
-            .order_by("-last_active_datetime")
+        logs = cls.objects.exclude(end_datetime__gt="1900-01-01")
+        logs = logs.filter(**kwargs)
+        logs = logs.order_by("-last_active_datetime")
         return None if not logs else logs[0]
 
     @classmethod
@@ -427,6 +401,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             # Note: this can be a recursive call
             logging.warn("%s: had to END activity on a begin(%d) @ %s" % (user.username, activity_type, start_datetime))
             # Don't mark current language when closing an old one
+            print("Ending found log, startime: {}".format(cur_log.start_datetime))
             cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)  # can't suppress save
             cur_log = None
 
@@ -434,6 +409,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
         cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
         if not suppress_save:
+            print("Saving new user log, start time: {}".format(start_datetime))
             cur_log.save()
 
         return cur_log
@@ -597,8 +573,8 @@ def add_to_summary(sender, **kwargs):
         # Compute total_seconds, save to summary
         #   Note: only supports setting end_datetime once!
         # #5157 - why do we call this, is it superstition?
-        # instance.full_clean()
-
+        instance.full_clean()
+        print("Processing pre save, start time: {}".format(instance.start_datetime))
         # #5157
         end_time = instance.last_active_datetime or instance.end_datetime
         if end_time:
@@ -612,6 +588,7 @@ def add_to_summary(sender, **kwargs):
         logging.debug("%s: total time (%d): %d seconds" % (instance.user.username, instance.activity_type, instance.total_seconds))
 
         # Save only completed log items to the UserLogSummary
+        print("Adding a new summary, total secounds: {}".format(instance.total_seconds))
         UserLogSummary.add_log_to_summary(instance)
 
 
