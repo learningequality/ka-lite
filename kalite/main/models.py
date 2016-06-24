@@ -59,10 +59,9 @@ class VideoLog(DeferredCountSyncedModel):
             " (completed)" if self.complete else "",
         )
 
-    def save(self, update_userlog=False, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # To deal with backwards compatibility,
         #   check video_id, whether imported or not.
-        print("videolog save got called")
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
@@ -73,13 +72,10 @@ class VideoLog(DeferredCountSyncedModel):
         if not kwargs.get("imported", False):
             self.full_clean()
 
-            # Tell logins that they are still active (ignoring validation failures).
-            #   TODO(bcipolli): Could log video information in the future.
-            if update_userlog:
-                try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
-                except ValidationError as e:
-                    logging.error("Failed to update userlog during video: %s" % e)
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
+            except ValidationError as e:
+                logging.error("Failed to update userlog during video: %s" % e)
 
         super(VideoLog, self).save(*args, **kwargs)
 
@@ -124,7 +120,7 @@ class ExerciseLog(DeferredCountSyncedModel):
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
 
-    def save(self, update_userlog=False, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -138,13 +134,10 @@ class ExerciseLog(DeferredCountSyncedModel):
                 self.completion_timestamp = datetime.now()
                 self.attempts_before_completion = self.attempts
 
-            # Tell logins that they are still active (ignoring validation failures).
-            #   TODO(bcipolli): Could log exercise information in the future.
-            if update_userlog:
-                try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
-                except ValidationError as e:
-                    logging.error("Failed to update userlog during exercise: %s" % e)
+            try:
+                UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
+            except ValidationError as e:
+                logging.error("Failed to update userlog during exercise: %s" % e)
 
         super(ExerciseLog, self).save(*args, **kwargs)
 
@@ -400,8 +393,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             #
             # Note: this can be a recursive call
             logging.warn("%s: had to END activity on a begin(%d) @ %s" % (user.username, activity_type, start_datetime))
-            # Don't mark current language when closing an old one
-            print("Ending found log, startime: {}".format(cur_log.start_datetime))
             cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)  # can't suppress save
             cur_log = None
 
@@ -409,7 +400,6 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
         cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
         if not suppress_save:
-            print("Saving new user log, start time: {}".format(start_datetime))
             cur_log.save()
 
         return cur_log
@@ -574,7 +564,6 @@ def add_to_summary(sender, **kwargs):
         #   Note: only supports setting end_datetime once!
         # #5157 - why do we call this, is it superstition?
         instance.full_clean()
-        print("Processing pre save, start time: {}".format(instance.start_datetime))
         # #5157
         end_time = instance.last_active_datetime or instance.end_datetime
         if end_time:
@@ -588,7 +577,6 @@ def add_to_summary(sender, **kwargs):
         logging.debug("%s: total time (%d): %d seconds" % (instance.user.username, instance.activity_type, instance.total_seconds))
 
         # Save only completed log items to the UserLogSummary
-        print("Adding a new summary, total secounds: {}".format(instance.total_seconds))
         UserLogSummary.add_log_to_summary(instance)
 
 
