@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+0.16.7 (unreleased)
+-------------------
+
+ * Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) :url-issue:`5157`
+
+
 0.16.6
 ------
 
