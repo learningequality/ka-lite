@@ -161,6 +161,9 @@ class FacilityUserResource(ModelResource):
         self.method_check(request, allowed=['get'])
         if "facility_user" in request.session:
             try:
+                # First, update it because this is a real event
+                UserLog.update_user_activity(request.session["facility_user"], activity_type="login")
+                # ...then end it
                 UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
                 del request.session['facility_user']
             except ValidationError as e:
