@@ -1,3 +1,17 @@
+0.16.7:
+  release_date: "2016/06/28"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) #5157
+      - TODO: Mastery percentage wrongly displayed on learner stats page #5181
+      - Content packs: Added app. 1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. #5120
+    students: []
+    coaches: []
+    admins: []
+
+
 0.16.6:
   release_date: "2016/06/14"
   git_commit: ""
