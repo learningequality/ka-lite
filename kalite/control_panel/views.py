@@ -446,7 +446,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
-    login_logs = login_logs.filter(total_seconds__gt=0)
+    login_logs = login_logs.filter(total_seconds__gte=0)
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
         video_logs = video_logs.filter(completion_timestamp__gte=period_start)
@@ -475,7 +475,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk", "streak_progress"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
-    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
+    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk", "count"))
 
     for user in users:
         user_data[user.pk] = OrderedDict()
@@ -511,7 +511,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_report_views"] += 1
         elif llog["activity_type"] == UserLog.get_activity_int("login"):
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
-            user_data[llog["user__pk"]]["total_logins"] += 1
+            user_data[llog["user__pk"]]["total_logins"] += llog["count"]
 
     for group in list(groups) + [None] * (group_id == None or group_id == UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
