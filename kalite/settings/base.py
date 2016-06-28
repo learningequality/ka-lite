@@ -281,7 +281,7 @@ else:
 # database with assessment items.
 
 # Content path-related settings
-CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
+CONTENT_ROOT = os.getenv('KALITE_CONTENT_ROOT', os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content'))))
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
