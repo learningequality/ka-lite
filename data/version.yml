@@ -6,7 +6,7 @@
     all:
       - Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) #5157
       - TODO: Mastery percentage wrongly displayed on learner stats page #5181
-      - Content packs: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. #5120
+      - Content packs: Added app. 1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. #5120
     students: []
     coaches: []
     admins: []
