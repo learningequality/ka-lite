@@ -1,0 +1,200 @@
+.vector_wrapper {
+  position: relative;
+}
+
+.vector_canvas_wrapper {
+  position: relative;
+  width: 100%;
+  &:before {
+    display: block;
+    padding-top: 56.25%;
+    content: '';
+  }
+}
+
+.vector_canvas {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  -webkit-user-select: initial !important;
+  background: #000000;
+  background-size: contain;
+  touch-action: initial !important;
+  -webkit-user-drag: initial !important;
+}
+
+.vector_captions {
+  background: black;
+  color: white;
+  position: absolute;
+  bottom: 75px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+
+.vector_bar {
+  position: absolute;
+  width: 100%;
+  padding-top: 5px;
+  color: white;
+  background-color: rgba(0, 150, 136, 0);
+  bottom: 0;
+}
+
+.vector_seek_wrapper {
+  width: 100%;
+}
+
+.vector_items_right {
+  float: right;
+}
+
+.vector_play_pause_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_play_arrow_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_play_pause_btn_pause {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_pause_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_replay_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_replay_10_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_full_screen_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_fullscreen_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_full_screen_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_fullscreen_exit_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_playback_rate_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_av_timer_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_playback_rate_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_av_timer_color_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_zoom_level_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_in_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_zoom_level_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_zoom_out_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_cc_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_cc_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_closed_caption_color_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_voice_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_voice_btn_on {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_record_voice_over_color_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_volume_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_up_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_volume_btn_mute {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_volume_off_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_settings_btn {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_settings_white_24px.svg) no-repeat center;
+  background-size: contain;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.vector_settings_btn_exit {
+  background: url(../static/js/distributed/vectorvideo/vectorvideo_icons/ic_close_white_24px.svg) no-repeat center;
+  background-size: contain;
+}
+
+.vector_wrapper:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:-ms-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_wrapper:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.vector_play_pause_btn_overlay {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.vector_settings {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.vector_hidden {
+  display: none;
+}
+
+.mdl-slider__background-flex {
+  width: 95%;
+  height: 4px;
+}
+
+.vector_volume_wrapper {
+  display: inline-block;
+  width: 100px;
+}

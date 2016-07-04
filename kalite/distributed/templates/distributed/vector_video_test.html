@@ -1,0 +1,20 @@
+{% extends "distributed/learn.html" %}
+{% load my_filters i18n i18n_filters staticfiles %}
+{% block title %}{% trans "Learn" %}{% endblock title %}
+
+{% block headcss %}
+{{ block.super }}
+<style id="exercise-inline-style"></style>
+<link rel="stylesheet" type="text/css" href="{% static 'js/distributed/perseus/ke/css/khan-exercise.css' True %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+<script src="{% static 'js/distributed/vectorvideo/responsivevoice.js' %}"></script>
+<script src="{% static 'js/distributed/bundles/bundle_vectorvideo.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+{{ block.super }}
+<div id="content-area"></div>
+<div id="sidebar-container"></div>
+{% endblock content %}
