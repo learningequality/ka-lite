@@ -11,10 +11,9 @@ information needed to set up the KA Lite software. Additionally, there's
 information on how to manage KA Lite and how to perform role-specific 
 tasks. If you have any questions that are not addressed by the 
 documentation and you have access to the Internet, please be sure to 
-check our `FAQ`_ or `Forums`_!
+check our `Forums`_!
 
-.. _FAQ: https://learningequality.org/ka-lite/faq/
-.. _Forums: https://forums.learningequality.org/
+.. _Forums: https://community.learningequality.org/
 
 .. toctree::
     :maxdepth: 2
