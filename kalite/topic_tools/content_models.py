@@ -675,28 +675,32 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
 
             def update_parent_annotation(parent):
 
-                children = list(Item.select(Item.available, Item.files_complete, Item.remote_size, Item.size_on_disk).where(Item.parent == parent.pk))
+                children = list(Item.select(Item.available, Item.total_files, Item.files_complete, Item.remote_size, Item.size_on_disk).where(Item.parent == parent.pk))
 
                 available = any(child.available for child in children)
+                total_files = sum(child.total_files for child in children)
                 files_complete = sum(child.files_complete for child in children)
                 child_remote = sum(child.remote_size for child in children if (not child.available and child.kind != "Topic") or (child.kind == "Topic"))
                 child_on_disk = sum(child.size_on_disk for child in children)
+
+                # ensure files_complete doesn't go above total_files; can be removed after fix is in for:
+                # https://github.com/fle-internal/content-pack-maker/issues/38
+                files_complete = min(total_files, files_complete)
 
                 if parent.available != available:
                     parent.available = available
                 if parent.files_complete != files_complete:
                     parent.files_complete = files_complete
-                # Ensure that the aggregate sizes are not None
-                if parent.remote_size != child_remote and child_remote:
+                if parent.remote_size != child_remote:
                     parent.remote_size = child_remote
-                # Ensure that the aggregate sizes are not None
-                if parent.size_on_disk != child_on_disk and child_on_disk:
+                if parent.size_on_disk != child_on_disk:
                     parent.size_on_disk = child_on_disk
                 if parent.is_dirty():
                     parent.save()
                     return True  # return True to indicate we need to continue up the tree
                 else:
                     return False  # return False to indicate we don't need to continue up the tree
+
 
             parents_to_update = {}
             for path, update in content_models:
@@ -710,7 +714,6 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
                         for attr, val in item_data.iteritems():
                             setattr(item, attr, val)
                         item.save()
-                        # recurse_availability_up_tree(item)
                         parents_to_update[item.parent.pk] = item.parent
 
             while parents_to_update:
