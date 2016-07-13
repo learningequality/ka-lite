@@ -17,6 +17,7 @@ class LockdownCheck:
                 request.path not in [reverse("facility_user_signup"), reverse("dynamic_js"), reverse("dynamic_css")] and
                 not request.path.startswith("/api/") and
                 not request.path.startswith("/securesync/api/user/status") and
+                not request.path.startswith("/securesync/api/user/login") and
                 not request.path.startswith(settings.CONTENT_DATA_URL) and
                 not request.path.startswith(settings.STATIC_URL) and
                 not request.GET.get('login', '') == 'True'
