@@ -1,10 +1,27 @@
 Release Notes
 =============
 
-0.16.7 (unreleased)
--------------------
+0.16.7
+------
+
+Bug fixes
+^^^^^^^^^
 
  * Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) :url-issue:`5157`
+ * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
+ * **Content packs**: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
+
+Known issues
+^^^^^^^^^^^^
+
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+ * Writing to server.log is disabled on Windows :url-issue:`5057`
 
 
 0.16.6
