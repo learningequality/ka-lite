@@ -1,3 +1,19 @@
+0.16.7:
+  release_date: "2016/07/23"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Restore learner stats. Correctly display login count and aggregate login durations (previously uncollected data!) #5157
+      - Mastery percentage wrongly displayed on learner stats page #5181
+      - Content packs. Added app. 1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. #5120
+      - CONTENT_ROOT can now be set by an environment variable. #5189
+      - video scanning is now much faster. #5201
+    students: []
+    coaches: []
+    admins: []
+
+
 0.16.6:
   release_date: "2016/06/14"
   git_commit: ""
@@ -8,13 +24,13 @@
       - Allow logins during LOCKDOWN #5117
       - Remove RPI warning message about max number of concurrent downloads, there's no longer a limit on small platforms #4982
       - Make ROOT_DATA_PATH consider the KALITE_DIR environment variable #5143
-      - Restore downloading on RPI w/ m2crypto: Unbundle requests and use requests.get instead of urllib.urlretrieve #5138
-      - Docs: Add warning message on KA Lite windows application docs #5137
-      - Treat socket.error as if no server is running #5135 
-      - Docs: Connect to ka-lite on IRC #ka-lite (Freenode) - #5127 
+      - Restore downloading on RPI w/ m2crypto. Unbundle requests and use requests.get instead of urllib.urlretrieve #5138
+      - Docs. Add warning message on KA Lite windows application docs #5137
+      - Treat socket.error as if no server is running #5135
+      - Docs. Connect to ka-lite on IRC #ka-lite (Freenode) - #5127
       - Notify student when all exercises in a series are completed (level has been mastered) #4875
       - Use current year in parts of footer #5112
-      - Handle socket.error: Fix some cases where KA Lite fails to start due to a previous unclean shutdown #5132
+      - Handle socket.error. Fix some cases where KA Lite fails to start due to a previous unclean shutdown #5132
     students: []
     coaches: []
     admins: []
