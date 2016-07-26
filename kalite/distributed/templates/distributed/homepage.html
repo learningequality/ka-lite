@@ -19,23 +19,38 @@
 
 {% block content %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div class="container" id="content-area">
+    <div class="row" id="content-area">
 
-        <div class="row">
+        <!-- <div class="row">
             <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
-        </div>
+        </div> -->
 
-        <div class="row">
-            <div class="col-sm-4 col-sm-push-4 col-xs-10 col-xs-push-1 vertical-shadow suggested-action">
+        <!-- <div class="row"> -->
+            <!-- <div class="col-sm-4 col-sm-push-4 col-xs-10 col-xs-push-1 vertical-shadow suggested-action">
                 <a href="{% url 'learn' %}">
                      <h2 class="h3 suggested-action-title">{% trans "Learn!" %}</h2>
                      <img class="img-responsive" id="suggested-action-image-link-homepage" src="{{ channel_data.frontpage_splash }}" alt="{% trans 'Learn with Khan Academy videos and exercises!' %}">
                 </a>
+            </div> -->
+        <div class="row" id="aflatoun-bg">
+            <a href="{% url 'learn' %}">
+                <img class="aflatoun-bg" src="{{ channel_data.frontpage_splash }}">
+            </a>
+        </div>
+        <!-- </div> -->
+        <div class="row">
+            <div class="col-md-offset-2 col-md-8 col-xs-12" id="homepage-p-div">
+                <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12" id="homepage-p-div">
-                <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
+            <div class="col-md-offset-2 col-md-4 col-xs-12">
+                <h4>An initiative of:</h4>
+                <img class="org-logo" src="{{ channel_data.header_logo }}">
+            </div>
+            <div class="col-md-offset-1 col-md-4 col-xs-12">
+                <h4>In partnership with:</h4>
+                <img class="org-logo" src="{{ channel_data.orange_fondation }}">
             </div>
         </div>
     </div>
