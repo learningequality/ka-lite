@@ -167,7 +167,7 @@ def parse_data(function):
 
 @parse_data
 @set_database
-def get_random_content(kinds=None, limit=1, **kwargs):
+def get_random_content(kinds=None, limit=1, available=None, **kwargs):
     """
     Convenience function for returning random content nodes for use in testing
     :param kinds: A list of node kinds to select from.
@@ -176,7 +176,10 @@ def get_random_content(kinds=None, limit=1, **kwargs):
     """
     if not kinds:
         kinds = ["Video", "Audio", "Exercise", "Document"]
-    return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
+    items = Item.select().where(Item.kind.in_(kinds))
+    if available is not None:
+        items = items.where(Item.available == available)
+    return items.order_by(fn.Random()).limit(limit)
 
 
 @set_database
