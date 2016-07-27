@@ -12,6 +12,9 @@ from django.core.handlers.wsgi import WSGIHandler
 
 __all__ = ['DjangoAppPlugin']
 
+# Due to #5140 (Windows XP doesn't know SVG), we add this...
+WELL_KNOWN_CONTENT_TYPES = {'svg': 'svg/xml'}
+
 class DjangoAppPlugin(plugins.SimplePlugin):
     def __init__(self, bus):
         """ CherryPy engine plugin to configure and mount
@@ -35,7 +38,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
                 dir="",
-                root=os.path.abspath(ASSESSMENT_ITEM_ROOT)
+                root=os.path.abspath(ASSESSMENT_ITEM_ROOT),
+                content_types=WELL_KNOWN_CONTENT_TYPES,
             )
             cherrypy.tree.mount(static_handler, settings.CONTENT_URL + "assessment/",)
 
@@ -43,7 +47,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
                 dir=os.path.split(settings.CONTENT_ROOT)[1],
-                root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0])
+                root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0]),
+                content_types=WELL_KNOWN_CONTENT_TYPES,
             )
             cherrypy.tree.mount(static_handler, settings.CONTENT_URL)
 
@@ -51,7 +56,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         static_handler = cherrypy.tools.staticdir.handler(
             section="/",
             dir=os.path.split(settings.MEDIA_ROOT)[1],
-            root=os.path.abspath(os.path.split(settings.MEDIA_ROOT)[0])
+            root=os.path.abspath(os.path.split(settings.MEDIA_ROOT)[0]),
+            content_types=WELL_KNOWN_CONTENT_TYPES,
         )
         cherrypy.tree.mount(static_handler, settings.MEDIA_URL)
 
@@ -59,7 +65,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         static_handler = cherrypy.tools.staticdir.handler(
             section="/",
             dir=os.path.split(settings.STATIC_ROOT)[1],
-            root=os.path.abspath(os.path.split(settings.STATIC_ROOT)[0])
+            root=os.path.abspath(os.path.split(settings.STATIC_ROOT)[0]),
+            content_types=WELL_KNOWN_CONTENT_TYPES,
         )
         cherrypy.tree.mount(static_handler, settings.STATIC_URL)
 
@@ -67,7 +74,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         static_handler = cherrypy.tools.staticdir.handler(
             section="/",
             dir=os.path.split(settings.CONTENT_DATA_PATH)[1],
-            root=os.path.abspath(os.path.split(settings.CONTENT_DATA_PATH)[0])
+            root=os.path.abspath(os.path.split(settings.CONTENT_DATA_PATH)[0]),
+            content_types=WELL_KNOWN_CONTENT_TYPES,
         )
         cherrypy.tree.mount(static_handler, settings.CONTENT_DATA_URL)
 
@@ -76,7 +84,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         admin_static_handler = cherrypy.tools.staticdir.handler(
             section='/',
             dir='admin',
-            root=admin_static_dir
+            root=admin_static_dir,
+            content_types=WELL_KNOWN_CONTENT_TYPES,
         )
         cherrypy.tree.mount(admin_static_handler, urlparse.urljoin(settings.STATIC_URL, 'admin'))
 

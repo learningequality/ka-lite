@@ -1,7 +1,5 @@
 import os
 
-from kalite.shared.utils import open_json_or_yml
-
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 # Must be PEP 440 compliant: https://www.python.org/dev/peps/pep-0440/
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
@@ -28,6 +26,8 @@ def VERSION_INFO():
     # we import settings lazily, since the settings modules depends on
     # this file. Importing it on top will lead to circular imports.
     from django.conf import settings
+    from kalite.shared.utils import open_json_or_yml
+
 
     return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version.yml"))
 

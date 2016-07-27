@@ -35,6 +35,7 @@ from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
 from kalite.topic_tools.content_models import get_topic_contents
+from datetime import timedelta
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -281,12 +282,16 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
                 exercise_logs.append(elog)
 
+                # Generate a user log regarding exercises done
+                duration = random.randint(10 * 60, 120 * 60)  # 10 - 120 minutes in seconds
+                exercise_start = start_date + timedelta(seconds=random.randint(0, int(date_diff.total_seconds() - duration)))
+                exercise_end = exercise_start + timedelta(seconds=duration)
                 ulog = UserLog(
                     user=facility_user,
-                    activity_type=1,
-                    start_datetime = start_date,
-                    end_datetime = start_date + date_diff,
-                    last_active_datetime = start_date + date_diff,
+                    activity_type=UserLog.get_activity_int("login"),
+                    start_datetime=exercise_start,
+                    end_datetime=exercise_end,
+                    last_active_datetime=exercise_end,
                 )
                 ulog.save()
                 user_logs.append(ulog)
@@ -449,21 +454,23 @@ def generate_fake_coachreport_logs(password="hellothere"):
         date_logged_in = datetime.datetime.now() - datetime.timedelta(days=random.randint(1,10))
         date_viewed_coachreport = date_logged_in + datetime.timedelta(minutes=random.randint(0, 30))
         date_logged_out = date_viewed_coachreport + datetime.timedelta(minutes=random.randint(0, 30))
-        login_log = UserLog.objects.create(
+        login_log = UserLog(
             user=t,
             activity_type=UserLog.get_activity_int("login"),
             start_datetime=date_logged_in,
             last_active_datetime=date_viewed_coachreport,
             end_datetime=date_logged_out,
         )
+        login_log.save()  # Must save because of pre-save logic
         logging.info("created login log for teacher %s" % t.username)
-        coachreport_log = UserLog.objects.create(
+        coachreport_log = UserLog(
             user=t,
             activity_type=UserLog.get_activity_int("coachreport"),
             start_datetime=date_viewed_coachreport,
             last_active_datetime=date_viewed_coachreport,
             end_datetime=date_viewed_coachreport,
         )
+        coachreport_log.save()  # Must save because of pre-save logic
         logs.append((login_log, coachreport_log))
         logging.info("created coachreport log for teacher %s" % t.username)
     return logs
