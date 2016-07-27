@@ -14,7 +14,7 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
-from kalite.version import VERSION, SHORTVERSION
+from kalite.version import SHORTVERSION
 from kalite.topic_tools import settings as topic_settings
 
 from fle_utils.config.models import Settings
@@ -28,7 +28,8 @@ CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
 CACHE_VARS = []
 
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 
 class LanguageNotFoundError(Exception):
@@ -155,7 +156,7 @@ def convert_language_code_format(lang_code, for_django=True):
 
     lang_code = lang_code.lower()
     code_parts = re.split('-|_', lang_code)
-    if len(code_parts) >  1:
+    if len(code_parts) > 1:
         assert len(code_parts) == 2, "code_parts was: {0}".format(code_parts)
         code_parts[1] = code_parts[1].upper()
         if for_django:
@@ -339,7 +340,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code) ]
+    langpack_resource_paths = [get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code)]
 
     for langpack_resource_path in langpack_resource_paths:
         try:
@@ -421,3 +422,16 @@ def extract_content_db(zf, lang, is_template=False):
         dbfobj = zf.open("content.db")
         shutil.copyfileobj(dbfobj, f)
 
+
+def reset_content_db(force=False):
+    # Copy all content item db templates
+    if os.path.exists(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            if file_name.endswith("sqlite"):
+                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                if force or not os.path.exists(dest_database):
+                    print("Copying {} to {}".format(template_path, dest_database))
+                    shutil.copy(template_path, dest_database)
+                else:
+                    print("Skipping {}".format(template_path))
