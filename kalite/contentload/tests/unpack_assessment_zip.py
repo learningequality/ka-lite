@@ -13,6 +13,7 @@ from django.test.utils import override_settings
 from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
+from kalite.i18n.base import reset_content_db
 
 TEMP_CONTENT_PATH = tempfile.mkdtemp()
 TEMP_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.version')
@@ -37,7 +38,9 @@ contentload_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(TEMP_CONTENT_
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
     def setUp(self):
-        
+
+        reset_content_db()
+
         # Create a dummy assessment item zip
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
