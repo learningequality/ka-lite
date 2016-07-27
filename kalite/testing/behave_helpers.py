@@ -47,14 +47,15 @@ from kalite.facility.models import FacilityUser
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins, KALiteTimeout
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-from selenium.webdriver.support.expected_conditions import staleness_of
 
 
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 30
-
+# When checking for something we don't expect to be found, add extra time for
+# scripts or whatever to complete
+MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 1
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ def rgba_to_hex(rgba_string):
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 
-def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
+def _assert_no_element_by(context, by, value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Raises a TimeoutException if the element is *still* found after wait_time seconds.
 
@@ -86,12 +87,16 @@ def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
     :param wait_time: The wait time in seconds.
     :return: Nothing, or raises a TimeoutException.
     """
-    WebDriverWait(context.browser, wait_time).until_not(
-        EC.presence_of_element_located((by, value))
-    )
+    try:
+        WebDriverWait(context.browser, wait_time).until(
+            EC.presence_of_element_located((by, value))
+        )
+    except TimeoutException:
+        return True
+    raise KALiteTimeout
 
 
-def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_id(context, _id, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
@@ -100,7 +105,7 @@ def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
     _assert_no_element_by(context, By.ID, _id, wait_time)
 
 
-def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
@@ -109,7 +114,7 @@ def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOA
     _assert_no_element_by(context, By.CSS_SELECTOR, css_value, wait_time)
 
 
-def assert_no_element_by_xpath_selector(context, xpath, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_xpath_selector(context, xpath, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.

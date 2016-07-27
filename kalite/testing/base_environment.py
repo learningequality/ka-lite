@@ -71,7 +71,6 @@ def setup_content_paths(context, db):
 
     annotate_content_models(db=db, iterator_content_items=iterator_content_items)
 
-    print(context.available_content_path)
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
             title="Unavailable item",
