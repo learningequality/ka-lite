@@ -60,7 +60,7 @@ def setup_content_paths(context, db):
     # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
     # depends on these specific values.
     context.unavailable_content_path = "khan/foo/bar/unavail"
-    context.available_content_path = get_random_content(kinds=["Video"])[0]['path']
+    context.available_content_path = get_random_content(kinds=["Exercise"], available=True)[0]['path']
 
     # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
     # It then updates the items with these paths with their update dicts, and then propagates
