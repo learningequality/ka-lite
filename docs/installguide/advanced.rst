@@ -154,6 +154,10 @@ installation: ::
         ServerName kalite.com
         DocumentRoot /var/www/html/
 
+        <Directory />
+            Require all granted
+        </Directory>
+
         Alias /static /var/www/.kalite/httpsrv/static
         Alias /media /var/www/.kalite/httpsrv/media
 
