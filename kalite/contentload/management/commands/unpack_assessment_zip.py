@@ -45,7 +45,7 @@ class Command(BaseCommand):
         if is_valid_url(ziplocation):  # url; download the zip
             logging.info("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
-            r = requests.get(ziplocation, prefetch=False)
+            r = requests.get(ziplocation, stream=True)
             content_length = r.headers.get("Content-Length")
             logging.info(
                 "Downloaded size: {}".format(

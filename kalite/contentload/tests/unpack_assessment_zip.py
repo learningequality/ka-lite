@@ -84,7 +84,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
                 force_download=True  # always force the download, so we can be sure the get method gets called
             )
 
-            get_method.assert_called_once_with(url, prefetch=False)
+            get_method.assert_called_once_with(url, stream=True)
 
             # verify that the other items are written to the content directory
             for filename in zf.namelist():
