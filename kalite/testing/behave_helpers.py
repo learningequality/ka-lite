@@ -27,6 +27,7 @@ For interacting with the API:
 * get
 * request
 """
+import logging
 import json
 import urllib
 
@@ -46,12 +47,16 @@ from kalite.facility.models import FacilityUser
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins, KALiteTimeout
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from selenium.webdriver.support.expected_conditions import staleness_of
 
 
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 30
+
+
+logger = logging.getLogger(__name__)
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
@@ -397,7 +402,10 @@ def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
 
 def logout(context):
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
-    get(context, url)
+    context.browser.get(build_url(context, url))
+    pre_element = find_css_with_wait(context, "pre")
+    json_response_text = pre_element.text
+    assert "success" in json_response_text and "true" in json_response_text
 
 
 def post(context, url, data=""):
@@ -421,7 +429,7 @@ def get(context, url, data=""):
 
     Returns the response.
     """
-    return request(context, url, method="GET", data=data)
+    return request(context, url, method="GET", data=data, api_call=api_call)
 
 
 def request(context, url, method="GET", data=""):
@@ -459,7 +467,11 @@ def request(context, url, method="GET", data=""):
             req.send('{data}');
         """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
     )
-    context_wm.browser_wait_for_js_condition("window.FLAG")
+    try:
+        context_wm.browser_wait_for_js_condition("window.FLAG")
+    except KALiteTimeout:
+        logger.error("Timed out waiting on URL: {}".format(url))
+        raise
     resp = context.browser.execute_script("return window.DATA")
     return resp
 
