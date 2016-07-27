@@ -1,13 +1,12 @@
 from optparse import make_option
 
 from django.conf import settings as django_settings
-logging = django_settings.LOG
-
+from django.core.management.base import BaseCommand
 from kalite.topic_tools.content_models import annotate_content_models
-
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
-from django.core.management.base import BaseCommand
+
+logging = django_settings.LOG
 
 
 class Command(BaseCommand):
@@ -37,9 +36,15 @@ class Command(BaseCommand):
         # temporarily swap out the database path for the desired target
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
-        logging.info("Annotating content for language: {language}, channel: {channel}".format(
-            language=language,
-            channel=channel))
+        logging.info(
+            (
+                "Annotating content for language: {language}, channel: {channel}\n\n"
+                "This may take several minutes depending on system resources..."
+            ).format(
+                language=language,
+                channel=channel
+            )
+        )
         annotate_content_models(database_path=database_path, channel=channel, language=language)
 
         logging.info("Annotation complete for language: {language}, channel: {channel}".format(
