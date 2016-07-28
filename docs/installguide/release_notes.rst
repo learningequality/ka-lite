@@ -11,6 +11,7 @@ Bug fixes
  * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
  * Lockdown fix for user logins :url-issue:`5202`
  * Put max-height CSS rule on navbar logo :url-issue:`5206`
+ * Running ``setup`` command as root will give a warning + prompt, because we don't advice running as root. :url-issue:`5032`
  * **Content packs**: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
 
 Known issues
