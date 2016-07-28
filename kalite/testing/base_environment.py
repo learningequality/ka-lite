@@ -24,7 +24,7 @@ from kalite.i18n.base import get_subtitle_file_path, get_subtitle_url
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
 from kalite.topic_tools.content_models import Item, set_database, annotate_content_models, create, get, \
-    delete_instances
+    delete_instances, get_random_content
 
 from securesync.models import Zone, Device, DeviceZone
 
@@ -56,12 +56,11 @@ def setup_content_paths(context, db):
         will be added.
     :return: None
     """
+
     # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
     # depends on these specific values.
-    context.unavailable_content_path, context.available_content_path = (
-        "khan/foo/bar/unavail",
-        "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
-    )
+    context.unavailable_content_path = "khan/foo/bar/unavail"
+    context.available_content_path = get_random_content(kinds=["Exercise"], available=True)[0]['path']
 
     # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
     # It then updates the items with these paths with their update dicts, and then propagates

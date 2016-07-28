@@ -97,8 +97,8 @@
                                 <td>{{ student.total_logins }}</td>
                                 <td>{{ student.total_hours|floatformat }} {% trans "hour(s)" %}</td>
                                 <td>{{ student.total_videos }}</td>
-                                <td>{{ student.total_exercises }}</td>
-                                <td>{{ student.pct_mastery|percent:1  }}</td>
+                                <td>{{ student.exercises_completed }}</td>
+                                <td>{{ student.pct_mastery|floatformat:1  }}%</td>
                             </tr>
                         {% endfor %}
                         {# 10x td for table formatting #}

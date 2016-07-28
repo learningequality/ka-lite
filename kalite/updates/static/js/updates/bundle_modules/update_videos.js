@@ -338,6 +338,9 @@ $(function() {
 
         // Prep
         $("#scan-videos").attr("disabled", "disabled");
+        
+        // Add warning for user.
+        messages.show_message("warning", gettext("Scanning for videos and updating your database - this can take several minutes, depending on how many videos that are found. Please be patient and stay on this page. Once completed, results will be shown on this page."));
 
         // Do the request
         api.doRequest(window.Urls.video_scan(), {lang: lang_code})

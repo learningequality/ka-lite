@@ -1,24 +1,25 @@
-import requests
+from distutils.version import StrictVersion
+from optparse import make_option
 import os
-import urlparse
-import zipfile
-import tempfile
-import sys
+import requests
 import shutil
+import sys
+import tempfile
 import threading
 import time
-from distutils.version import StrictVersion
-from fle_utils.general import ensure_dir
-from optparse import make_option
+import urlparse
+import zipfile
+
+from django.core.management import call_command
 
 from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
-
-logging = django_settings.LOG
-
+from fle_utils.general import ensure_dir
 from kalite import version
 from kalite.contentload import settings
+
+
+logging = django_settings.LOG
 
 
 class Command(BaseCommand):
@@ -44,9 +45,13 @@ class Command(BaseCommand):
         if is_valid_url(ziplocation):  # url; download the zip
             logging.info("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
-            r = requests.get(ziplocation, prefetch=False)
+            r = requests.get(ziplocation, stream=True)
             content_length = r.headers.get("Content-Length")
-            logging.info("Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown")
+            logging.info(
+                "Downloaded size: {}".format(
+                    str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown"
+                )
+            )
             sys.stdout.write("Downloading file...")
             sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")

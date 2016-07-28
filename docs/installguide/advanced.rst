@@ -154,8 +154,12 @@ installation: ::
         ServerName kalite.com
         DocumentRoot /var/www/html/
 
-        Alias /static /var/www/.kalite/static
-        Alias /media /var/www/.kalite/media
+        <Directory />
+            Require all granted
+        </Directory>
+
+        Alias /static /var/www/.kalite/httpsrv/static
+        Alias /media /var/www/.kalite/httpsrv/media
 
         WSGIScriptAlias / /usr/lib/python2.7/dist-packages/kalite/project/wsgi.py
 
@@ -168,18 +172,23 @@ installation: ::
     </VirtualHost>
 
 
+.. note::
+    It's recommended that you install ``ka-lite-static`` in a virtualenv.
+    If you are using Apache+mod_wsgi, you should copy & modify ``wsgi.py``
+    to reflect the path of your venv.
+
+
 If you are using uwsgi+Nginx, this is the critical part of your uwsgi
 configuration, provided that you have installed kalite from PyPi or .deb: ::
 
     module = kalite.project.wsgi
 
 
-Remember that kalite runs in user space and creates data files in that user's
+Remember that KA Lite runs in user space and creates data files in that user's
 home directory. A normal Debian/Ubuntu system has a www-data user for Apache
 which is the default user for mod_wsgi and will create database files, static
 files etc. for kalite in ``/var/www/.kalite/``. If you run it as another user,
 it may be located somewhere else.
-
 
 .. note:: Log in as the Django application server's user, e.g. www-data and
     initialize the kalite static files and database before anything you can
@@ -190,3 +199,4 @@ Example of setting up kalite for the www-data user: ::
     $> sudo su -s /bin/bash www-data
     $> kalite manage setup
     $> exit
+
