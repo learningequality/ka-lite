@@ -113,7 +113,7 @@ def set_database(function):
                 language=language
             )
 
-        db = SqliteDatabase(path)
+        db = SqliteDatabase(path, pragmas=settings.CONTENT_DB_SQLITE_PRAGMAS)
 
         kwargs["db"] = db
 

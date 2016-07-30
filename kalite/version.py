@@ -28,7 +28,6 @@ def VERSION_INFO():
     from django.conf import settings
     from kalite.shared.utils import open_json_or_yml
 
-
     return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version.yml"))
 
 
@@ -38,4 +37,4 @@ def user_agent():
     requests sent to learningequality.org for stats
     """
     from requests.utils import default_user_agent
-    "ka-lite/%s " % VERSION + default_user_agent()
+    return "ka-lite/%s " % VERSION + default_user_agent()

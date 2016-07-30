@@ -15,10 +15,20 @@ Debian/Ubuntu: Subscribe to updates through a PPA
 _________________________________________________
 
 We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
-and if you are connected to the internet, this will also give you automatic updates::
+and if you are connected to the internet, this will also give you automatic updates.
+
+On Ubuntu, do this::
 
     sudo echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu trusty main" >> /etc/apt/sources.list.d/learningequality-ka-lite-trusty.list
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
+    sudo apt-get update
+    sudo apt-get install ka-lite
+
+On Debian / Raspberry Pi, the commands differ a bit::
+
+    sudo apt-get install software-properties-common python-software-properties
+    sudo add-apt-repository 'deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main'
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3194DD81
     sudo apt-get update
     sudo apt-get install ka-lite
 
