@@ -257,11 +257,8 @@ class Command(BaseCommand):
                 "--------------------------------------------------------------------------------")
             raw_input("Press [enter] to continue...")
 
-        # Tried not to be os-specific, but ... hey. :-/
-        # benjaoming: This doesn't work, why is 502 hard coded!? Root is normally
-        # '0' And let's not care about stuff like this, people can be free to
-        # run this as root if they want :)
-        if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
+        # Assuming uid '0' is always root
+        if not is_windows() and hasattr(os, "getuid") and os.getuid() == 0:
             print(
                 "-------------------------------------------------------------------")
             print("WARNING: You are installing KA-Lite as root user!")
