@@ -19,6 +19,7 @@ dependencies:
 test:
   override:
     - make assets
+    - make docs
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
