@@ -10,6 +10,7 @@ Bug fixes
  * Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) :url-issue:`5157`
  * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
  * Lockdown fix for user logins :url-issue:`5202`
+ * Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs<http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. :url-issue:`5225`
  * Put max-height CSS rule on navbar logo :url-issue:`5206`
  * Running ``setup`` command as root will give a warning + prompt, because we don't advice running as root. :url-issue:`5032`
  * **Content packs**: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
