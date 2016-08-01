@@ -11,7 +11,7 @@ Bug fixes
  * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
  * Speed up content scanning for up to 10x speedup when scanning big video directories, meaning content scanning drops from hours to minutes :url-issue:`5201`
  * Lockdown fix for user logins :url-issue:`5202`
- * Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs<http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. :url-issue:`5225`
+ * Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs <http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. :url-issue:`5225`
  * Put max-height CSS rule on navbar logo :url-issue:`5206`
  * Submit correct HTTP ``user-agent`` for learningequality.org stats :url-issue:`5226`
  * Broken legacy assessment item download fixed (affects mainly some Debian packages) :url-issue:`5214`
