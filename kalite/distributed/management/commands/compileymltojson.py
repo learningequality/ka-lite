@@ -6,11 +6,6 @@ import yaml
 
 from django.core.management.base import NoArgsCommand
 
-BLACKLISTED_YAML_FILES = [
-    ".travis.yml",
-    "circle.yml"
-]
-
 
 class Command(NoArgsCommand):
 
@@ -18,12 +13,15 @@ class Command(NoArgsCommand):
         # avoid using django.conf.settings, for that sweet fast startup
         # time
         project_root = os.environ.get("KALITE_DIR")
-        for root, _, files in os.walk(project_root):
+        # benjaoming: Sorry about this, but if we want to avoid using settings,
+        # we have to hard code the location of the data directory here,
+        # otherwise this command will scan the whole root of kalite... which
+        # is slow and includes false hits.
+        data_dir = os.path.join(project_root, 'data')
+        for root, _, files in os.walk(data_dir):
             for f in files:
                 full_name = os.path.join(root, f)
-                if (full_name.endswith(".yml") and
-                    "node_modules" not in root and
-                    f not in BLACKLISTED_YAML_FILES):
+                if full_name.endswith(".yml"):
                     print(full_name)
                     yml_to_json(full_name)
 

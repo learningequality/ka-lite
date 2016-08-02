@@ -113,7 +113,7 @@ def set_database(function):
                 language=language
             )
 
-        db = SqliteDatabase(path)
+        db = SqliteDatabase(path, pragmas=settings.CONTENT_DB_SQLITE_PRAGMAS)
 
         kwargs["db"] = db
 
@@ -167,7 +167,7 @@ def parse_data(function):
 
 @parse_data
 @set_database
-def get_random_content(kinds=None, limit=1, **kwargs):
+def get_random_content(kinds=None, limit=1, available=None, **kwargs):
     """
     Convenience function for returning random content nodes for use in testing
     :param kinds: A list of node kinds to select from.
@@ -176,7 +176,10 @@ def get_random_content(kinds=None, limit=1, **kwargs):
     """
     if not kinds:
         kinds = ["Video", "Audio", "Exercise", "Document"]
-    return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
+    items = Item.select().where(Item.kind.in_(kinds))
+    if available is not None:
+        items = items.where(Item.available == available)
+    return items.order_by(fn.Random()).limit(limit)
 
 
 @set_database
@@ -666,39 +669,43 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
     """
 
     db = kwargs.get("db")
+
     if db:
+
         content_models = iterator_content_items(ids=ids, channel=channel, language=language)
+
         with db.atomic() as transaction:
-            def recurse_availability_up_tree(node, available):
-                if not node.parent:
-                    return
-                else:
-                    parent = node.parent
-                Parent = Item.alias()
-                children = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk)
-                if not available:
-                    children_available = children.where(Item.available == True).count() > 0
-                    available = children_available
 
-                files_complete = children.aggregate(fn.SUM(Item.files_complete))
+            def update_parent_annotation(parent):
 
-                child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
-                child_on_disk = children.aggregate(fn.SUM(Item.size_on_disk))
+                children = list(Item.select(Item.available, Item.total_files, Item.files_complete, Item.remote_size, Item.size_on_disk).where(Item.parent == parent.pk))
+
+                available = any(child.available for child in children)
+                total_files = sum(child.total_files for child in children)
+                files_complete = sum(child.files_complete for child in children)
+                child_remote = sum(child.remote_size for child in children if (not child.available and child.kind != "Topic") or (child.kind == "Topic"))
+                child_on_disk = sum(child.size_on_disk for child in children)
+
+                # ensure files_complete doesn't go above total_files; can be removed after fix is in for:
+                # https://github.com/fle-internal/content-pack-maker/issues/38
+                files_complete = min(total_files, files_complete)
 
                 if parent.available != available:
                     parent.available = available
                 if parent.files_complete != files_complete:
                     parent.files_complete = files_complete
-                # Ensure that the aggregate sizes are not None
-                if parent.remote_size != child_remote and child_remote:
+                if parent.remote_size != child_remote:
                     parent.remote_size = child_remote
-                # Ensure that the aggregate sizes are not None
-                if parent.size_on_disk != child_on_disk and child_on_disk:
+                if parent.size_on_disk != child_on_disk:
                     parent.size_on_disk = child_on_disk
                 if parent.is_dirty():
                     parent.save()
-                    recurse_availability_up_tree(parent, available)
+                    return True  # return True to indicate we need to continue up the tree
+                else:
+                    return False  # return False to indicate we don't need to continue up the tree
 
+
+            parents_to_update = {}
             for path, update in content_models:
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
@@ -710,7 +717,15 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
                         for attr, val in item_data.iteritems():
                             setattr(item, attr, val)
                         item.save()
-                        recurse_availability_up_tree(item, update.get("available", False))
+                        parents_to_update[item.parent.pk] = item.parent
+
+            while parents_to_update:
+                new_parents_to_update = {}
+                for node in parents_to_update.values():
+                    changed = update_parent_annotation(node)
+                    if changed and node.parent:
+                        new_parents_to_update[node.parent.pk] = node.parent
+                parents_to_update = new_parents_to_update
 
 
 @set_database

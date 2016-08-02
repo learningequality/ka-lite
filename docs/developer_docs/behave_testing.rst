@@ -18,6 +18,14 @@ To get the dependencies run ```pip install -r dev_requirements.txt```. This shou
 
 To run the tests simply run ```python kalitectl.py manage test``` just like you used to. This will automatically search out tests using both the unit test framework and the behave framework. You can specify apps, but right now there's no way to just run integration tests.
 
+Running a specific test
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to run for instance the set of tests in ``kalite/distributed/features/content_rating.feature``, use this command, applying the app label ``distributed`` and the name of the feature ``content_rating``::
+
+    bin/kalite manage test distributed.content_rating --bdd-only
+
+
 Anatomy of the integration tests
 --------------------------------
 
