@@ -24,7 +24,8 @@ Bug fixes
 Known issues
 ^^^^^^^^^^^^
 
- * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211`
+ * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211` - will be fixed in 0.16.8
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
  * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
  * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
@@ -32,6 +33,7 @@ Known issues
  * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
  * Individual Student Progress Report may take a long time to load :url-issue:`5106`
  * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
 
 
 0.16.6
