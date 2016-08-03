@@ -43,5 +43,8 @@ def impl(context):
 
 @then(u'the video player is aware of the subtitles')
 def impl(context):
+    # TODO(benjaoming): This step fails at random because:
+    # player.textTracks is undefined. We should wait for the player to be
+    # initialized before looking for subtitles.
     text_tracks = context.browser.execute_script('return player.textTracks().length;')
     assert text_tracks > 0, "The video didn't have any text tracks!"
