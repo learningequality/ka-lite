@@ -10,6 +10,7 @@ import shutil
 import sauceclient as sc
 import socket
 
+from ssl import SSLError
 from httplib import CannotSendRequest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -207,6 +208,8 @@ def after_scenario(context, scenario):
                 context.sauce.jobs.update_job(context.browser.session_id, passed=False)
             else:
                 context.sauce.jobs.update_job(context.browser.session_id, passed=True)
+    except SSLError as e:
+        print("SSL error: Couldn't log the job... Error message:\n" + e.message)
     except Exception as e:
         if "404" in e.message:
             print("Couldn't log the job... Error message:\n" + e.message)
