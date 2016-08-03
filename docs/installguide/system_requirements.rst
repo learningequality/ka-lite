@@ -78,6 +78,7 @@ KA Lite's hardware requirements as a server are next to nothing.
     - ~18GB HDD (Spanish)
     - ~15GB HDD (Portuguese/Brazilian)
     - ~10GB HDD (French)
+    - ~265GB (full set of English, non-resized videos + partner contents)
 
 If you have a center with less than 30 computers, a device as simple as a
 Raspberry Pi is known to work fine.
