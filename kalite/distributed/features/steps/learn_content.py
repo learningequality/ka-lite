@@ -1,4 +1,6 @@
 from behave import given, then, when
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 from kalite.testing.behave_helpers import build_url, reverse, alert_in_page, find_css_class_with_wait, \
     assert_no_element_by_css_selector, wait_for_video_player_ready
@@ -43,5 +45,13 @@ def impl(context):
 
 @then(u'the video player is aware of the subtitles')
 def impl(context):
+    def condition(browser):
+        return browser.execute_script('return typeof player != "undefined";')
+    try:
+        WebDriverWait(context.browser, 2).until(
+            condition
+        )
+    except TimeoutException:
+        raise AssertionError("No videojs initialized")
     text_tracks = context.browser.execute_script('return player.textTracks().length;')
     assert text_tracks > 0, "The video didn't have any text tracks!"

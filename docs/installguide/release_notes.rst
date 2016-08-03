@@ -1,6 +1,34 @@
 Release Notes
 =============
 
+0.16.8
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211`
+ * Confusing and harmless "error" message removed from first-runs :url-issue:`5236`
+ * Tests now run several minutes faster and are more reliable :url-issue:`5242`
+
+
+Known issues
+^^^^^^^^^^^^
+
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+
+**Paper cuts**
+
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+
+
 0.16.7
 ------
 
@@ -9,19 +37,31 @@ Bug fixes
 
  * Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) :url-issue:`5157`
  * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
+ * Speed up content scanning for up to 10x speedup when scanning big video directories, meaning content scanning drops from hours to minutes :url-issue:`5201`
+ * Lockdown fix for user logins :url-issue:`5202`
+ * Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs <http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. :url-issue:`5225`
+ * Put max-height CSS rule on navbar logo :url-issue:`5206`
+ * Submit correct HTTP ``user-agent`` for learningequality.org stats :url-issue:`5226`
+ * Broken legacy assessment item download fixed (affects mainly some Debian packages) :url-issue:`5214`
+ * Fix automatic CI tests so they now run (development issue, not related to deployments) :url-issue:`5201`
+ * Added automatic coverage reports (development issue, not related to deployments) :url-issue:`5230`
+ * Running ``setup`` command as root will give a warning + prompt, because we don't advice running as root. :url-issue:`5032`
+ * **Docs updates**: Tested and updated Apache/Nginx WSGI guide, updated PPA setup to work on Debian/Raspbian
  * **Content packs**: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
 
 Known issues
 ^^^^^^^^^^^^
 
+ * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211` - will be fixed in 0.16.8
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
- * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
  * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
  * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
  * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
  * Individual Student Progress Report may take a long time to load :url-issue:`5106`
  * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
- * Writing to server.log is disabled on Windows :url-issue:`5057`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
 
 
 0.16.6
