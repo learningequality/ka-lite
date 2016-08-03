@@ -53,18 +53,18 @@ Hardware requirements
 Clients
 ^^^^^^^
 
-KA Lite is running as a client on very old desktops and very low-scale
-computers. For instance, some deployments are known to use first-gen Raspberry Pi
-as desktop computers.
+Very old desktops and very low-power computers can be used as client devices to
+access KA Lite. For instance, some deployments are known to use first-gen
+Raspberry Pi as desktop computers.
 
-We can always recommend doing a practical test, but when you want to do a
+It is always a good idea to do a practical test, but when you want to do a
 project with KA Lite involved, it's not necessary to scale your hardware because
 of KA Lite.
 
 The main concern is that your system needs a video card and driver that can
-play the videos. Please note that we serve two sets of videos, the
-individual downloads and the bundled torrent with resized videos -- the latter
-requires the least from hardware.
+play the videos. Please note that we serve two sets of videos, the individual
+downloads and the torrent with resized videos -- the latter requires the least
+from hardware.
 
 Servers
 ^^^^^^^
@@ -81,7 +81,7 @@ KA Lite's hardware requirements as a server are next to nothing.
     - ~265GB (full set of English, non-resized videos + partner contents)
 
 If you have a center with less than 30 computers, a device as simple as a
-Raspberry Pi is known to work fine.
+Raspberry Pi is known to work fine as a server.
 
 .. note:: In case you are deploying on Linux and want an efficient setup, use
     the ``ka-lite-raspberry-pi`` package, it doesn't require a specific
@@ -90,7 +90,7 @@ Raspberry Pi is known to work fine.
 
 Please note that during the very first run or after upgrades or installation of
 new languages, the server has to scan for videos and update its database. If
-you have very small devices, this one-time action will require a lot of time.
+you have a slower device, this one-time action will require a lot of time.
 
 
 Getting the videos
@@ -98,5 +98,5 @@ Getting the videos
 
 Remember that you need a very fast internet connection to get the initial set of
 videos, and that the application itself including English content databases
-is ~0.5GB.
+is ~500MB.
 
