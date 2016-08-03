@@ -27,7 +27,8 @@ def step_impl(context):
 
 @then("I should see a modal")
 def step_impl(context):
-    assert find_id_with_wait(context, modal_container, wait_time=120), "modal not displayed!"
+    assert id_shown_with_wait(context, modal_container, wait_time=5), "modal not displayed!"
+
 
 @when("the username is empty")
 def step_impl(context):
@@ -49,7 +50,7 @@ def step_impl(context):
 
 @then("the modal won't dismiss")
 def step_impl(context):
-    assert not elem_is_invisible_with_wait(context, context.modal_element), "modal dismissed!"
+    assert not elem_is_invisible_with_wait(context, context.modal_element, wait_time=2), "modal dismissed!"
 
 @when("the password is empty")
 def step_impl(context):
@@ -85,10 +86,10 @@ def step_impl(context):
 
 @then("the modal will dismiss")
 def impl(context):
-    assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=120), "modal not dismissed!"
+    assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
 
 def fill_field(context, text, field_id):
-    field = find_id_with_wait(context, field_id, wait_time=180)
+    field = find_id_with_wait(context, field_id, wait_time=5)
     field.clear()
     field.click()  # Ensure that we're focused on that field for input.
     for key in text:
