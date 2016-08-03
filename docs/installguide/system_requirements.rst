@@ -4,22 +4,36 @@ System requirements
 Operating systems
 -----------------
 
- * Windows XP, Vista, 7, 8, 10
- * Mac OSX 10.9, 10.10 and 10.11
- * Linux: Any system with Python 2.7
- * Debian/Raspberry Pi packages: Wheezy or later
- * Ubuntu packages: 14.04, 15.10, 16.04 - anything that's *not* end-of-life.
+ - Windows Vista, 7, 8, 10
+ - Mac OSX 10.9, 10.10 and 10.11
+ - Linux: Any system with Python 2.7
+ - Debian/Raspberry Pi packages: Wheezy or later
+ - Ubuntu packages: 14.04, 15.10, 16.04 - anything that's *not* end-of-life.
+
+
+**Limited support**
+
+The following systems are known to work, but we do not actively ensure their
+stability and their might be issues.
+
+ - Windows XP
+ - Ubuntu 12.04
 
 
 Supported Browsers
 ------------------
 
- * IE9+
- * Firefox
- * Chrome
- * Safari
+ - IE9+
+ - Firefox *)
+ - Chrome
+ - Safari
 
 KA Lite is currently *not* supported on Internet Explorer version 8 or lower.
+
+.. note:: *) Firefox 45+ is the system we run all the automated tests on, and so has the
+  greatest guarantee of working. However, we do not use technology that's
+  incompatible with other browsers, and so we expect them to work and fix any
+  issues that occur.
 
 Known issues:
 
