@@ -160,17 +160,20 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
     try:
-        if elem.get_attribute("id"):
-            by = (By.ID, elem.get_attribute("id"))
-        elif elem.get_attribute("class"):
-            by = (By.CLASS_NAME, elem.get_attribute("class"))
-        else:
-            assert False, "No way to select element."
+        if not elem.is_displayed():
+            return True
     except StaleElementReferenceException:
         return True
+
+    def displayed_condition(driver):
+        try:
+            return not elem.is_displayed()
+        except StaleElementReferenceException:
+            return True
+
     try:
         WebDriverWait(context.browser, wait_time).until(
-            EC.invisibility_of_element_located(by)
+            displayed_condition
         )
         return True
     except TimeoutException:

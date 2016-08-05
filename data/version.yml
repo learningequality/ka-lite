@@ -1,5 +1,18 @@
+0.16.8:
+  release_date: "2016/08/05"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+       - Mac OSX installer version (based on pyrun) crashes #5211
+       - Confusing and harmless "error" message removed from first-runs #5236
+       - Tests now run several minutes faster and are more reliable #5242
+    students: []
+    coaches: []
+    admins: []
+
 0.16.7:
-  release_date: "2016/07/23"
+  release_date: "2016/08/01"
   git_commit: ""
   new_features: []
   bugs_fixed:
