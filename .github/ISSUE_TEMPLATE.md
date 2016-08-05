@@ -2,13 +2,13 @@
 
 *Briefly describe what this is about*
 
-## Branch or installer method
+## System information
 
-*Please specify if you are using the current `develop` branch or which installation source you were using when the issue occurred.*
+*Please specify the KA Lite version you were using and your operating system!*
 
- - Operating system: Windows/OSX/Ubuntu/Raspbian etc.
- - Operating system version
+ - Operating system: ?
  - Version: 0.16.?
+ - Browser: ?
 
 ## Traceback or relevant snippet from server.log
 
