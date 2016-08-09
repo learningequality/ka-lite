@@ -278,6 +278,7 @@ var LoginView = BaseView.extend({
             facility: this.facility,
             is_teacher: false
         };
+        var setGetParamDict = require("utils/get_params").setGetParamDict;
         var url = setGetParamDict(window.sessionModel.get("USER_URL"), data);
         api.doRequest(url, null, {
             cache: true,
