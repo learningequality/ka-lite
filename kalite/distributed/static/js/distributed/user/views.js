@@ -320,7 +320,7 @@ var LoginView = BaseView.extend({
         // has finished loading.
         this.set_login_button_state();
         this.$(".password-btn").removeAttr("disabled");
-        this.$("#id_username").on( "autocompletesearch", this.set_login_button_state);
+        this.$("#id_username").on(this.set_login_button_state);
     },
 
     key_user: function(event) {
