@@ -13,6 +13,23 @@ Deprecations / removals
  * The bundled ``requests`` library is now version 2.1.1 :url-issue:`5263`
  * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
 
+Command cleanup
+^^^^^^^^^^^^^^^
+
+In 0.17, we cleaned up a lot of unused/broken/deprecated commands,
+:url-issue:`5211`.
+
+In case you are using any of them (we hope not), you will have to pay attention
+that the following management commands have been removed:
+
+ * `kalite manage katest`
+ * `kalite manage initdconfig`
+ * `kalite manage nginxconfig`
+ * `kalite manage apacheconfig`
+ * `kalite manage todolist`
+ * `kalite manage i18nize_templates`
+
+
 Bug fixes
 ^^^^^^^^^
 
