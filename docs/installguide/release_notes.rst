@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+0.17 (unreleased)
+-----------------
+
+Bug fixes
+^^^^^^^^^
+
+ * Forward admin user to Manage tab after device registration :url-issue:`4622`
+
+
 0.16.8
 ------
 
