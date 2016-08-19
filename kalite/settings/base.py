@@ -298,11 +298,12 @@ STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 KALITE_CHANNEL_CONTEXT_DATA = {
     "channel_name": ugettext_lazy(u"KA Lite"),
     "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
-    "tag_line": ugettext_lazy(u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
+    "tag_line": ugettext_lazy(u"Aflatoun Educational Platform is a light-weight web server for viewing and interacting with Aflatoun materials and teacher refresher training without needing an Internet connection."),
     "channel_license": u"CC-BY-NC-SA",
-    "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
-    "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
-    "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
+    "footer_text": ugettext_lazy(u"Content All Rights Reserved, Aflatoun"),
+    "header_logo": os.path.join(STATIC_URL, 'images', 'aflatoun-logo.png'),
+    "frontpage_splash": os.path.join(STATIC_URL, 'images', 'aflatoun-bg.jpg'),
+    "orange_fondation": os.path.join(STATIC_URL, 'images', 'orange.png'),
 }
 
 

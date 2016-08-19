@@ -75,19 +75,16 @@ input[type="submit"] {
 }
 .kalite-navbar {
     width: 100%;
-    border-radius: 2px 2px 0 0;
+    border-radius: 0;
 }
 .navbar-brand img {
     margin-top: -6px;
     max-height: 35px;
 }
 .navbar ul li a {
-    color: white;
+    color: @k-accent-color;
     text-transform: uppercase;
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
-    padding-bottom: 13px;
+    padding-bottom: 15px;
 }
 .navbar ul li {
     padding-right: 7px;
@@ -97,19 +94,13 @@ input[type="submit"] {
     border-bottom: none;
     top: 5px;
 }
-.navbar ul.nav-tabs {
-    border-bottom: 2px solid @k-accent-color;
-}
-.nav-tabs {
-    border-bottom: none;
-}
 .nav-tabs li a,
 .nav-tabs li.active a,
 .nav-tabs li a:active {
     border: 0;
-    border-radius: 5px 15px 0 0;
+    border-radius: 0;
     margin: 0 0 6px 0;
-    background-color: @k-accent-color;
+    background-color: #FFFFFF;
     color: @k-accent-color;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
@@ -122,26 +113,15 @@ input[type="submit"] {
 .nav-tabs li.active a:hover,
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
-    background: white !important;
-    color: @k-accent-color !important;
+    background: @k-accent-color !important;
+    color: #FFFFFF !important;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
     transition: all 80ms ease-out;
 }
 .nav-tabs div li.active {
-    background: white !important;
-}
-.top-nav li.active a:hover,
-.top-nav li.active a,
-.top-nav li a:hover,
-.top-nav li a,
-.top-nav li.active a,
-.top-nav li a:active,
-a#user-name-a.dropdown-toggle {
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
+    background: @k-accent-color !important;
 }
 a#user-name-a.dropdown-toggle {
     margin-bottom: 0px;
@@ -181,15 +161,9 @@ a#user-name-a.dropdown-toggle {
 }
 .navbar-nav .open .dropdown-menu {
     background: white !important;
-    border-left: 2px solid @k-accent-color;
-    border-bottom: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
 }
 .nav .open a, .nav .open a:hover, .nav .open a:focus {
     background: white;
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
 }
 
 .nav li a:hover,
@@ -280,6 +254,13 @@ form .input-group {
 .display-none {
     display: none !important;
 }
+#nav_signup {
+    color: #923a94;
+}
+#nav_login {
+    color: #36bfea;
+}
+
 /* ======= Logged in student only ======== */
 .relative-block{
     position: relative;
@@ -358,9 +339,15 @@ form .input-group {
     font-size: 0.96em;
     margin-top: 15px;
     text-align: center;
+    font-size: 16px;
+}
+.homepage-h4 {
+    color: #939597;
 }
 #homepage-p-div {
-    margin: 0 auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #939597;
 }
 
 /* ===================================
