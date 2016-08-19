@@ -561,7 +561,6 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.current_attempt_log = new Models.AttemptLogModel(data);
 
-
         return this.current_attempt_log;
 
     },
@@ -745,7 +744,14 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     load_user_data: function() {
 
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("id"), context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {
+            filters: {
+                exercise_id: this.options.data_model.get("id"),
+                context_type__in: ["playlist", "exercise"]
+            },
+            streak_window: this.options.data_model.get("all_assessment_items").length,
+            streak_correct: this.options.data_model.get("all_assessment_items").length
+        });
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
@@ -833,8 +839,8 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         var msg;
 
         var context = {
-            numerator: Models.ExerciseParams.STREAK_CORRECT_NEEDED,
-            denominator: Models.ExerciseParams.STREAK_WINDOW
+            numerator: this.options.data_model.get("all_assessment_items").length,
+            denominator: this.options.data_model.get("all_assessment_items").length
         };
         if (this.log_model) {
             if (!this.log_model.get("complete")) {

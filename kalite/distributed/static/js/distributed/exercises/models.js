@@ -233,10 +233,12 @@ var AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
+        this.streak_window = options.streak_window || ExerciseParams.STREAK_WINDOW;
+        this.streak_correct = options.streak_correct || ExerciseParams.STREAK_CORRECT_NEEDED;
         this.filters = $.extend({
             "user": window.statusModel.get("user_id"),
-            "limit": ExerciseParams.STREAK_WINDOW
-        }, options);
+            "limit": this.streak_window
+        }, options.filters);
     },
 
     url: function() {
@@ -248,8 +250,9 @@ var AttemptLogCollection = Backbone.Collection.extend({
     },
 
     add_new: function(attemptlog) {
-        if (this.length == ExerciseParams.STREAK_WINDOW) {
+        if (this.length == this.streak_window) {
             this.pop();
+            console.log('pop');
         }
         this.unshift(attemptlog);
     },
@@ -264,16 +267,16 @@ var AttemptLogCollection = Backbone.Collection.extend({
 
     get_streak_progress_percent: function() {
         var streak_progress = this.get_streak_progress();
-        return Math.min((streak_progress / ExerciseParams.STREAK_CORRECT_NEEDED) * 100, 100);
+        return Math.min((streak_progress / this.streak_correct) * 100, 100);
     },
 
     get_streak_points: function() {
         // only include attempts that were correct (others won't have points)
         var filtered_attempts = this.filter(function(attempt) { return attempt.get("correct"); });
         // add up and return the total number of points represented by these attempts
-        // (only include the latest STREAK_CORRECT_NEEDED attempts, so the user doesn't get too many points)
+        // (only include the latest this.streak_correct attempts, so the user doesn't get too many points)
         var total = 0;
-        for (var i = 0; i < Math.min(ExerciseParams.STREAK_CORRECT_NEEDED, filtered_attempts.length); i++) {
+        for (var i = 0; i < Math.min(this.streak_correct, filtered_attempts.length); i++) {
             total += filtered_attempts[i].get("points");
         }
         return total;
@@ -282,7 +285,7 @@ var AttemptLogCollection = Backbone.Collection.extend({
     calculate_points_per_question: function(basepoints) {
         // for comparability with the original algorithm (when a streak of 10 was needed),
         // we calibrate the points awarded for each question (note that there are no random bonuses now)
-        return Math.round((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
+        return Math.round((basepoints * 10) / this.streak_correct);
     }
 
 });
