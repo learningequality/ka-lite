@@ -40,16 +40,34 @@
         <!-- </div> -->
         <div class="row">
             <div class="col-md-offset-2 col-md-8 col-xs-12" id="homepage-p-div">
-                <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
+                <p class="homepage-p"><strong>
+                    {% if current_language == "en" %}
+                        Aflatoun Educational Platform is a light-weight web server for viewing and interacting with Aflatoun materials and teacher refresher training without needing an Internet connection.
+                    {% else %}
+                        Plate-forme éducative d'Aflatoun est un serveur web léger pour utiliser et interagir avec les contenus principaux de l'Aflatoun sans avoir besoin d'une connexion Internet.
+                    {% endif %}
+                </strong></p>
             </div>
         </div>
         <div class="row">
             <div class="col-md-offset-2 col-md-4 col-xs-12">
-                <h4 class="homepage-h4">An initiative of:</h4>
+                <h4 class="homepage-h4">
+                    {% if current_language == "en" %}
+                        An initiative of:
+                    {% else %}
+                        Une initiative de:
+                    {% endif %}
+                </h4>
                 <img class="org-logo" src="{{ channel_data.header_logo }}">
             </div>
             <div class="col-md-offset-1 col-md-4 col-xs-12">
-                <h4 class="homepage-h4">In partnership with:</h4>
+                <h4 class="homepage-h4">
+                    {% if current_language == "en" %}
+                        In partnership with:
+                    {% else %}
+                        En partenariat avec:
+                    {% endif %}
+                </h4>
                 <img class="org-logo" src="{{ channel_data.orange_fondation }}">
             </div>
         </div>
