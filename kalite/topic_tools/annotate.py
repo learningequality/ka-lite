@@ -66,9 +66,12 @@ def update_content_availability(content_list, language="en", channel="khan"):
             # Ignore topics, as we only want to update their availability after we have updated the rest.
             continue
         else:
-            file_id = content.get("youtube_id")
+            file_id = content.get("youtube_id") or content.get("id")
             default_thumbnail = create_thumbnail_url(content.get("id"))
             format = content.get("format", "")
+            if content.get("kind") != "Video":
+                file_id = content.get("id")
+
             filename = file_id + "." + format if file_id else None
 
             # Get list of subtitle language codes currently available
@@ -77,7 +80,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
             if filename and filename in contents_folder:
                 update["files_complete"] = 1
                 # File for this language is available and downloaded, so let's stamp the file size on it!
-                update["size_on_disk"] = get_local_video_size(content.get("youtube_id"))
+                update["size_on_disk"] = get_local_video_size(content.get("youtube_id")) or 0
             else:
                 # The video file for this content item does not exist. Set the files_complete and size_on_disk to 0
                 if content.get("files_complete"):
