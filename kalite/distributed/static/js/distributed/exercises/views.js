@@ -366,9 +366,6 @@ var ExerciseView = BaseView.extend({
 
         var item = new Models.AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
-        messages.clear_messages();
-
-
         // Do this in this way, so that if the view is closed prior to the fetch completing
         // successfully, the listens will have been unbound, and the callbacks will not get
         // called.
@@ -564,7 +561,6 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.current_attempt_log = new Models.AttemptLogModel(data);
 
-        this.attempt_collection.unshift(this.current_attempt_log);
 
         return this.current_attempt_log;
 
