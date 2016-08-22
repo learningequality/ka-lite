@@ -345,7 +345,7 @@ var LoginView = BaseView.extend({
         return this.student_usernames.indexOf(this.$("#id_username").val()) > -1;
     },
 
-    set_login_button_state: function() {
+    set_login_button_state: function(event) {
         if (this.admin || this.check_user_in_list()) {
             this.$(".login-btn").removeAttr("disabled");
         } else {
