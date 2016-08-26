@@ -303,6 +303,7 @@ KALITE_CHANNEL_CONTEXT_DATA = {
     "footer_text": ugettext_lazy(u"Content All Rights Reserved, Aflatoun"),
     "header_logo": os.path.join(STATIC_URL, 'images', 'aflatoun-logo.png'),
     "frontpage_splash": os.path.join(STATIC_URL, 'images', 'aflatoun-bg.jpg'),
+    "frontpage_splash_fr":os.path.join(STATIC_URL, 'images', 'aflatoun-bg-fr.jpg'),
     "orange_fondation": os.path.join(STATIC_URL, 'images', 'orange.png'),
 }
 

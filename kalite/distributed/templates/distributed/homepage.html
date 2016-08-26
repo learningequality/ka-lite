@@ -14,7 +14,7 @@
         }
     </script>
     {% endif %}
-    
+
 {% endblock headjs %}
 
 {% block content %}
@@ -34,7 +34,11 @@
             </div> -->
         <div class="row" id="aflatoun-bg">
             <a href="{% url 'learn' %}">
-                <img class="aflatoun-bg" src="{{ channel_data.frontpage_splash }}">
+                {% if current_language == "en" %}
+                  <img class="aflatoun-bg" src="{{ channel_data.frontpage_splash }}">
+                {% else %}
+                  <img class="aflatoun-bg" src="{{ channel_data.frontpage_splash_fr }}">
+                {% endif %}
             </a>
         </div>
         <!-- </div> -->
