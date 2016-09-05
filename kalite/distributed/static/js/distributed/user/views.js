@@ -278,6 +278,7 @@ var LoginView = BaseView.extend({
             facility: this.facility,
             is_teacher: false
         };
+        var setGetParamDict = require("utils/get_params").setGetParamDict;
         var url = setGetParamDict(window.sessionModel.get("USER_URL"), data);
         api.doRequest(url, null, {
             cache: true,
@@ -319,7 +320,7 @@ var LoginView = BaseView.extend({
         // has finished loading.
         this.set_login_button_state();
         this.$(".password-btn").removeAttr("disabled");
-        this.$("#id_username").on( "autocompletesearch", this.set_login_button_state);
+        this.$("#id_username").on(this.set_login_button_state);
     },
 
     key_user: function(event) {
@@ -344,7 +345,7 @@ var LoginView = BaseView.extend({
         return this.student_usernames.indexOf(this.$("#id_username").val()) > -1;
     },
 
-    set_login_button_state: function() {
+    set_login_button_state: function(event) {
         if (this.admin || this.check_user_in_list()) {
             this.$(".login-btn").removeAttr("disabled");
         } else {
