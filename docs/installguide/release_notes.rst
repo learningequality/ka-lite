@@ -8,6 +8,7 @@ Bug fixes
 ^^^^^^^^^
 
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Test improvements: Avoid test failure due to race condition :url-issue:`5252`
 
 
 Known issues
