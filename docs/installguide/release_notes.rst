@@ -1,6 +1,33 @@
 Release Notes
 =============
 
+0.16.9
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Test improvements: Avoid test failure due to race condition :url-issue:`5252`
+ * Activating simplified login results in blank login modal :url-issue:`5255`
+
+Known issues
+^^^^^^^^^^^^
+
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+
+**Paper cuts**
+
+ * Old versions of ``pip`` installer breaks because of ``requests`` library downgrade. :url-issue:`5264`
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+
+
 0.16.8
 ------
 
