@@ -102,7 +102,7 @@ assets:
 release: dist man
 	ls -l dist
 	echo "uploading above to PyPi, using twine"
-	twine upload -s dist/*
+	twine upload -s --sign-with gpg2 dist/*
 
 dist: clean clean-dev-db docs assets
 	python setup.py sdist --formats=$(format)
