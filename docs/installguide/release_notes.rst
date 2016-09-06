@@ -9,7 +9,7 @@ Bug fixes
 
  * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
  * Test improvements: Avoid test failure due to race condition :url-issue:`5252`
-
+ * Activating simplified login results in blank login modal :url-issue:`5255`
 
 Known issues
 ^^^^^^^^^^^^

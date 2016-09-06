@@ -5,6 +5,7 @@
   bugs_fixed:
     all:
        - Learner is not notified of mastery level, exercises keep displaying #4875
+       - Activating simplified login results in blank login modal #5255
     students: []
     coaches: []
     admins: []
