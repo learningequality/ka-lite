@@ -318,9 +318,19 @@ var LoginView = BaseView.extend({
         // Cannot disable autocomplete before it has been enabled
         // So start this button off disabled and enable it when autocomplete
         // has finished loading.
-        this.set_login_button_state();
+
+        // Copy of method because when called by event below, does not receive
+        // the view instance as 'this'
+        function set_login_button_state(event) {
+            if (self.admin || self.check_user_in_list()) {
+                self.$(".login-btn").removeAttr("disabled");
+            } else {
+                self.$(".login-btn").attr("disabled", "disabled");
+            }
+        }
+        set_login_button_state();
         this.$(".password-btn").removeAttr("disabled");
-        this.$("#id_username").on(this.set_login_button_state);
+        this.$("#id_username").change(set_login_button_state);
     },
 
     key_user: function(event) {
