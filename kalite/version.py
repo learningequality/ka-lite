@@ -5,7 +5,7 @@ import os
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
 MAJOR_VERSION = "0"
 MINOR_VERSION = "16"
-PATCH_VERSION = "9b1"
+PATCH_VERSION = "9"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
