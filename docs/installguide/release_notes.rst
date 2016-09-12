@@ -16,13 +16,15 @@ Bug fixes
 Known issues
 ^^^^^^^^^^^^
 
- * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Windows installer tray application option "Run on start" does not work see
+   `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
  * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
  * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
  * If you are upgrading from 0.15 on a Windows system, you have to manually locate
-   ``python-packages\ka-lite``, typically in
-   ``C:\Python27\share\kalite\python-packages\requests`` and delete it. Otherwise
-   video download breaks. :url-issue:`5263`
+   ``python-packages\requests``, typically in
+   ``C:\Python27\share\kalite\python-packages\requests`` and delete it (after
+   completing the installation process). Otherwise video download breaks.
+   :url-issue:`5263`
 
 
 **Paper cuts**
