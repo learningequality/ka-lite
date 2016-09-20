@@ -15,6 +15,7 @@ Deprecations / removals
  * The parts of `kalite.testing` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
  * The whole `kalite.basetests` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
  * `kalite.updates.management.commands.classes` moved so it doesn't show up as a command `classes`.
+ * `python-packages/fle_utils/build`, unused build utility from 2013.
 
 Command cleanup
 ^^^^^^^^^^^^^^^
@@ -39,6 +40,7 @@ that the following management commands have been removed:
  * `kalite manage runcode`
  * `kalite manage unpack_asessment_zip`
  * `kalite manage create_dummy_language_pack`
+ * `kalite manage generate_blacklist`
 
 Bug fixes
 ^^^^^^^^^

@@ -376,7 +376,6 @@ INSTALLED_APPS = [
     'django_js_reverse',
     'securesync',
     'south',
-    'fle_utils.build',
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
