@@ -1,4 +1,4 @@
-from kalite.updates.management.commands.classes import UpdatesStaticCommand
+from kalite.updates.management.utils import UpdatesStaticCommand
 from optparse import make_option
 
 from django.core.management import call_command
