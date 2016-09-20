@@ -35,6 +35,7 @@ that the following management commands have been removed:
  * `kalite manage modifymodel`
  * `kalite manage readmodel`
  * `kalite manage runcode`
+ * `kalite manage unpack_asessment_zip`
 
 
 Bug fixes
