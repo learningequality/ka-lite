@@ -1,23 +1,15 @@
 # -*- coding: utf-8 -*-
-from kalite import ROOT_DATA_PATH
+import time
 from kalite import version
-from kalite.distributed.settings import *
-from kalite.facility.settings import *
-from kalite.legacy.i18n_settings import *
-from kalite.legacy.updates_settings import *
-from kalite.main.settings import *
-from kalite.shared.exceptions import RemovedInKALite_v016_Error
 import logging
 import os
-from os.path import expanduser
 import sys
-import time
 import warnings
 
-from django.utils.translation import ugettext_lazy
-from fle_utils.chronograph.settings import *
-from securesync.settings import *
+from kalite import ROOT_DATA_PATH
+from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
+from django.utils.translation import ugettext_lazy
 
 try:
     from kalite import local_settings
@@ -368,6 +360,7 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
+from os.path import expanduser
 
 BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
 DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
@@ -542,11 +535,18 @@ CONTENT_DB_SQLITE_PRAGMAS = []
 #   config packages to override settings.
 ########################
 
+from kalite.distributed.settings import *
+from securesync.settings import *
+from fle_utils.chronograph.settings import *
+from kalite.facility.settings import *
+from kalite.main.settings import *
 
 # Import from applications with problematic __init__.py files
+from kalite.legacy.i18n_settings import *
+from kalite.legacy.updates_settings import *
+
 
 KALITE_TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
-
 TEST_RUNNER = KALITE_TEST_RUNNER
 
 RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
