@@ -55,7 +55,7 @@ MAX_WAIT_TIME = 30
 MAX_PAGE_LOAD_TIME = 30
 # When checking for something we don't expect to be found, add extra time for
 # scripts or whatever to complete
-MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 1
+MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 2
 
 logger = logging.getLogger(__name__)
 
