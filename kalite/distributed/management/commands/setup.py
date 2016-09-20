@@ -35,7 +35,6 @@ from fle_utils.general import get_host_name, ensure_dir
 from fle_utils.platforms import is_windows
 from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks,\
     reset_content_db
-from kalite.contentload.management.commands.unpack_assessment_zip import should_upgrade_assessment_items
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
@@ -87,7 +86,7 @@ def clean_pyc(path):
             os.remove(full_path)
 
 def english_content_pack_and_assessment_resources_are_current():
-    return not should_upgrade_assessment_items() and ("en" not in [lp["code"] for lp in outdated_langpacks()])
+    return ("en" not in [lp["code"] for lp in outdated_langpacks()])
 
 
 def validate_username(username):
