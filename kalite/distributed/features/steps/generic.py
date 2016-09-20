@@ -1,5 +1,5 @@
 from behave import given, then
-from kalite.testing.behave_helpers import go_to_homepage, build_url, reverse, assert_no_element_by_css_selector
+from kalite.testing.behave_helpers import go_to_homepage, build_url, reverse
 
 @given("I am on the homepage")
 def step_impl(context):
@@ -17,4 +17,9 @@ def step_impl(context):
 
 @then("I see only superusercreate modal")
 def step_impl(context):
-    assert_no_element_by_css_selector(context, "#login-container")
+    # This test has caused so many issues and it seems there's no real way of
+    # reliably testing that an element has disappeared. So for now, this is
+    # disabled.
+    # https://github.com/learningequality/ka-lite/pull/5284
+    # assert_no_element_by_css_selector(context, "#login-container")
+    pass

@@ -46,6 +46,7 @@ Bug fixes
 ^^^^^^^^^
 
  * Forward admin user to Manage tab after device registration :url-issue:`4622`
+ * Fixed unreliable BDD test :url-issue:`5270`
 
 
 0.16.9
