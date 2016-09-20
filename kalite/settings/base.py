@@ -389,7 +389,6 @@ INSTALLED_APPS = [
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
-    'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
     'kalite.control_panel',

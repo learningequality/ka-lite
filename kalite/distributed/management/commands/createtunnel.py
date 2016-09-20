@@ -12,6 +12,22 @@ from django.utils.translation import gettext as _
 
 from securesync.models import Device
 
+def checklockfile(func):
+    def checklockfile_wrapper_fn(self, *args, **kwargs):
+        if os.path.exists(self.lockfile):
+            raise CommandError(_("Another createtunnel command is still running!"))
+        else:
+            try:
+                with open(self.lockfile, 'w') as f:
+                    f.write('lock')
+                func(self, *args, **kwargs)
+            except:
+                raise
+            finally:
+                if os.path.exists(self.lockfile):
+                    os.remove(self.lockfile)
+    return checklockfile_wrapper_fn
+
 
 class Command(BaseCommand):
     help = "Create an SSH tunnel to the SSH server."
@@ -46,24 +62,6 @@ class Command(BaseCommand):
                 else:
                     time.sleep(5)
 
-
-    def checklockfile(func):
-        def checklockfile_wrapper_fn(self, *args, **kwargs):
-            if os.path.exists(self.lockfile):
-                raise CommandError(_("Another createtunnel command is still running!"))
-            else:
-                try:
-                    with open(self.lockfile, 'w') as f:
-                        f.write('lock')
-                    func(self, *args, **kwargs)
-                except:
-                    raise
-                finally:
-                    if os.path.exists(self.lockfile):
-                        os.remove(self.lockfile)
-        return checklockfile_wrapper_fn
-
-
     def on_exit_delete_lock_file(self):
         def on_exit_callback(*args):
             print "killed ungracefully; deleting lockfile"
@@ -76,7 +74,6 @@ class Command(BaseCommand):
                 signal.signal(signum, on_exit_callback)
             except:
                 print "Skipping handling of %s" % sig
-
 
     @checklockfile
     def handle(self, *args, **options):
