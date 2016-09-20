@@ -24,21 +24,21 @@ Supported Browsers
 ------------------
 
  - IE9+
- - Firefox *)
+ - Firefox \*)
  - Chrome
  - Safari
 
 KA Lite is currently *not* supported on Internet Explorer version 8 or lower.
 
-.. note:: *) Firefox 45+ is the system we run all the automated tests on, and so has the
+.. note:: \*) Firefox 45+ is the system we run all the automated tests on, and so has the
   greatest guarantee of working. However, we do not use technology that's
   incompatible with other browsers, and so we expect them to work and fix any
   issues that occur.
 
 Known issues:
 
- * Videos do not play on Windows XP (use the Chrome browser)
- * Subtitles do not work for Epiphany (the browser in Raspberry Pi).
+ - Videos do not play on Windows XP (use the Chrome browser)
+ - Subtitles do not work for Epiphany (the browser in Raspberry Pi).
 
 
 Video playback
