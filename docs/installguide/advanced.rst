@@ -4,9 +4,9 @@ Advanced installation options
 =============================
 
 .. note::
-    Every time you install or update kalite, you should (re)run ``kalite manage setup``
-    to setup the database and download assessment items (video descriptions,
-    exercises etc.).
+    Every time you install or update kalite, you should (re)run
+    ``kalite manage setup`` to setup the database and download content packs
+    (exercise texts, images, translations etc.).
 
 
 .. _pip-installation:
@@ -63,16 +63,9 @@ and if you are connected to the internet, this will also give you automatic upda
 
 On Ubuntu, do this::
 
-    sudo echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu trusty main" >> /etc/apt/sources.list.d/learningequality-ka-lite-trusty.list
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
-    sudo apt-get update
-    sudo apt-get install ka-lite
-
-On Debian / Raspberry Pi, the commands differ a bit::
-
     sudo apt-get install software-properties-common python-software-properties
-    sudo add-apt-repository 'deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main'
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3194DD81
+    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite'
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
     sudo apt-get update
     sudo apt-get install ka-lite
 
