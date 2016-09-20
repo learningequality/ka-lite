@@ -12,7 +12,7 @@ Deprecations / removals
  * (List of removed commands)
  * The bundled ``requests`` library is now version 2.1.1 :url-issue:`5263`
  * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
- * The whole `kalite.testing` application has been removed. It was used to do various benchmarks that have been unmaintained and are outdated.
+ * The parts of `kalite.testing` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
  * The whole `kalite.basetests` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
 
 Command cleanup

@@ -7,7 +7,6 @@ from kalite.legacy.i18n_settings import *
 from kalite.legacy.updates_settings import *
 from kalite.main.settings import *
 from kalite.shared.exceptions import RemovedInKALite_v016_Error
-from kalite.testing.settings import *
 import logging
 import os
 from os.path import expanduser
@@ -546,4 +545,13 @@ CONTENT_DB_SQLITE_PRAGMAS = []
 
 # Import from applications with problematic __init__.py files
 
+KALITE_TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
+
 TEST_RUNNER = KALITE_TEST_RUNNER
+
+RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
+
+TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["medium", "long"])  # can be
+assert not (set(TESTS_TO_SKIP) - set(["short", "medium", "long"])), "TESTS_TO_SKIP must contain only 'short', 'medium', and 'long'"
+
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
