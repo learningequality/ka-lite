@@ -404,11 +404,6 @@ INSTALLED_APPS = [
     'dbbackup',
 ]
 
-if IS_SOURCE:
-    INSTALLED_APPS += (
-        "kalite.basetests",
-    )
-
 INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = [
