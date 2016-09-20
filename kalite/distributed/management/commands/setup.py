@@ -213,11 +213,6 @@ class Command(BaseCommand):
                     dest='no-assessment-items',
                     default=False,
                     help='Skip all steps associating with content pack downloading or the content database'),
-        make_option('-g', '--git-migrate',
-                    action='store',
-                    dest='git_migrate_path',
-                    default=None,
-                    help='Runs the gitmigrate management command to import data and content from previous installations of KA Lite'),
     )
 
     def handle(self, *args, **options):
@@ -269,11 +264,6 @@ class Command(BaseCommand):
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
-
-        git_migrate_path = options["git_migrate_path"]
-
-        if git_migrate_path:
-            call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
 
         database_kind = settings.DATABASES["default"]["ENGINE"]
         if "sqlite" in database_kind:

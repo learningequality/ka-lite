@@ -25,6 +25,7 @@ In 0.17, we cleaned up a lot of unused/broken/deprecated commands,
 In case you are using any of them (we hope not), you will have to pay attention
 that the following management commands have been removed:
 
+ * `kalite manage gitmigrate`
  * `kalite manage katest`
  * `kalite manage initdconfig`
  * `kalite manage nginxconfig`
