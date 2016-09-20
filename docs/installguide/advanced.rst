@@ -4,52 +4,9 @@ Advanced installation options
 =============================
 
 .. note::
-    Every time you install or update kalite, you should (re)run ``kalite manage setup``
-    to setup the database and download assessment items (video descriptions,
-    exercises etc.).
-
-
-.. _ppa-installation:
-
-Debian/Ubuntu: Subscribe to updates through a PPA
-_________________________________________________
-
-We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
-and if you are connected to the internet, this will also give you automatic updates.
-
-On Ubuntu, do this::
-
-    sudo apt-get install software-properties-common python-software-properties
-    sudo add-apt-repository ppa:learningequality/ka-lite
-    sudo apt-get update
-    sudo apt-get install ka-lite
-
-On Debian / Raspberry Pi, the commands differ a bit::
-
-    sudo apt-get install software-properties-common python-software-properties
-    sudo add-apt-repository 'deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main'
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3194DD81
-    sudo apt-get update
-    sudo apt-get install ka-lite
-
-
-.. _gtk-installation:
-
-User interface for Debian/Ubuntu
-__________________________________
-
-Make sure you have the PPA added, then run::
-
-    sudo apt-get install ka-lite-gtk
-
-
-.. _development-installation:
-
-Development
-___________
-A guide recommending how to install KA Lite for development is available in
-:ref:`development-environment`.
-
+    Every time you install or update kalite, you should (re)run
+    ``kalite manage setup`` to setup the database and download content packs
+    (exercise texts, images, translations etc.).
 
 
 .. _pip-installation:
@@ -90,10 +47,46 @@ To unpack the package for installation, run:
 
 Once it's unpacked, install it by entering the extracted directory and running::
 
-    $> sudo python setup.py install.
+    $> sudo python setup.py install
 
 Beware that the PyPi sources do not contain assessment items, so you need to
 :url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB)..
+
+
+.. _ppa-installation:
+
+Debian/Ubuntu: Subscribe to updates through a PPA
+_________________________________________________
+
+We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
+and if you are connected to the internet, this will also give you automatic updates.
+
+On Ubuntu, do this::
+
+    sudo apt-get install software-properties-common python-software-properties
+    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite'
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
+    sudo apt-get update
+    sudo apt-get install ka-lite
+
+
+.. _gtk-installation:
+
+User interface for Debian/Ubuntu
+__________________________________
+
+Make sure you have the PPA added, then run::
+
+    sudo apt-get install ka-lite-gtk
+
+
+.. _development-installation:
+
+Development
+___________
+A guide recommending how to install KA Lite for development is available in
+:ref:`development-environment`.
+
 
 
 Specific system setups
