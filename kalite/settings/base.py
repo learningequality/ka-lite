@@ -546,7 +546,7 @@ from kalite.legacy.i18n_settings import *
 from kalite.legacy.updates_settings import *
 
 
-KALITE_TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
+KALITE_TEST_RUNNER = "kalite.testing.testrunner.KALiteTestRunner"
 TEST_RUNNER = KALITE_TEST_RUNNER
 
 RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
