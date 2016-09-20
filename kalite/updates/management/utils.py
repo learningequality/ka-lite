@@ -6,7 +6,7 @@ from optparse import make_option
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 
-from ...models import UpdateProgressLog
+from ..models import UpdateProgressLog
 from fle_utils.django_utils.command import LocaleAwareCommand
 from functools import wraps
 

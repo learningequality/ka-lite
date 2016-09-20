@@ -10,7 +10,7 @@ from django.conf import settings
 logging = settings.LOG
 from django.utils.translation import ugettext as _
 
-from .classes import UpdatesDynamicCommand
+from kalite.updates.management.utils import UpdatesDynamicCommand
 from ...videos import download_video
 from ...download_track import VideoQueue
 from fle_utils import set_process_priority

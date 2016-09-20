@@ -14,6 +14,7 @@ Deprecations / removals
  * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
  * The parts of `kalite.testing` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
  * The whole `kalite.basetests` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
+ * `kalite.updates.management.commands.classes` moved so it doesn't show up as a command `classes`.
 
 Command cleanup
 ^^^^^^^^^^^^^^^
