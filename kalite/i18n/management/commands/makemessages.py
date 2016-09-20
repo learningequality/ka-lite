@@ -16,7 +16,7 @@ IGNORE_PATTERNS = [
     "*/node_modules*",
     "*dist-packages*",
     "*/LC_MESSAGES/*",
-    "*python-packages*",
+    "*/kalite/packages*",
     "*/kalite/static*",
     "*bundle*.js",
     "*/ka-lite/build/*",

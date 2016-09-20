@@ -56,8 +56,6 @@ Planned features:
 
 """
 from __future__ import print_function
-# Add distributed python-packages subfolder to current path
-# DO NOT IMPORT BEFORE THIS LIKE
 import atexit
 import subprocess
 import platform
@@ -70,14 +68,21 @@ import traceback
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
     sys.path = [
-        os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
         os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
-        os.path.join(os.environ['KALITE_DIR'], 'kalite')
+        os.path.join(os.environ['KALITE_DIR'], 'kalite'),
+        os.path.join(os.environ['KALITE_DIR'], 'kalite', 'packages', 'bundled'),
+        os.path.join(os.environ['KALITE_DIR'], 'kalite', 'packages', 'dist'),
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
 else:
+    
     filedir = os.path.dirname(__file__)
-    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
+    sys.path = [
+        os.path.join(filedir, 'dist-packages'),
+        os.path.join(filedir, 'kalite'),
+        os.path.join(filedir, 'kalite', 'packages', 'bundled'),
+        os.path.join(filedir, 'kalite', 'packages', 'dist'),
+    ] + sys.path
 
 if sys.version_info >= (3,):
     sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])

@@ -350,7 +350,6 @@ class Command(BaseCommand):
             # namely that the pyc files are left dangling.
             distributed_packages = [
                 os.path.join(kalite.ROOT_DATA_PATH, 'dist-packages'),
-                os.path.join(kalite.ROOT_DATA_PATH, 'python-packages'),
             ]
             # Try locating django
             for dir_to_clean in distributed_packages:

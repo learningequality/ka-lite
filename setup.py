@@ -100,8 +100,8 @@ DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wh
 # installs. This means that "setup.py install" can have two meanings:
 #   1. When running from source dir, it means do not install the static version!
 #   2. When running from a source built by '--static', it should not install
-#      any requirements and instead install all data from dist-packages into
-#      where python-packages are going.
+#      any requirements and instead install all requirements into
+#      kalite/packages/dist
 STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'dist-packages')
 
 # Create if it doesn't exist in order to avoid warnings from setuptools
@@ -158,10 +158,6 @@ def get_installed_packages():
 #############################
 # To read more about this, please refer to:
 # https://pythonhosted.org/setuptools/setuptools.html#including-data-files
-#
-# The bundled python-packages are considered data-files because they are
-# platform independent and because they are not supposed to live in the general
-# site-packages directory.
 
 
 def gen_data_files(*dirs, **kwargs):
@@ -196,11 +192,7 @@ def gen_data_files(*dirs, **kwargs):
             )
     return results
 
-# Append the ROOT_DATA_PATH to all paths
-data_files = map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('python-packages')
-)
+data_files = []
 
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
@@ -280,7 +272,7 @@ class my_install_scripts(install_scripts):
 # STATIC AND DYNAMIC BUILD SPECIFICS #
 ######################################
 
-# If it's a static build, we invoke pip to bundle dependencies in python-packages
+# If it's a static build, we invoke pip to bundle dependencies in kalite/packages/dist
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
 
@@ -413,7 +405,7 @@ setup(
     license="MIT",
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
-    packages=find_packages(exclude=["python-packages"]),
+    packages=find_packages(),
     data_files=data_files,
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
