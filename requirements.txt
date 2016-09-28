@@ -1,3 +1,12 @@
+# Django is NOT used but is actually bundled, we just put this requirement
+# because later versions of django include a utf-8 named file that breaks
+# on certain systems when packaging.
+# This file:
+# https://github.com/django/django/blob/master/tests/staticfiles_tests/apps/test/static/test/%E2%8A%97.txt
+# ...to explain: Some of the below packages depend on django, if we don't
+# specify a version here, we'll get the latest.
+django<1.6
+
 docopt>=0.6,<0.7
 South==1.0.2
 django-js-reverse==0.5.0
@@ -21,5 +30,8 @@ youtube-dl==2015.11.24
 # There is still no release of this
 # fixed issue, i.e. django-tastypie==0.12.2 is broken.
 # This one works though...
-https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.zip#egg=django-tastypie-0.12.2dev0
+https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.tar.gz#egg=django-tastypie-0.12.2dev0
 requests==2.11.1
+
+# Why is this not installed automatically??
+python-mimeparse>=0.1.4

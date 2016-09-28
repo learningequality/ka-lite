@@ -68,20 +68,13 @@ import traceback
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
     sys.path = [
-        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
-        os.path.join(os.environ['KALITE_DIR'], 'kalite'),
-        os.path.join(os.environ['KALITE_DIR'], 'kalite', 'packages', 'bundled'),
-        os.path.join(os.environ['KALITE_DIR'], 'kalite', 'packages', 'dist'),
+        os.path.join(os.environ['KALITE_DIR'], 'kalite'),  # TODO: What's this for?
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
-else:
-    
+else:    
     filedir = os.path.dirname(__file__)
     sys.path = [
-        os.path.join(filedir, 'dist-packages'),
-        os.path.join(filedir, 'kalite'),
-        os.path.join(filedir, 'kalite', 'packages', 'bundled'),
-        os.path.join(filedir, 'kalite', 'packages', 'dist'),
+        os.path.join(filedir, 'kalite'),  # TODO: What's this for?
     ] + sys.path
 
 if sys.version_info >= (3,):
@@ -89,9 +82,17 @@ if sys.version_info >= (3,):
     sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
     sys.exit(1)
 
+import kalite
+
+sys.path = [
+    os.path.join(os.path.dirname(kalite.__file__), 'packages', 'bundled'),
+    os.path.join(os.path.dirname(kalite.__file__), 'packages', 'dist'),
+] + sys.path
+
 import httplib
 import re
 import cherrypy
+
 
 # We do not understand --option value, only --option=value.
 # Similarly, we don't understand -o Foo, only -oFoo
@@ -117,7 +118,6 @@ from socket import timeout
 
 from django.core.management import ManagementUtility, get_commands
 
-import kalite
 from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses

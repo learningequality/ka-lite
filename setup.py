@@ -102,11 +102,7 @@ DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wh
 #   2. When running from a source built by '--static', it should not install
 #      any requirements and instead install all requirements into
 #      kalite/packages/dist
-STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'dist-packages')
-
-# Create if it doesn't exist in order to avoid warnings from setuptools
-if not os.path.exists(STATIC_DIST_PACKAGES):
-    os.mkdir(STATIC_DIST_PACKAGES)
+STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'kalite', 'packages', 'dist')
 
 # We are running from source if .KALITE_SOURCE_DIR exists
 RUNNING_FROM_SOURCE = os.path.exists(os.path.join(where_am_i, ".KALITE_SOURCE_DIR"))
@@ -276,17 +272,13 @@ class my_install_scripts(install_scripts):
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
 
-    manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-    manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
-    file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-
     sys.stderr.write(
         "This is a static build... invoking pip to put static dependencies in "
-        "dist-packages/\n"
+        "kalite/packages/dist/\n"
     )
 
-    STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, 'dist-packages-downloads')
-    STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, 'dist-packages-temp')
+    STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, '.pip-downloads')
+    STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, '.pip-temp')
 
     # Create directory where dynamically created dependencies are put
     if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
@@ -314,42 +306,47 @@ if STATIC_BUILD:
         opts.download_cache = STATIC_DIST_PACKAGES_DOWNLOAD_CACHE
         opts.isolated = True
         opts.compile = False
-        opts.ignore_dependencies = True
+        opts.ignore_dependencies = False
+        # This is deprecated and will disappear in Pip 10
         opts.use_wheel = False
+        # The below is not an option, then we skip mimeparse
+        # opts.no_binary = ':all:'  # Do not use any binary files (whl)
         opts.no_clean = False
         # Hotfix for the one single tastypie dependency link. Not nice.
         # To be removed as soon as an upstream tastypie fixes our
         # Django 1.5 issue
+        # Removed in pip 9!
         opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
 
-    # Install requirements into dist-packages
+    # Install requirements into kalite/packages/dist
     if DIST_BUILDING_COMMAND:
         install_distributions(RAW_REQUIREMENTS)
-
-    # Empty the requirements.txt file
-
+        # Now remove Django because it's bundled
+        shutil.rmtree(os.path.join(STATIC_DIST_PACKAGES, "django"))
 
 # It's not a build command with --static or it's not a build command at all
 else:
 
-    # If the dist-packages directory is non-empty
-    if os.listdir(STATIC_DIST_PACKAGES):
+    # If the kalite/packages/dist directory is non-empty
+    # Not empty = more than the __init__.py file
+    if len(os.listdir(STATIC_DIST_PACKAGES)) > 1:
         # If we are building something or running from the source
         if DIST_BUILDING_COMMAND or (RUNNING_FROM_SOURCE and "install" in sys.argv):
             sys.stderr.write((
                 "Installing from source or not building with --static, so clearing "
-                "out dist-packages: {}\n\nIf you wish to install a static version "
+                "out kalite/packages/dist: {}\n\nIf you wish to install a static version "
                 "from the source distribution, use setup.py install --static\n\n"
                 "ENTER to continue or CTRL+C to cancel\n\n"
             ).format(STATIC_DIST_PACKAGES))
             sys.stdin.readline()
             shutil.rmtree(STATIC_DIST_PACKAGES)
             os.mkdir(STATIC_DIST_PACKAGES)
+            open(os.path.join(STATIC_DIST_PACKAGES, '__init__.py'), "w").write("\n")
         else:
-            # There are distributed requirements in dist-packages, so ignore
+            # There are distributed requirements in kalite/packages, so ignore
             # everything in the requirements.txt file
             DIST_REQUIREMENTS = []
             DIST_NAME = 'ka-lite-static'
@@ -366,7 +363,7 @@ else:
                     "been using."
                 )
 
-    # No dist-packages/ and not building, so must be installing the dynamic
+    # No kalite/packages/dist/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
         # Check that static version is not already installed
@@ -381,19 +378,6 @@ else:
                     "...or other possible installation mechanisms you may have "
                     "been using."
                 )
-
-    if os.path.exists(os.path.join(where_am_i, 'MANIFEST.in.dist')):
-        manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-        manifest_content += "\n" + "recursive-include dist-packages *"
-        file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-
-
-# All files from dist-packages are included if the directory exists
-if os.listdir(STATIC_DIST_PACKAGES):
-    data_files += map(
-        lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-        gen_data_files('dist-packages')
-    )
 
 setup(
     name=DIST_NAME,

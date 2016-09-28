@@ -14,7 +14,6 @@ logging = settings.LOG
 
 IGNORE_PATTERNS = [
     "*/node_modules*",
-    "*dist-packages*",
     "*/LC_MESSAGES/*",
     "*/kalite/packages*",
     "*/kalite/static*",

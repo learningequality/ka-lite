@@ -345,15 +345,6 @@ class Command(BaseCommand):
         # Clean *pyc files if we are in a git repo
         if settings.IS_SOURCE:
             clean_pyc(settings.SOURCE_DIR)
-        else:
-            # Because we install dependencies as data_files, we run into problems,
-            # namely that the pyc files are left dangling.
-            distributed_packages = [
-                os.path.join(kalite.ROOT_DATA_PATH, 'dist-packages'),
-            ]
-            # Try locating django
-            for dir_to_clean in distributed_packages:
-                clean_pyc(dir_to_clean)
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
