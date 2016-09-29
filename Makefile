@@ -92,7 +92,6 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
-	bin/kalite manage compileymltojson
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
 	mkdir -p kalite/database/templates/
