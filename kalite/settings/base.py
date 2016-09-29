@@ -210,8 +210,6 @@ _data_path_channels = os.path.join(_data_path, 'data')
 
 CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
 
-CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
-
 ###################################################
 # USER DATA
 ###################################################
