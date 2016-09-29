@@ -206,9 +206,6 @@ else:
 #
 # It's NOT user-writable -- requires privileges, so any writing must be done at install time.
 
-_data_path_channels = os.path.join(_data_path, 'data')
-
-CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
 
 ###################################################
 # USER DATA
