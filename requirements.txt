@@ -32,6 +32,3 @@ youtube-dl==2015.11.24
 # This one works though...
 https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.tar.gz#egg=django-tastypie-0.12.2dev0
 requests==2.11.1
-
-# Why is this not installed automatically??
-python-mimeparse>=0.1.4

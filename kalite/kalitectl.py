@@ -911,7 +911,8 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     raise DocoptExit()
 
 
-if __name__ == "__main__":
+def cli():
+
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(kalite.__version__), options_first=False)
@@ -960,3 +961,7 @@ if __name__ == "__main__":
     elif arguments['manage']:
         command = arguments['COMMAND']
         manage(command, args=arguments['DJANGO_OPTIONS'])
+
+if __name__ == "__main__":
+
+    cli()
