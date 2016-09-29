@@ -31,7 +31,7 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.version import VERSION, VERSION_INFO
+from kalite.version import VERSION
 
 
 UNGROUPED = "Ungrouped"
@@ -231,9 +231,6 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
         context.update({
             "software_version": current_version,
-            "software_release_date": VERSION_INFO().get(
-                current_version, {}
-            ).get("release_date", "Unknown"),
             "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
             "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
             "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024 ** 2),
