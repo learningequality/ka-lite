@@ -192,16 +192,6 @@ data_files = []
 
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('data')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('static-libraries')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
     gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
 )
 

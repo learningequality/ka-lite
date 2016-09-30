@@ -231,7 +231,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
         context.update({
             "software_version": current_version,
-            "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
+            "install_dir": settings.SOURCE_DIR,
             "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
             "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024 ** 2),
         })

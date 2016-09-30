@@ -116,17 +116,10 @@ if os.name == "nt":
     LOGGING["handlers"]["console"]["class"] = "django.utils.log.NullHandler"
 
 
-###################################################
-# RUNNING FROM STATIC SOURCE DIR?
-###################################################
-#
-# ka-lite can be run from a source directory, such
-# that all data files and user data are stored in
-# one static structure.
-default_source_path = os.path.split(
+SOURCE_DIR = os.path.split(
     os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 )[0]
-if not default_source_path:
+if not SOURCE_DIR:
     default_source_path = '.'
 
 DB_TEMPLATE_DIR = os.path.join(

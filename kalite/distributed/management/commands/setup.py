@@ -342,10 +342,6 @@ class Command(BaseCommand):
         # Now do stuff
         ########################
 
-        # Clean *pyc files if we are in a git repo
-        if settings.IS_SOURCE:
-            clean_pyc(settings.SOURCE_DIR)
-
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
