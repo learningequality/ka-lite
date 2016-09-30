@@ -129,10 +129,6 @@ default_source_path = os.path.split(
 if not default_source_path:
     default_source_path = '.'
 
-# Indicates that we are in a git repo
-IS_SOURCE = os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR'))
-SOURCE_DIR = None
-
 DB_TEMPLATE_DIR = os.path.join(
     os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
     "database",
@@ -150,40 +146,13 @@ DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
 DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 
-if IS_SOURCE:
-    # We assume that the project source is 2 dirs up from the settings/base.py file
-    _data_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    SOURCE_DIR = _data_path
+_data_path = ROOT_DATA_PATH
 
-    if not _data_path:
-        _data_path = '.'
-
-    # This is getting deprecated as we will not explicitly operate with a static
-    # source structure, but have shared system-wide data and user data.
-    # It's not actually even a project root, because it's also the application's
-    # own package root.
-    default_project_root = os.path.join(
-        _data_path,
-        'kalite'
-    )
-
-    # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.path.realpath(
-        getattr(
-            local_settings,
-            "PROJECT_PATH",
-            default_project_root
-        )
-    )
-
-else:
-    _data_path = ROOT_DATA_PATH
-
-    # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.environ.get(
-        "KALITE_HOME",
-        os.path.join(os.path.expanduser("~"), ".kalite")
-    )
+# BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
+PROJECT_PATH = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
 
 
 ###################################################
@@ -214,48 +183,30 @@ USER_DATA_ROOT = os.environ.get(
     os.path.join(os.path.expanduser("~"), ".kalite")
 )
 
-# Most of these data locations are messed up because of legacy
-if IS_SOURCE:
-    USER_DATA_ROOT = SOURCE_DIR
-    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR,))
-    LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
+# Ensure that path exists
+if not os.path.exists(USER_DATA_ROOT):
+    os.mkdir(USER_DATA_ROOT)
 
-    # This is the legacy location kalite/database/data.sqlite
-    DEFAULT_DATABASE_DIR = os.path.join(_data_path, "kalite", "database")
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, "data.sqlite")
+USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 
-    MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
-    STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
+LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
+if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
+    os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
+DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+if not os.path.exists(DEFAULT_DATABASE_DIR):
+    os.mkdir(DEFAULT_DATABASE_DIR)
 
-# Storing data in a user directory
-else:
+DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
 
-    # Ensure that path exists
-    if not os.path.exists(USER_DATA_ROOT):
-        os.mkdir(USER_DATA_ROOT)
-
-    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-    KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
-    if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
-        os.mkdir(USER_WRITABLE_LOCALE_DIR)
-
-    DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
-    if not os.path.exists(DEFAULT_DATABASE_DIR):
-        os.mkdir(DEFAULT_DATABASE_DIR)
-
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
-
-    # Stuff that can be served by the HTTP server is located the same place
-    # for convenience and security
-    HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
-    if not os.path.exists(HTTPSRV_PATH):
-        os.mkdir(HTTPSRV_PATH)
-    MEDIA_ROOT = os.path.join(HTTPSRV_PATH, "media")
-    STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
+# Stuff that can be served by the HTTP server is located the same place
+# for convenience and security
+HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
+if not os.path.exists(HTTPSRV_PATH):
+    os.mkdir(HTTPSRV_PATH)
+MEDIA_ROOT = os.path.join(HTTPSRV_PATH, "media")
+STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 
 
 #######################################

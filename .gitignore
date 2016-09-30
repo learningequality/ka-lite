@@ -9,7 +9,8 @@
 .project
 .pydevproject
 
-# Undocumented ignores
+# Database templates
+kalite/database
 
 # setup.py
 dist/
@@ -33,15 +34,10 @@ static-updates
 # oh-my-zsh
 .venv
 
-# SQLite files (should probably specify the path)
-*.db
-*.sqlite*
-
 # Not sure
 *.patch
 *.pid
 *.prof
-secretkey.txt
 
 # Python compiling
 *.pyc
@@ -52,10 +48,6 @@ secretkey.txt
 
 # Sublime editor
 *.sublime-*
-
-# Ignore all .zip files!? No comment?? Needs fixing, I guess it's to avoid
-# committing local assessment items.
-*.zip
 
 # Documentation
 docs/_build
@@ -72,14 +64,10 @@ venv/
 # Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
 /kalite/distributed/static/js/distributed/perseus
 
-# Ignore file used to store queued video download info.
-videos_to_download.json
-
 # Ignore django-reverse-js file that gets copied during testing.
 kalite/distributed/static/django_js_reverse/js/reverse.js
 
 # Lacks documentation
-locale/
 node_modules/
 tmp/
 virtualenv/
@@ -90,16 +78,6 @@ writeup/
 /run_command.*
 /start.*
 /stop.*
-/content/*.jpg
-/content/*.json
-/content/*.png
-/content/*.mp4
-/content/*.mp4.part
-/content/*.srt
-/content/*.mp3
-/content/*.pdf
-/content/khan/
-/content/assessment
 /kalite/*.jpg
 /kalite/*.mp4.part
 /kalite/i18n/data/dubbed_video_mappings.json
