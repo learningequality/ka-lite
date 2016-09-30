@@ -27,6 +27,7 @@ Deprecations / removals
  * ``python-packages/fle_utils/build``, unused build utility from 2013.
  * The ``manage.py`` script has been removed from the source tree (use ``bin/kalite manage <command>`` instead.)
  * When running KA Lite straight from source, we used some very legacy convetions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
+ * PyRun is no longer supported, code that pertained its lacking ``multiprocessing`` has been removed.
 
 Command cleanup
 ^^^^^^^^^^^^^^^
