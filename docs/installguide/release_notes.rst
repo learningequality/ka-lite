@@ -52,6 +52,7 @@ that the following management commands have been removed:
  * ``kalite manage unpack_asessment_zip``
  * ``kalite manage create_dummy_language_pack``
  * ``kalite manage generate_blacklist``
+ * ``kalite manage compileymltojson``
 
 Bug fixes
 ^^^^^^^^^
