@@ -32,6 +32,7 @@ from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.version import VERSION
+from kalite import PACKAGE_PATH
 
 
 UNGROUPED = "Ungrouped"
@@ -231,7 +232,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
         context.update({
             "software_version": current_version,
-            "install_dir": settings.SOURCE_DIR,
+            "install_dir": PACKAGE_PATH,
             "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
             "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024 ** 2),
         })

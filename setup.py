@@ -104,9 +104,6 @@ DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wh
 #      kalite/packages/dist
 STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'kalite', 'packages', 'dist')
 
-# We are running from source if .KALITE_SOURCE_DIR exists
-RUNNING_FROM_SOURCE = os.path.exists(os.path.join(where_am_i, ".KALITE_SOURCE_DIR"))
-
 # Default description of the distributed package
 DIST_DESCRIPTION = (
     """KA Lite is a light-weight web server for viewing and interacting """
@@ -318,10 +315,10 @@ else:
     # Not empty = more than the __init__.py file
     if len(os.listdir(STATIC_DIST_PACKAGES)) > 1:
         # If we are building something or running from the source
-        if DIST_BUILDING_COMMAND or (RUNNING_FROM_SOURCE and "install" in sys.argv):
+        if DIST_BUILDING_COMMAND:
             sys.stderr.write((
                 "Installing from source or not building with --static, so clearing "
-                "out kalite/packages/dist: {}\n\nIf you wish to install a static version "
+                "out: {}\n\nIf you wish to install a static version "
                 "from the source distribution, use setup.py install --static\n\n"
                 "ENTER to continue or CTRL+C to cancel\n\n"
             ).format(STATIC_DIST_PACKAGES))

@@ -21,12 +21,10 @@ format?=gztar
 
 clean: clean-build clean-pyc clean-test
 
-clean-dev-db:
-	rm -f kalite/database/data.sqlite
-
 clean-build:
 	rm -fr build/
 	rm -fr dist/
+	rm -rf .kalite_dist_tmp
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
@@ -84,10 +82,10 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
-	bin/kalite manage syncdb --noinput
-	bin/kalite manage migrate
+	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput
+	KALITE_HOME=.kalite_dist_tmp bin/kalite manage migrate
 	mkdir -p kalite/database/templates/
-	cp kalite/database/data.sqlite kalite/database/templates/
+	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
 release: dist man
@@ -95,7 +93,7 @@ release: dist man
 	echo "uploading above to PyPi, using twine"
 	twine upload -s --sign-with gpg2 dist/*
 
-dist: clean clean-dev-db docs assets
+dist: clean docs assets
 	python setup.py sdist --formats=$(format)
 	python setup.py sdist --formats=$(format) --static
 	ls -l dist

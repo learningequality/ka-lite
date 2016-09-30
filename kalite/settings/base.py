@@ -6,7 +6,7 @@ import os
 import sys
 import warnings
 
-from kalite import ROOT_DATA_PATH
+from kalite import ROOT_DATA_PATH, PACKAGE_PATH
 from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 from django.utils.translation import ugettext_lazy
@@ -115,12 +115,6 @@ LOGGING = {
 if os.name == "nt":
     LOGGING["handlers"]["console"]["class"] = "django.utils.log.NullHandler"
 
-
-SOURCE_DIR = os.path.split(
-    os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
-)[0]
-if not SOURCE_DIR:
-    default_source_path = '.'
 
 DB_TEMPLATE_DIR = os.path.join(
     os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
@@ -368,7 +362,7 @@ if not os.path.exists(USER_STATIC_FILES):
 
 # libraries common to all apps
 STATICFILES_DIRS = (
-    os.path.join(SOURCE_DIR, 'static-libraries'),
+    os.path.join(PACKAGE_PATH, 'static-libraries'),
     USER_STATIC_FILES
 )
 built_docs_path = os.path.join(_data_path, "docs", "_build")

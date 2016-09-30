@@ -16,6 +16,8 @@ kalite/database
 dist/
 build/
 *.egg-info/
+# Created during make dist
+.kalite_dist_tmp
 
 # Static builds with setup.py [command] --static
 .pip-temp/
