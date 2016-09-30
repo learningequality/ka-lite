@@ -7,6 +7,7 @@ include setup.cfg
 include requirements.txt
 
 recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars *.woff2 *.mo
+recursive-include kalite/static-libraries *
 
 recursive-include kalite/packages/dist *
 recursive-exclude kalite/packages/dist *.po
@@ -19,10 +20,6 @@ recursive-include kalite/database/templates/content_items *sqlite
 # This can be a huge problem when creating an sdist from
 # a local development environment
 recursive-exclude kalite/static *
-
-# Data files, these are not picked up by sdist unless listed here
-recursive-include python-packages *
-recursive-include static-libraries *
 
 # There are still a couple of files left here, however main part is for build
 # process

@@ -368,7 +368,7 @@ if not os.path.exists(USER_STATIC_FILES):
 
 # libraries common to all apps
 STATICFILES_DIRS = (
-    os.path.join(_data_path, 'static-libraries'),
+    os.path.join(SOURCE_DIR, 'static-libraries'),
     USER_STATIC_FILES
 )
 built_docs_path = os.path.join(_data_path, "docs", "_build")
