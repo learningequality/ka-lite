@@ -388,7 +388,7 @@ class ManageThread(Thread):
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
         # This ensures that 'kalite' is printed in help menus instead of
-        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
+        # 'kalite' or 'kalite.__main__' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
 
@@ -413,7 +413,7 @@ def manage(command, args=None, as_thread=False):
 
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
-        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
+        # 'kalite' or 'kalite.__main__' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
@@ -911,7 +911,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     raise DocoptExit()
 
 
-def cli():
+def main():
 
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
@@ -964,4 +964,4 @@ def cli():
 
 if __name__ == "__main__":
 
-    cli()
+    main()

@@ -7,7 +7,8 @@ set in the system's env (useful for distribution).
 Notes...
 This script might be invoked on a system where 'python' means python3 so we try
 to be smart and allow that to happen, in which case we spawn a new process with
-python2.
+python2. Also, we don't have data to support putting something like
+'/usr/bin/python27' in the shebang.
 
 Q&A
 Q: Why is this not written in Bash?
@@ -25,8 +26,9 @@ Environment variables used:
 import os
 import sys
 import subprocess
-from distutils import spawn
 import warnings
+
+from distutils import spawn
 
 
 # Python 2+3 definition
@@ -140,7 +142,7 @@ if python_executable:
 
     # Open up a process and proxy both the process' stdout and stderr
     p = subprocess.Popen(
-        [python_executable, "-m", "kalite.kalitectl"] + args,
+        [python_executable, "-m", "kalite"] + args,
         env=env,
     )
     
@@ -155,5 +157,5 @@ if python_executable:
 # best option....
 else:
     
-    from kalite import kalitectl
-    kalitectl.cli()
+    from kalite import cli
+    cli.main()

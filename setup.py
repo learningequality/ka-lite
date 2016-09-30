@@ -205,12 +205,6 @@ data_files += map(
     gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
 )
 
-# For now, just disguise the kalitectl.py script here as it's only to be accessed
-# with the bin/kalite proxy.
-data_files += [(
-    kalite.ROOT_DATA_PATH, [os.path.join(where_am_i, 'kalitectl.py')]
-)]
-
 
 ################
 # Windows code #

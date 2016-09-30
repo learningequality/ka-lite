@@ -64,7 +64,6 @@ class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
-
         super(KALiteBrowserTestCase, self).tearDown()
 
     def reverse(self, url_name, args=None, kwargs=None):

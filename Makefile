@@ -63,15 +63,7 @@ test-all:
 	# tox
 
 coverage:
-	coverage run --source kalite kalitectl.py test
-	coverage report -m
-
-coverage-bdd:
-	coverage run --source kalite kalitectl.py test --bdd-only
-	coverage report -m
-
-coverage-nobdd:
-	coverage run --source kalite kalitectl.py test --no-bdd
+	coverage run --source kalite bin/kalite test
 	coverage report -m
 
 docs:

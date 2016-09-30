@@ -15,7 +15,7 @@ except ImportError:
 # Functions, for support
 ########################
 
-# This defaults to 8008, which is also the default of kalitectl.py which should
+# This defaults to 8008, which is also the default of kalite.__main__ which should
 # always set KALITE_LISTEN_PORT
 HTTP_PORT = os.environ.get('KALITE_LISTEN_PORT', 8008)
 
