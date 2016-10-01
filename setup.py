@@ -44,12 +44,13 @@ except ImportError:
 
 # Since pip 7.0.1, bdist_wheel has started to be called automatically when
 # the sdist was being installed. Let's not have that.
-# By raising an exception,
+# The problem is that it will build a 'ka-lite-static' and call it 'ka-lite'
 
-if 'bdist_wheel' in sys.argv:
+if 'bdist_wheel' in sys.argv and '-d' in sys.argv:
+    open("/tmp/kalite.pip.log", "w").write(str(sys.argv) + "\n" + str(os.environ))
     raise RuntimeError(
-        "Harmless: Because of a bug in Wheel, we do not support bdist_wheel. "
-        "See: https://bitbucket.org/pypa/wheel/issue/92/bdist_wheel-makes-absolute-data_files"
+        "Harmless: We don't support auto-converting to .whl format. Please "
+        "fetch the .whl instead of the tarball."
     )
 
 # Path of setup.py, used to resolve path of requirements.txt file

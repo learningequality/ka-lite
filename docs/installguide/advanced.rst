@@ -115,6 +115,7 @@ installation: ::
 
         Alias /static /var/www/.kalite/httpsrv/static
         Alias /media /var/www/.kalite/httpsrv/media
+        Alias /content /var/www/.kalite/content
 
         WSGIScriptAlias / /usr/lib/python2.7/dist-packages/kalite/project/wsgi.py
 
