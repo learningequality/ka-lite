@@ -37,54 +37,14 @@ try:
 except NameError:
     pass
 
-kalite_path = None
-
 # Ensure that PATH is set because distutils.find_executable fails on
 # windows with no path set.
 os.environ['PATH'] = os.environ.get("PATH", "")
 
 # Yay! The path is set!
 if 'KALITE_DIR' in os.environ:
-    kalite_path = os.environ['KALITE_DIR']
-    if not os.path.exists(kalite_path):
-        raise RuntimeError("KALITE_DIR environment var is invalid: {:s}".format(kalite_path))
-
-# Path not set, try to guess it
-# bin/kalite can be invoked from different locations, especially from within
-# the source, that's why we have this mess.
-else:
-    # Fetch full path of script's base dirname
-    where_am_i = os.path.split(os.path.realpath(__file__))
-    script_dir_path = os.path.split(where_am_i[0])[0]
-    script_dir_name = os.path.split(where_am_i[0])[1]
-    if script_dir_name == 'ka-lite':
-        kalite_path = where_am_i[0]
-    elif script_dir_name == 'kalite':
-        kalite_path = script_dir_path
-    elif script_dir_name == 'bin':
-        kalite_path = script_dir_path
-    elif script_dir_name == 'windows':
-        kalite_path = os.path.realpath(os.path.join(script_dir_path, '..'))
-    # Check that it works
-    if kalite_path and not os.path.exists(os.path.join(kalite_path, 'kalite', '__init__.py')):
-        kalite_path = None
-
-    installed_path = os.path.join(sys.prefix, 'share', 'kalite')
-    if not kalite_path and os.path.exists(installed_path):
-        kalite_path = installed_path
-
-    if not kalite_path:
-        raise RuntimeError("Could not determine where KA Lite is installed. Please set the KALITE_DIR environment variable.")
-
-    # Make sure it's set as an absolute path
-    kalite_path = os.path.abspath(kalite_path)
-    
-    if not os.path.exists(kalite_path):
-        raise RuntimeError("Assuming kalite data path {} but it doesn't exist!".format(kalite_path))
-
-    # Converts to normal string for Windows users, where it gets turned into a
-    # unicode string and errors out in subprocess
-    os.environ['KALITE_DIR'] = str(kalite_path)
+    if not os.path.exists(os.environ['KALITE_DIR']):
+        raise RuntimeError("KALITE_DIR environment var is invalid: {:s}".format(os.environ['KALITE_DIR']))
 
 
 # TODO(benjaoming): Delegate responsibility to the .deb package
