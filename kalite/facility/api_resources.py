@@ -218,7 +218,6 @@ class FacilityUserResource(ModelResource):
             "version": version.VERSION,
             "facilities": facility_list(),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
-            "docs_exist": getattr(settings, "DOCS_EXIST", False),
             "zone_id": getattr(Device.get_own_device().get_zone(), "id", "None"),
             "has_superuser": User.objects.filter(is_superuser=True).exists(),
         }

@@ -31,6 +31,5 @@ recursive-exclude data/khan *
 recursive-exclude python-packages *pyc
 
 # Docs
-recursive-include docs/_build/html *
 include docs/kalite.1.gz
-
+kalite/static-docs

@@ -363,14 +363,11 @@ if not os.path.exists(USER_STATIC_FILES):
 # libraries common to all apps
 STATICFILES_DIRS = (
     os.path.join(PACKAGE_PATH, 'static-libraries'),
-    USER_STATIC_FILES
+    USER_STATIC_FILES,
 )
-built_docs_path = os.path.join(_data_path, "docs", "_build")
-DOCS_EXIST = os.path.exists(built_docs_path)
-if DOCS_EXIST:
-    STATICFILES_DIRS += (
-        built_docs_path,
-    )
+
+DOCS_ROOT = os.path.join(PACKAGE_PATH, "static-docs")
+DOCS_URL = '/docs/'
 
 DEFAULT_ENCODING = 'utf-8'
 

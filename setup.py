@@ -146,51 +146,8 @@ def get_installed_packages():
     return [x.key for x in filter(lambda y: where_am_i not in y.location, pkg_resources.working_set)]
 
 
-#############################
-# DATA FILES
-#############################
-# To read more about this, please refer to:
-# https://pythonhosted.org/setuptools/setuptools.html#including-data-files
-
-
-def gen_data_files(*dirs, **kwargs):
-    """
-    We can only link files, not directories. Therefore, we use an approach
-    that scans all files to pass them to the data_files kwarg for setup().
-    Thanks: http://stackoverflow.com/a/7288382/405682
-    """
-    results = []
-
-    optional = kwargs.pop('optional', False)
-
-    def filter_illegal_extensions(f):
-        return os.path.splitext(f)[1] != ".pyc"
-
-    for src_dir in dirs:
-        if not os.path.isdir(src_dir):
-            if optional:
-                continue
-            else:
-                raise RuntimeError("{dir:s} does not exist, cannot continue".format(dir=src_dir))
-
-        for root, dirs, files in os.walk(src_dir):
-            results.append(
-                (
-                    root,
-                    filter(
-                        filter_illegal_extensions,
-                        map(lambda f: os.path.join(root, f), files)
-                    )
-                )
-            )
-    return results
-
-data_files = []
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
-)
+if DIST_BUILDING_COMMAND and not os.path.exists(os.path.join(where_am_i, "kalite", "static-docs")):
+    raise RuntimeError("Not building - kalite/docs not found.")
 
 
 ################
@@ -371,7 +328,6 @@ setup(
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
     packages=find_packages(),
-    data_files=data_files,
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
     dependency_links=DEPENDENCY_LINKS,

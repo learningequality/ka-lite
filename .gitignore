@@ -54,6 +54,7 @@ static-updates
 # Documentation
 docs/_build
 docs/images/*
+kalite/static-docs
 
 # oh-my-zsh convention for automatically
 # switching on a venv
