@@ -154,15 +154,6 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         )
         cherrypy.tree.mount(static_handler, settings.MEDIA_URL)
 
-        # Serve the static media files
-        static_handler = cherrypy.tools.staticdir.handler(
-            section="/",
-            dir=os.path.split(settings.DOCS_ROOT)[1],
-            root=os.path.split(settings.DOCS_ROOT)[0],
-            content_types=WELL_KNOWN_CONTENT_TYPES,
-        )
-        cherrypy.tree.mount(static_handler, settings.DOCS_URL)
-
         # Serve the static files
         static_handler = cherrypy.tools.staticdir.handler(
             section="/",

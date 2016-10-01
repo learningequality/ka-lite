@@ -366,9 +366,6 @@ STATICFILES_DIRS = (
     USER_STATIC_FILES,
 )
 
-DOCS_ROOT = os.path.join(PACKAGE_PATH, "static-docs")
-DOCS_URL = '/docs/'
-
 DEFAULT_ENCODING = 'utf-8'
 
 # Due to a newer version of slimit being installed, allowing this causes an error:

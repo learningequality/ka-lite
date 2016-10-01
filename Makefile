@@ -29,7 +29,7 @@ clean-build:
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
 	rm -fr kalite/database/templates
-	rm -fr kalite/static-docs
+	rm -fr kalite/static-libraries/docs
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -71,7 +71,7 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	cp -Rf docs/_build/html kalite/static-docs/
+	cp -Rf docs/_build/html kalite/static-libraries/docs/
 	# open docs/_build/html/index.html
 
 

@@ -147,8 +147,8 @@ def get_installed_packages():
     return [x.key for x in filter(lambda y: where_am_i not in y.location, pkg_resources.working_set)]
 
 
-if DIST_BUILDING_COMMAND and not os.path.exists(os.path.join(where_am_i, "kalite", "static-docs")):
-    raise RuntimeError("Not building - kalite/docs not found.")
+if DIST_BUILDING_COMMAND and not os.path.exists(os.path.join(where_am_i, "kalite", "static-libraries", "docs")):
+    raise RuntimeError("Not building - kalite/static-libraries/docs not found.")
 
 
 ################
