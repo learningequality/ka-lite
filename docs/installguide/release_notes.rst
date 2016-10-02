@@ -17,6 +17,7 @@ Bug fixes
  * Upgrades from 0.15 on a Windows system broke video download :url-issue:`5263`
  * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
  * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
+ * Activating simplified login results in blank login modal :url-issue:`5255`
 
 Known issues
 ^^^^^^^^^^^^
