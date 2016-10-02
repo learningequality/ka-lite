@@ -96,10 +96,10 @@ release: dist man
 	twine upload -s --sign-with gpg2 dist/*
 
 dist: clean docs assets
-	python setup.py sdist --formats=$(format)
+	# python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
-	python setup.py sdist --formats=$(format) --static
-	python setup.py bdist_wheel --static --no-clean
+	# python setup.py sdist --formats=$(format) --static
+	python setup.py bdist_wheel --static  # --no-clean
 	ls -l dist
 
 install: clean
