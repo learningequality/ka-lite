@@ -12,3 +12,7 @@ Useful stuff our devs think that the rest of our devs ought to know about.
     Profiling KA Lite <profiling>
     Developer Utility Commands <utility>
     Logging <logging>
+    Inline help <inline>
+    Documentation <documentation>
+    Documentation screenshots <screenshots>
+
