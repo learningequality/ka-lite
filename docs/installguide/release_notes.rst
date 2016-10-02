@@ -29,6 +29,7 @@ Deprecations / removals
  * When running KA Lite straight from source, we used some very legacy convetions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
  * PyRun is no longer supported, code that pertained its lacking ``multiprocessing`` has been removed.
  * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
+ * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
 
 Command cleanup
 ^^^^^^^^^^^^^^^
@@ -64,6 +65,7 @@ Bug fixes
  * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
  * Added PyPy support by not spawning a new interpreter :url-issue:`3399` :url-issue:`4315`
  * Upgrades from 0.15 on a Windows system broke video download :url-issue:`5263`
+ * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
 
 Known issues
 ^^^^^^^^^^^^
