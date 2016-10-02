@@ -95,9 +95,6 @@ if settings.DEBUG:
         url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
             'document_root': settings.MEDIA_ROOT,
         }),
-        url(r'^%s(?P<path>.*)$' % settings.DOCS_URL[1:], 'django.views.static.serve', {
-            'document_root': settings.DOCS_ROOT,
-        }),
     )
 
 handler403 = __package__ + '.views.handler_403'
