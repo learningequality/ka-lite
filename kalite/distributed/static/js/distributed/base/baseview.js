@@ -5,6 +5,19 @@ module.exports = Backbone.View.extend({
 
 
     /**
+     * Bind error handling
+     */
+    initialize: function(options) {
+        this.bind("error", this.defaultErrorHandler);
+    },
+
+    defaultErrorHandler: function(model, error) {
+         if (error.status == 500) {
+              $("#ajax_user_error").show();
+         }
+    },
+
+    /**
      * Add a subview to the view to allow for easy clean up on remove/close.
      * @param {Object} subview_type - The constructor for the view you want to instantiate.
      * @param {Object} options - The options object for instantiating the subview.
@@ -15,7 +28,7 @@ module.exports = Backbone.View.extend({
         this.subviews.push(subview);
         return subview;
     },
-
+    
     /**
      * Bulk append views to the view to allow for minimal repaint when adding many views.
      * @param {Array} view_list - An array of all the views you want to append.
