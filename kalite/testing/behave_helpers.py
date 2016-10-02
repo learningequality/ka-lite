@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
     try:
         elem = WebDriverWait(browser, wait_time).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#message_container .alert"))
         )
         return elem
     except TimeoutException:
