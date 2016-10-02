@@ -18,6 +18,7 @@ Bug fixes
  * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
  * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
  * Activating simplified login results in blank login modal :url-issue:`5255`
+ * ``favicon.ico`` missing in distributed set of files, little KA green leaf now appears in browser window decorations and shortcuts :url-issue:`5306`
 
 Known issues
 ^^^^^^^^^^^^
