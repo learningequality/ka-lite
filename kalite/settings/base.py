@@ -227,7 +227,7 @@ KALITE_CHANNEL_CONTEXT_DATA = {
     "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
     "tag_line": ugettext_lazy(u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
     "channel_license": u"CC-BY-NC-SA",
-    "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
+    "footer_text": ugettext_lazy(u"Videos © {year:d} Khan Academy (Creative Commons) // Exercises © {year:d} Khan Academy"),
     "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
     "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
 }
