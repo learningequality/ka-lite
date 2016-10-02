@@ -18,6 +18,11 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 
 .. _Github Wiki: https://github.com/learningequality/ka-lite/wiki/Report%20Bugs%20by%20Creating%20Issues
 
+Why are my downloaded videos not displaying?
+--------------------------------------------
+
+Please refer to :ref:`video-playback`.
+
 How do I change KA Lite's content folder?
 -----------------------------------------
 
