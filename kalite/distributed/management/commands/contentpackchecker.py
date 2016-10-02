@@ -2,24 +2,17 @@ import glob
 import json
 import os
 import requests
-import shutil
-import tempfile
-import zipfile
 
 from optparse import make_option
 
 from django.conf import settings as django_settings
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.translation import ugettext as _
+from django.core.management.base import BaseCommand
 
-from fle_utils.general import ensure_dir
+from kalite.topic_tools.content_models import Item, set_database, parse_data, AssessmentItem
 
-from kalite.topic_tools.content_models import get_content_items, Item, set_database, parse_data, AssessmentItem
-
-from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
-    extract_content_db, get_localized_exercise_dirpath
+from kalite.i18n.base import get_locale_path, get_subtitle_file_path as get_subtitle_path, \
+    get_localized_exercise_dirpath
 
 from kalite.version import SHORTVERSION
 

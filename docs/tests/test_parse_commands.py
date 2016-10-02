@@ -13,7 +13,7 @@ from nose.tools import assert_equal, raises, with_setup
 
 import sys, os
 
-sys.path.insert(0, os.path.abspath(os.path.join('..','python-packages')))
+sys.path.insert(0, os.path.abspath(os.path.join('..','kalite', 'packages', 'bundled')))
 import screenshot
 
 def test_parse_focus():

@@ -56,8 +56,6 @@ Planned features:
 
 """
 from __future__ import print_function
-# Add distributed python-packages subfolder to current path
-# DO NOT IMPORT BEFORE THIS LIKE
 import atexit
 import subprocess
 import platform
@@ -70,23 +68,31 @@ import traceback
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
     sys.path = [
-        os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
-        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
-        os.path.join(os.environ['KALITE_DIR'], 'kalite')
+        os.path.join(os.environ['KALITE_DIR'], 'kalite'),  # TODO: What's this for?
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
-else:
+else:    
     filedir = os.path.dirname(__file__)
-    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
+    sys.path = [
+        os.path.join(filedir, 'kalite'),  # TODO: What's this for?
+    ] + sys.path
 
 if sys.version_info >= (3,):
     sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
     sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
     sys.exit(1)
 
+import kalite
+
+sys.path = [
+    os.path.join(os.path.dirname(kalite.__file__), 'packages', 'bundled'),
+    os.path.join(os.path.dirname(kalite.__file__), 'packages', 'dist'),
+] + sys.path
+
 import httplib
 import re
 import cherrypy
+
 
 # We do not understand --option value, only --option=value.
 # Similarly, we don't understand -o Foo, only -oFoo
@@ -112,7 +118,6 @@ from socket import timeout
 
 from django.core.management import ManagementUtility, get_commands
 
-import kalite
 from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
@@ -383,7 +388,7 @@ class ManageThread(Thread):
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
         # This ensures that 'kalite' is printed in help menus instead of
-        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
+        # 'kalite' or 'kalite.__main__' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
 
@@ -408,7 +413,7 @@ def manage(command, args=None, as_thread=False):
 
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
-        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
+        # 'kalite' or 'kalite.__main__' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
@@ -906,7 +911,8 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     raise DocoptExit()
 
 
-if __name__ == "__main__":
+def main():
+
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(kalite.__version__), options_first=False)
@@ -955,3 +961,7 @@ if __name__ == "__main__":
     elif arguments['manage']:
         command = arguments['COMMAND']
         manage(command, args=arguments['DJANGO_OPTIONS'])
+
+if __name__ == "__main__":
+
+    main()

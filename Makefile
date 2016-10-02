@@ -21,16 +21,15 @@ format?=gztar
 
 clean: clean-build clean-pyc clean-test
 
-clean-dev-db:
-	rm -f kalite/database/data.sqlite
-
 clean-build:
 	rm -fr build/
 	rm -fr dist/
+	rm -rf .kalite_dist_tmp
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
 	rm -fr kalite/database/templates
+	rm -fr kalite/static-libraries/docs
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -63,15 +62,7 @@ test-all:
 	# tox
 
 coverage:
-	coverage run --source kalite kalitectl.py test
-	coverage report -m
-
-coverage-bdd:
-	coverage run --source kalite kalitectl.py test --bdd-only
-	coverage report -m
-
-coverage-nobdd:
-	coverage run --source kalite kalitectl.py test --no-bdd
+	coverage run --source kalite bin/kalite test
 	coverage report -m
 
 docs:
@@ -80,6 +71,7 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+	cp -Rf docs/_build/html kalite/static-libraries/docs/
 	# open docs/_build/html/index.html
 
 
@@ -92,11 +84,10 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
-	bin/kalite manage compileymltojson
-	bin/kalite manage syncdb --noinput
-	bin/kalite manage migrate
+	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput
+	KALITE_HOME=.kalite_dist_tmp bin/kalite manage migrate
 	mkdir -p kalite/database/templates/
-	cp kalite/database/data.sqlite kalite/database/templates/
+	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
 release: dist man
@@ -104,7 +95,7 @@ release: dist man
 	echo "uploading above to PyPi, using twine"
 	twine upload -s --sign-with gpg2 dist/*
 
-dist: clean clean-dev-db docs assets
+dist: clean docs assets
 	python setup.py sdist --formats=$(format)
 	python setup.py sdist --formats=$(format) --static
 	ls -l dist

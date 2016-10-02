@@ -26,7 +26,7 @@ test:
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
         background: true
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*" kalitectl.py manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*" kalitectl.py manage test --no-bdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*,kalite/packages/*" bin/kalite manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,kalite/packages/*,*/tests/*,*/migrations/*" bin/kalite manage test --no-bdd;; esac:
         parallel: true
     # TODO: replace below with "make lint" when we're pep8
     - npm install -g jshint

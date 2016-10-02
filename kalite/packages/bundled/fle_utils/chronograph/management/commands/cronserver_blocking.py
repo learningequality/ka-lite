@@ -11,7 +11,7 @@ shutdown = False
 
 class Command(BaseCommand):
     args = ""
-    help = _("Used by kalitectl.py to run a blocking management command")
+    help = _("Invoked by kalite CLI to run a blocking management command")
 
     option_list = BaseCommand.option_list + ()
 

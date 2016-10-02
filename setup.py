@@ -44,12 +44,13 @@ except ImportError:
 
 # Since pip 7.0.1, bdist_wheel has started to be called automatically when
 # the sdist was being installed. Let's not have that.
-# By raising an exception,
+# The problem is that it will build a 'ka-lite-static' and call it 'ka-lite'
 
-if 'bdist_wheel' in sys.argv:
+if 'bdist_wheel' in sys.argv and '-d' in sys.argv:
+    open("/tmp/kalite.pip.log", "w").write(str(sys.argv) + "\n" + str(os.environ))
     raise RuntimeError(
-        "Harmless: Because of a bug in Wheel, we do not support bdist_wheel. "
-        "See: https://bitbucket.org/pypa/wheel/issue/92/bdist_wheel-makes-absolute-data_files"
+        "Harmless: We don't support auto-converting to .whl format. Please "
+        "fetch the .whl instead of the tarball."
     )
 
 # Path of setup.py, used to resolve path of requirements.txt file
@@ -100,16 +101,9 @@ DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wh
 # installs. This means that "setup.py install" can have two meanings:
 #   1. When running from source dir, it means do not install the static version!
 #   2. When running from a source built by '--static', it should not install
-#      any requirements and instead install all data from dist-packages into
-#      where python-packages are going.
-STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'dist-packages')
-
-# Create if it doesn't exist in order to avoid warnings from setuptools
-if not os.path.exists(STATIC_DIST_PACKAGES):
-    os.mkdir(STATIC_DIST_PACKAGES)
-
-# We are running from source if .KALITE_SOURCE_DIR exists
-RUNNING_FROM_SOURCE = os.path.exists(os.path.join(where_am_i, ".KALITE_SOURCE_DIR"))
+#      any requirements and instead install all requirements into
+#      kalite/packages/dist
+STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'kalite', 'packages', 'dist')
 
 # Default description of the distributed package
 DIST_DESCRIPTION = (
@@ -153,75 +147,8 @@ def get_installed_packages():
     return [x.key for x in filter(lambda y: where_am_i not in y.location, pkg_resources.working_set)]
 
 
-#############################
-# DATA FILES
-#############################
-# To read more about this, please refer to:
-# https://pythonhosted.org/setuptools/setuptools.html#including-data-files
-#
-# The bundled python-packages are considered data-files because they are
-# platform independent and because they are not supposed to live in the general
-# site-packages directory.
-
-
-def gen_data_files(*dirs, **kwargs):
-    """
-    We can only link files, not directories. Therefore, we use an approach
-    that scans all files to pass them to the data_files kwarg for setup().
-    Thanks: http://stackoverflow.com/a/7288382/405682
-    """
-    results = []
-
-    optional = kwargs.pop('optional', False)
-
-    def filter_illegal_extensions(f):
-        return os.path.splitext(f)[1] != ".pyc"
-
-    for src_dir in dirs:
-        if not os.path.isdir(src_dir):
-            if optional:
-                continue
-            else:
-                raise RuntimeError("{dir:s} does not exist, cannot continue".format(dir=src_dir))
-
-        for root, dirs, files in os.walk(src_dir):
-            results.append(
-                (
-                    root,
-                    filter(
-                        filter_illegal_extensions,
-                        map(lambda f: os.path.join(root, f), files)
-                    )
-                )
-            )
-    return results
-
-# Append the ROOT_DATA_PATH to all paths
-data_files = map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('python-packages')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('data')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('static-libraries')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
-)
-
-# For now, just disguise the kalitectl.py script here as it's only to be accessed
-# with the bin/kalite proxy.
-data_files += [(
-    kalite.ROOT_DATA_PATH, [os.path.join(where_am_i, 'kalitectl.py')]
-)]
+if DIST_BUILDING_COMMAND and not os.path.exists(os.path.join(where_am_i, "kalite", "static-libraries", "docs")):
+    raise RuntimeError("Not building - kalite/static-libraries/docs not found.")
 
 
 ################
@@ -280,21 +207,17 @@ class my_install_scripts(install_scripts):
 # STATIC AND DYNAMIC BUILD SPECIFICS #
 ######################################
 
-# If it's a static build, we invoke pip to bundle dependencies in python-packages
+# If it's a static build, we invoke pip to bundle dependencies in kalite/packages/dist
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
 
-    manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-    manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
-    file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-
     sys.stderr.write(
         "This is a static build... invoking pip to put static dependencies in "
-        "dist-packages/\n"
+        "kalite/packages/dist/\n"
     )
 
-    STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, 'dist-packages-downloads')
-    STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, 'dist-packages-temp')
+    STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, '.pip-downloads')
+    STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, '.pip-temp')
 
     # Create directory where dynamically created dependencies are put
     if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
@@ -322,42 +245,47 @@ if STATIC_BUILD:
         opts.download_cache = STATIC_DIST_PACKAGES_DOWNLOAD_CACHE
         opts.isolated = True
         opts.compile = False
-        opts.ignore_dependencies = True
+        opts.ignore_dependencies = False
+        # This is deprecated and will disappear in Pip 10
         opts.use_wheel = False
+        # The below is not an option, then we skip mimeparse
+        # opts.no_binary = ':all:'  # Do not use any binary files (whl)
         opts.no_clean = False
         # Hotfix for the one single tastypie dependency link. Not nice.
         # To be removed as soon as an upstream tastypie fixes our
         # Django 1.5 issue
+        # Removed in pip 9!
         opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
 
-    # Install requirements into dist-packages
+    # Install requirements into kalite/packages/dist
     if DIST_BUILDING_COMMAND:
         install_distributions(RAW_REQUIREMENTS)
-
-    # Empty the requirements.txt file
-
+        # Now remove Django because it's bundled
+        shutil.rmtree(os.path.join(STATIC_DIST_PACKAGES, "django"))
 
 # It's not a build command with --static or it's not a build command at all
 else:
 
-    # If the dist-packages directory is non-empty
-    if os.listdir(STATIC_DIST_PACKAGES):
+    # If the kalite/packages/dist directory is non-empty
+    # Not empty = more than the __init__.py file
+    if len(os.listdir(STATIC_DIST_PACKAGES)) > 1:
         # If we are building something or running from the source
-        if DIST_BUILDING_COMMAND or (RUNNING_FROM_SOURCE and "install" in sys.argv):
+        if DIST_BUILDING_COMMAND:
             sys.stderr.write((
                 "Installing from source or not building with --static, so clearing "
-                "out dist-packages: {}\n\nIf you wish to install a static version "
+                "out: {}\n\nIf you wish to install a static version "
                 "from the source distribution, use setup.py install --static\n\n"
                 "ENTER to continue or CTRL+C to cancel\n\n"
             ).format(STATIC_DIST_PACKAGES))
             sys.stdin.readline()
             shutil.rmtree(STATIC_DIST_PACKAGES)
             os.mkdir(STATIC_DIST_PACKAGES)
+            open(os.path.join(STATIC_DIST_PACKAGES, '__init__.py'), "w").write("\n")
         else:
-            # There are distributed requirements in dist-packages, so ignore
+            # There are distributed requirements in kalite/packages, so ignore
             # everything in the requirements.txt file
             DIST_REQUIREMENTS = []
             DIST_NAME = 'ka-lite-static'
@@ -374,7 +302,7 @@ else:
                     "been using."
                 )
 
-    # No dist-packages/ and not building, so must be installing the dynamic
+    # No kalite/packages/dist/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
         # Check that static version is not already installed
@@ -390,19 +318,6 @@ else:
                     "been using."
                 )
 
-    if os.path.exists(os.path.join(where_am_i, 'MANIFEST.in.dist')):
-        manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-        manifest_content += "\n" + "recursive-include dist-packages *"
-        file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-
-
-# All files from dist-packages are included if the directory exists
-if os.listdir(STATIC_DIST_PACKAGES):
-    data_files += map(
-        lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-        gen_data_files('dist-packages')
-    )
-
 setup(
     name=DIST_NAME,
     version=kalite.VERSION,
@@ -413,8 +328,7 @@ setup(
     license="MIT",
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
-    packages=find_packages(exclude=["python-packages"]),
-    data_files=data_files,
+    packages=find_packages(),
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
     dependency_links=DEPENDENCY_LINKS,

@@ -16,7 +16,7 @@ from errors import OptionError
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
 OUTPUT_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), SS_DUMP_DIR))
-KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kalitectl.py"))
+KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin", "kalite"))
 # Formatted from subprocess.Popen
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
