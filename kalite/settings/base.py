@@ -366,6 +366,18 @@ DEFAULT_ENCODING = 'utf-8'
 # https://github.com/ierror/django-js-reverse/issues/29
 JS_REVERSE_JS_MINIFY = False
 
+
+# https://github.com/learningequality/ka-lite/issues/5123
+AJAX_ERROR = ugettext_lazy(
+    """<p>Sorry, this page is having an unexpected problem - but this error """
+    """<strong>is not your fault</strong></p>"""
+    """<p>Please don't worry, and select another from 25,000 exercises in here """
+    """to continue learning...</p>"""
+)
+
+TASTYPIE_CANNED_ERROR = AJAX_ERROR
+
+
 ########################
 # Storage and caching
 ########################

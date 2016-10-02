@@ -19,6 +19,7 @@ Bug fixes
  * Use current year in footer text :url-issue:`5055`
  * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
  * Redirect to front page if user logs in from the signup page :url-issue:`3926`
+ * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
 
 
 Known issues
