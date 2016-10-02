@@ -52,6 +52,7 @@ Code cleanup
  * PyRun is no longer supported, code that pertained its lacking ``multiprocessing`` has been removed.
  * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
  * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
+ * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
 
 Command cleanup
 ^^^^^^^^^^^^^^^
@@ -78,7 +79,8 @@ that the following management commands have been removed:
  * ``kalite manage create_dummy_language_pack``
  * ``kalite manage generate_blacklist``
  * ``kalite manage compileymltojson``
-
+ * ``kalite manage restorebackup``
+ * ``kalite manage kalitebackup``
 
 0.16.9
 ------

@@ -210,6 +210,8 @@ KA Lite is capable of synchronizing data with our central data repository when a
 
 For the deployments in which we do have direct involvement, we receive updates from our partners with quantitative data from the built-in coach reports and attain qualitative data from our on-site visits. For example, we know that 20 out of 20 students in the Idaho Department of Corrections deployment have passed their GED using KA Lite.
 
+.. _backup:
+
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------
 
