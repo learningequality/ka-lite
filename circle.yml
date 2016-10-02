@@ -33,7 +33,7 @@ test:
     - jshint kalite/*/static/js/*/
   post:
     - killall --wait sc  # wait for Sauce Connect to close the tunnel
-    - COVERALLS_PARALLEL=true coveralls -v
+    - bash <(curl -s https://codecov.io/bash)
 
 notify:
   webhooks:
