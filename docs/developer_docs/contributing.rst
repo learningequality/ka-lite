@@ -9,4 +9,5 @@ How can I contribute to...
 .. toctree::
 
     Documentation <documentation>
+    Inline help <inline>
     Accessibility <accessibility>
