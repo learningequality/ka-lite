@@ -115,17 +115,20 @@ DIST_DESCRIPTION = (
 # This changes when installing the static version
 DIST_NAME = 'ka-lite'
 
+STATIC_BUILD = False  # Download all dependencies to kalite/packages/dist
+NO_CLEAN = False  # Do not clean kalite/packages/dist
 
 # Check if user supplied the special '--static' option
 if '--static' in sys.argv:
     sys.argv.remove('--static')
     STATIC_BUILD = True
+    if '--no-clean' in sys.argv:
+        NO_CLEAN = True
+        sys.argv.remove('--no-clean')
     DIST_NAME = 'ka-lite-static'
     DIST_DESCRIPTION += " This is the static version, which bundles all dependencies. Recommended for a portable installation method."
     STATIC_REQUIREMENTS = DIST_REQUIREMENTS
     DIST_REQUIREMENTS = []
-else:
-    STATIC_BUILD = False
 
 
 def enable_log_to_stdout(logname):
@@ -224,7 +227,7 @@ if STATIC_BUILD:
         os.mkdir(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE)
 
     # Should remove the temporary directory always
-    if os.path.exists(STATIC_DIST_PACKAGES_TEMP):
+    if not NO_CLEAN and os.path.exists(STATIC_DIST_PACKAGES_TEMP):
         print("Removing previous temporary sources for pip {}".format(STATIC_DIST_PACKAGES_TEMP))
         shutil.rmtree(STATIC_DIST_PACKAGES_TEMP)
 
@@ -250,7 +253,7 @@ if STATIC_BUILD:
         opts.use_wheel = False
         # The below is not an option, then we skip mimeparse
         # opts.no_binary = ':all:'  # Do not use any binary files (whl)
-        opts.no_clean = False
+        opts.no_clean = NO_CLEAN
         # Hotfix for the one single tastypie dependency link. Not nice.
         # To be removed as soon as an upstream tastypie fixes our
         # Django 1.5 issue

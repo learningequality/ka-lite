@@ -97,7 +97,9 @@ release: dist man
 
 dist: clean docs assets
 	python setup.py sdist --formats=$(format)
+	python setup.py bdist_wheel
 	python setup.py sdist --formats=$(format) --static
+	python setup.py bdist_wheel --static --no-clean
 	ls -l dist
 
 install: clean
