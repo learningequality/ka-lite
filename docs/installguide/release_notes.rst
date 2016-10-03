@@ -22,6 +22,7 @@ Bug fixes
  * Use current year in footer text :url-issue:`5055`
  * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
 
+
 Known issues
 ^^^^^^^^^^^^
 
@@ -82,6 +83,8 @@ that the following management commands have been removed:
  * ``kalite manage compileymltojson``
  * ``kalite manage restorebackup``
  * ``kalite manage kalitebackup``
+ * Remove ``--watch`` option from ``bin/kalite start`` because ``bin/kalite manage runserver`` does the job. :url-issue:`5314`
+
 
 0.16.9
 ------

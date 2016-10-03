@@ -6,7 +6,7 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [--foreground --watch] [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [options]
@@ -46,8 +46,6 @@ Examples:
 
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
-  kalite start --watch      Set cherrypy to watch for changes to Django code and start
-                            the Watchify process to recompile Javascript dynamically.
 
 Planned features:
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
@@ -423,42 +421,7 @@ def manage(command, args=None, as_thread=False):
         return thread
 
 
-# Watchify running code modified from:
-# https://github.com/beaugunderson/django-gulp/blob/master/django_gulp/management/commands/runserver.py
-
-def start_watchify():
-    sys.stdout.write('Starting watchify')
-
-    watchify_process = subprocess.Popen(
-        args='node build.js --debug --watch --staticfiles',
-        shell=True,
-        stdin=subprocess.PIPE,
-        stdout=sys.stdout,
-        stderr=sys.stderr)
-
-    if watchify_process.poll() is not None:
-        raise RuntimeError('watchify failed to start')
-
-    print('Started watchify process on pid {0}'.format(
-        watchify_process.pid))
-
-    with open(NODE_PID_FILE, 'w') as f:
-        f.write("%d" % watchify_process.pid)
-
-    atexit.register(kill_watchify_process)
-
-def kill_watchify_process():
-    pid, __ = read_pid_file(NODE_PID_FILE)
-    # PID file exists, but process is dead
-    if not pid_exists(pid):
-        print('watchify process not running')
-    else:
-        kill_pid(pid)
-        os.unlink(NODE_PID_FILE)
-        sys.stdout.write('watchify process killed')
-
-
-def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
@@ -519,11 +482,6 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
 
     manage('initialize_kalite')
 
-    if watch:
-        watchify_thread = Thread(target=start_watchify)
-        watchify_thread.daemon = True
-        watchify_thread.start()
-
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
@@ -571,11 +529,11 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
     })
 
     DjangoAppPlugin(cherrypy.engine).subscribe()
-    if not watch:
-        # cherrypyserver automatically reloads if any modules change
-        # Switch-off that functionality here to save cpu cycles
-        # http://docs.cherrypy.org/stable/appendix/faq.html
-        cherrypy.engine.autoreload.unsubscribe()
+
+    # cherrypyserver automatically reloads if any modules change
+    # Switch-off that functionality here to save cpu cycles
+    # http://docs.cherrypy.org/stable/appendix/faq.html
+    cherrypy.engine.autoreload.unsubscribe()
 
     try:
         cherrypy.quickstart()
@@ -924,7 +882,6 @@ def main():
     if arguments['start']:
         start(
             debug=arguments['--debug'],
-            watch=arguments['--watch'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS'],
             daemonize=not arguments['--foreground'],
