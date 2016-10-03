@@ -232,6 +232,9 @@ var LoginView = BaseView.extend({
     handle_login: function(response) {
         if (response.status == 200) {
             this.trigger("login_success");
+            if (location.href.indexOf("signup") > -1) {
+                window.location = "/";
+            }
             if (this.next) {
                 window.location = this.next;
             } else if (response.redirect) {
