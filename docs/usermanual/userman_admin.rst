@@ -665,6 +665,8 @@ _________________
   With this setting, users must be logged in order to access videos & exercises
 * ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
   Disables user sign ups.
+* ``HIDE_CONTENT_RATING = <True or false> (default = False)``
+  Hides content feedback, i.e. the star rating box below videos
 
 
 Online Synchronization
