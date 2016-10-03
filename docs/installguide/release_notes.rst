@@ -20,6 +20,7 @@ Bug fixes
  * Activating simplified login results in blank login modal :url-issue:`5255`
  * ``favicon.ico`` missing in distributed set of files, little KA green leaf now appears in browser window decorations and shortcuts :url-issue:`5306`
  * Use current year in footer text :url-issue:`5055`
+ * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
 
 Known issues
 ^^^^^^^^^^^^

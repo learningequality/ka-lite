@@ -439,6 +439,9 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
 # PRAGMAs to pass to SQLite when we first open the content DBs for reading. Used mostly for optimizations.
 CONTENT_DB_SQLITE_PRAGMAS = []
 
+# Hides content rating
+HIDE_CONTENT_RATING = False
+
 ########################
 # After all settings, but before config packages,
 #   import settings from other apps.
