@@ -10,13 +10,10 @@ Bug fixes
 ^^^^^^^^^
 
  * Forward admin user to Manage tab after device registration :url-issue:`4622`
- * The bundled ``requests`` library is now version 2.11.1 :url-issue:`5263`
- * Fixed unreliable BDD test :url-issue:`5270`
- * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
- * Added PyPy support by not spawning a new interpreter :url-issue:`3399` :url-issue:`4315`
+ * The bundled ``requests`` library is now version 2.11.1, fixing various download issues :url-issue:`5263`
+ * Reduced memory footprint and added PyPy support by not spawning a new interpreter :url-issue:`3399` :url-issue:`4315`
  * Upgrades from 0.15 on a Windows system broke video download :url-issue:`5263`
  * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
- * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
  * Activating simplified login results in blank login modal :url-issue:`5255`
  * ``favicon.ico`` missing in distributed set of files, little KA green leaf now appears in browser window decorations and shortcuts :url-issue:`5306`
  * Use current year in footer text :url-issue:`5055`
@@ -44,6 +41,9 @@ Code cleanup
 ^^^^^^^^^^^^
 
  * (List of removed commands)
+ * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
+ * Fixed unreliable BDD test :url-issue:`5270`
+ * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
  * ``kalitectl.py`` has been removed, instead we invoke ``kalite.__main__`` from ``bin/kalite``.
  * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
  * The parts of ``kalite.testing`` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
