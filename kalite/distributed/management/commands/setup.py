@@ -43,7 +43,11 @@ CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(
     version=SHORTVERSION, langcode="en", suffix="")
 
 PRESEED_DIR = os.path.join(ROOT_DATA_PATH, "preseed")
-PRESEED_CONTENT_PACK_MASK = re.compile(r"contentpack\.(?P<lang>[a-z]{2,}).zip")
+
+# Examples:
+# contentpack.en.zip
+# contentpack-0.16.en.zip
+PRESEED_CONTENT_PACK_MASK = re.compile(r"contentpack.*\.(?P<lang>[a-z]{2,}).zip")
 
 
 def raw_input_yn(prompt):
