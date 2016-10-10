@@ -57,6 +57,15 @@ Code cleanup
  * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
  * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
 
+Debian/Ubuntu installer
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ * Everything in the debconf regarding assessment items has been **removed**. This only has an effect if you had automated deployments. Instead of automating deployments and their content through debconf settings, use your own custom `.kalite` user data directory or invoke `kalite manage retrievecontentpack`. `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * `ka-lite-bundle` now comes bundled with the English content pack `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * No Python files (`*.py`) are placed in `/usr/share/kalite`.
+ * Systemd support introduced, fixes specific bug on unupdated Raspbian Jesse `learningequality/installers#422 <https://github.com/learningequality/installers/pull/422>`__
+
+
 Command cleanup
 ^^^^^^^^^^^^^^^
 
