@@ -18,10 +18,15 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 
 .. _Github Wiki: https://github.com/learningequality/ka-lite/wiki/Report%20Bugs%20by%20Creating%20Issues
 
+Why are my downloaded videos not displaying?
+--------------------------------------------
+
+Please refer to :ref:`video-playback`.
+
 How do I change KA Lite's content folder?
 -----------------------------------------
 
-If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure CONTENT_ROOT in the ":ref:`configuration-settings`" section.
+If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure ``CONTENT_ROOT`` in the ":ref:`configuration-settings`" section.
 
 How do I change the directory where *all* of KA Lite's runtime files go, including content?
 -------------------------------------------------------------------------------------------
@@ -121,12 +126,15 @@ You will need:
 1. A computer that is running the KA Lite software (e.g. a desktop computer, laptop, or Raspberry Pi).
 2. One or more client devices that have web browsers (laptops, tablets, desktop computers, etc)
 
-Note that for a single-user deployment (1) and (2) can be the same computer, with the browser connecting to the locally running KA Lite server software. To make the software accessible to multiple client devices, you will need to put them on the same local network as the KA Lite device (1), e.g. through a router.
+Note that for a single-user deployment (1) and (2) can be the same computer, with the browser connecting to the locally running KA Lite server software. To make the software accessible to multiple client devices, you will need to put them on the same local network as the KA Lite device (1), e.g. through a WIFI access point.
+
+To read more details, see :ref:`system-requirements`.
 
 What sort of processing power is required for KA Lite?
 ------------------------------------------------------
 
-KA Lite has very low processing requirements, and can be run as a server on devices with processors as low-powered as the $35 Raspberry Pi, using about 100MB of RAM. There is also low processing power required for client devices as well, and any browser that supports HTML5 video with h264 encoding or Flash Player should be able to function as a client device.
+See :ref:`system-requirements`.
+
 
 What are the operating system (OS) and software requirements for running KA Lite?
 ---------------------------------------------------------------------------------
@@ -134,6 +142,8 @@ What are the operating system (OS) and software requirements for running KA Lite
 KA Lite can run on almost any major operating system: Windows, Linux, and Mac/OSX. The only software dependency is the `Python 2.7 runtime`_.
 
 .. _Python 2.7 runtime: https://www.python.org/downloads/
+
+See :ref:`system-requirements`.
 
 What is data syncing?
 ---------------------
@@ -191,7 +201,7 @@ Yes, absolutely! If you would like to contribute to KA Lite as a translator, you
 
 .. _translations and internationalization: https://github.com/learningequality/ka-lite/wiki/Internationalization:-Contributing-Translations
 
-Can I contribute even if I don’t know how to code?
+Can I contribute even if I don't know how to code?
 --------------------------------------------------
 
 Yes! `There are many ways! <https://learningequality.org/ka-lite/#community>`_
@@ -209,6 +219,8 @@ Because KA Lite is freely available and designed to run offline, collecting impa
 KA Lite is capable of synchronizing data with our central data repository when an online connection exists.
 
 For the deployments in which we do have direct involvement, we receive updates from our partners with quantitative data from the built-in coach reports and attain qualitative data from our on-site visits. For example, we know that 20 out of 20 students in the Idaho Department of Corrections deployment have passed their GED using KA Lite.
+
+.. _backup:
 
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------

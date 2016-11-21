@@ -1,0 +1,35 @@
+# MANIFEST.in is generated with basic
+# layout of MANIFEST.in.dist
+
+include LICENSE
+include README.rst
+include setup.cfg
+include requirements.txt
+
+recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars *.woff2 *.mo *ico
+recursive-include kalite/static-libraries *
+
+recursive-include kalite/packages/dist *
+recursive-exclude kalite/packages/dist *.po
+
+# Get the empty DBs -- make sure they are properly generated!
+recursive-exclude kalite/database *
+recursive-include kalite/database/templates *sqlite
+recursive-include kalite/database/templates/content_items *sqlite
+
+# This can be a huge problem when creating an sdist from
+# a local development environment
+recursive-exclude kalite/static *
+
+# There are still a couple of files left here, however main part is for build
+# process
+recursive-include data *
+recursive-exclude data/khan *
+
+# Necessary because it's a data directory so they
+# do not get automatically excluded
+recursive-exclude python-packages *pyc
+
+# Docs
+include docs/kalite.1.gz
+kalite/static-docs

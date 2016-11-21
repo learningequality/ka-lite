@@ -16,7 +16,7 @@ Running the integration tests
 
 To get the dependencies run ```pip install -r dev_requirements.txt```. This should install the correct version of behave. Selenium is also required but is currently included in our python-packages directory.
 
-To run the tests simply run ```python kalitectl.py manage test``` just like you used to. This will automatically search out tests using both the unit test framework and the behave framework. You can specify apps, but right now there's no way to just run integration tests.
+To run the tests simply run ```bin/kalite manage test``` just like you used to. This will automatically search out tests using both the unit test framework and the behave framework. You can specify apps, but right now there's no way to just run integration tests.
 
 Running a specific test
 ^^^^^^^^^^^^^^^^^^^^^^^

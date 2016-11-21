@@ -43,10 +43,12 @@ module.exports = BaseView.extend({
             If the model is new (never been synced) or empty (such as if it was deleted) render each component in
             sequence. Otherwise, render all components together, for review.
         */
-        if( this.model.isNew() || this.model.get("quality") === 0 || this.model.get("difficulty") === 0) {
-            this.renderSequence();
-        } else {
-            this.renderAll();
+        if ( ! window.sessionModel.get('HIDE_CONTENT_RATING') ) {
+            if( this.model.isNew() || this.model.get("quality") === 0 || this.model.get("difficulty") === 0) {
+                this.renderSequence();
+            } else {
+                this.renderAll();
+            }
         }
     },
 

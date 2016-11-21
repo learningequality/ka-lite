@@ -143,8 +143,7 @@ To download and install it from command line:
 You can also add the PPA, see :ref:`ppa-installation`, and then
 run ``sudo apt-get install ka-lite-raspberry-pi``. 
 
-After installing, you can setup a Wifi hotspot using this guide:
-:ref:`raspberry-pi-wifi`
+For a more thorough guide, see :ref:`raspberry-pi-tutorial`.
 
 
 Other options

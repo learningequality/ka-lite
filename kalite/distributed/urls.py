@@ -36,25 +36,6 @@ urlpatterns += patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
-
-# TODO: This should only be in DEBUG settings and the HTTP server should be
-# serving it otherwise. Cherrypy is currently serving it through modifications
-# in kalite/distributed/cherrypyserver.py
-urlpatterns += patterns('',
-    url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_DATA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_DATA_PATH,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
-    }),
-)
-
 # Teaching / admin patterns
 urlpatterns += patterns(__package__ + '.views',
     # For teachers
@@ -101,6 +82,19 @@ urlpatterns += patterns(__package__ + '.views',
 if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+    )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+            'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
+        }),
+        url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+            'document_root': settings.CONTENT_ROOT,
+        }),
+        url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
     )
 
 handler403 = __package__ + '.views.handler_403'

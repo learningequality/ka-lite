@@ -30,19 +30,3 @@ Documentation development
 
 #. You can view the docs in a browser by opening *docs/_build/html/index.html*.
 #. After you are satisfied with your changes push them to your fork of the ka-lite project, and then open a PR.
-
-
-Screenshots
------------
-
-Screenshots are made automatically following the screenshots directives. They
-are stored in a folder ``docs/_static/``, which is also sync'ed to Github
-(TODO: This is a temporary procedure).
-
-To grab new screenshots, you have to have Firefox installed and run::
-
-   cd docs/
-   SPHINX_SS_USE_PVD=true make SPHINXOPTS="-D screenshots_create=1" html
-
-You can also refer to ``docs/SCREENSHOT_USAGE.MD`` for more info about the
-screenshot RST directive.

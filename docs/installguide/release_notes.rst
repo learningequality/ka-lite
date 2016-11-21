@@ -1,7 +1,101 @@
 Release Notes
 =============
 
-.. warning::
+0.17 (unreleased)
+-----------------
+
+This is a draft of what will be released. Notes are not fully accurate or final.
+
+Bug fixes
+^^^^^^^^^
+
+ * Forward admin user to Manage tab after device registration :url-issue:`4622`
+ * The bundled ``requests`` library is now version 2.11.1, fixing various download issues :url-issue:`5263`
+ * Reduced memory footprint and added PyPy support by not spawning a new interpreter :url-issue:`3399` :url-issue:`4315`
+ * Upgrades from 0.15 on a Windows system broke video download :url-issue:`5263`
+ * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
+ * Activating simplified login results in blank login modal :url-issue:`5255`
+ * ``favicon.ico`` missing in distributed set of files, little KA green leaf now appears in browser window decorations and shortcuts :url-issue:`5306`
+ * Use current year in footer text :url-issue:`5055`
+ * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
+ * Redirect to front page if user logs in from the signup page :url-issue:`3926`
+ * Progress bar missing when decimals in progress percentage :url-issue:`5321`
+
+
+Known issues
+^^^^^^^^^^^^
+
+ * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in other way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** 8 installation on 32bit is reported to take ~1 hour before eventually finishing.
+ * **Development**: Selenium tests on Firefox 48+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``
+
+
+.. note::
+    Code and command cleanups listed below are harmless if you installed KA Lite
+    using an installer and only relevant in these cases:
+     * You run a specialized setup or deployment
+     * Your deployment is 1½+ years old
+     * You're a KA Lite developer
+
+Code cleanup
+^^^^^^^^^^^^
+
+ * (List of removed commands)
+ * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
+ * Fixed unreliable BDD test :url-issue:`5270`
+ * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
+ * ``kalitectl.py`` has been removed, instead we invoke ``kalite.__main__`` from ``bin/kalite``.
+ * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
+ * The parts of ``kalite.testing`` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
+ * The whole ``kalite.basetests`` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
+ * ``kalite.updates.management.commands.classes`` refactored so it doesn't show up as a command ``classes`` (nb: it wasn't a command!).
+ * ``python-packages/fle_utils/build``, unused build utility from 2013.
+ * The ``manage.py`` script has been removed from the source tree (use ``bin/kalite manage <command>`` instead.)
+ * When running KA Lite straight from source, we used some very legacy convetions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
+ * PyRun is no longer supported, code that pertained its lacking ``multiprocessing`` has been removed.
+ * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
+ * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
+ * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
+
+Debian/Ubuntu installer
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ * Everything in the debconf regarding assessment items has been **removed**. This only has an effect if you had automated deployments. Instead of automating deployments and their content through debconf settings, use your own custom `.kalite` user data directory or invoke `kalite manage retrievecontentpack`. `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * `ka-lite-bundle` now comes bundled with the English content pack `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * No Python files (`*.py`) are placed in `/usr/share/kalite`.
+ * Systemd support introduced, fixes specific bug on unupdated Raspbian Jesse `learningequality/installers#422 <https://github.com/learningequality/installers/pull/422>`__
+
+
+Command cleanup
+^^^^^^^^^^^^^^^
+
+In 0.17, we cleaned up a lot of unused/broken/deprecated commands,
+:url-issue:`5211`.
+
+In case you are using any of them (we hope not), you will have to pay attention
+that the following management commands have been removed:
+
+ * ``kalite manage gitmigrate``
+ * ``kalite manage katest``
+ * ``kalite manage initdconfig``
+ * ``kalite manage nginxconfig``
+ * ``kalite manage apacheconfig``
+ * ``kalite manage todolist``
+ * ``kalite manage i18nize_templates``
+ * ``kalite manage benchmark``
+ * ``kalite manage createmodel``
+ * ``kalite manage modifymodel``
+ * ``kalite manage readmodel``
+ * ``kalite manage runcode``
+ * ``kalite manage unpack_asessment_zip``
+ * ``kalite manage create_dummy_language_pack``
+ * ``kalite manage generate_blacklist``
+ * ``kalite manage compileymltojson``
+ * ``kalite manage restorebackup``
+ * ``kalite manage kalitebackup``
+ * Remove ``--watch`` option from ``bin/kalite start`` because ``bin/kalite manage runserver`` does the job. :url-issue:`5314`
+
 
 0.16.9
 ------
