@@ -12,16 +12,31 @@ from fle_utils.internet.decorators import api_handle_error_with_json
 @csrf_exempt
 @api_handle_error_with_json
 def set_server_or_user_default_language(request):
+    """This function sets the default language for either the server or user.
+    It is accessed via HTTP POST or GET.
+
+    Required Args (POST or GET):
+        lang (str): any supported ISO 639-1 language code
+
+    Optional Args (GET):
+        returnUrl (str): the URL to redirect the client to after setting the language
+        allUsers (bool): when true, set the the default language for all users,
+                         when false or missing, set the language for current user
+
+    Returns:
+        JSON status, unless a returnUrl is provided, in which case it returns
+        a redirect when successful
+
+    Example:
+        To set the current user's language to Spanish and send them to
+        the Math section, you could use the following link:
+
+            /api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math
+    """
 
     returnUrl = ''
     allUsers = ''
 
-    # by allowing GET requests we can use this script to switch
-    # languages on the fly with a link like this:
-    #   http://my.host:8008/api/i18n/set_default_language/?lang=en&returnUrl=/learn/khan/math
-    # That would change the language for the current user. You
-    # can also switch the default language for all users with
-    # the addition of '&allUsers=1' argument
     if request.method == 'GET':
         data = request.GET
         if 'returnUrl' in data:
