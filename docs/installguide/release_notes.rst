@@ -25,9 +25,9 @@ Bug fixes
 Known issues
 ^^^^^^^^^^^^
 
- * Windows installer tray application option "Run on start" does not work see
-   `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
- * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+ * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in other way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** 8 installation on 32bit is reported to take ~1 hour before eventually finishing.
  * **Development**: Selenium tests on Firefox 48+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``
 
 
