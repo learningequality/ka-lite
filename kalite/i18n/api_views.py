@@ -39,6 +39,8 @@ def set_server_or_user_default_language(request):
 
     if request.method == 'GET':
         data = request.GET
+        if not 'lang' in data:
+            return redirect('/')
         if 'returnUrl' in data:
             returnUrl = data['returnUrl']
         if 'allUsers' in data:
