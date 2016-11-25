@@ -1,10 +1,10 @@
 import os
+import shutil
 import sys
 
 from optparse import make_option
 
 from django.conf import settings
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 
@@ -33,7 +33,10 @@ class Command(BaseCommand):
                 print "No problem, have a nice day!"
                 sys.exit(0)
         
-        call_command("flush", interactive=False)
+        shutil.copy(
+            settings.DB_TEMPLATE_DEFAULT,
+            settings.DEFAULT_DATABASE_PATH
+        )
 
         if os.path.exists(settings.SECRET_KEY_FILE):
             os.unlink(settings.SECRET_KEY_FILE)
