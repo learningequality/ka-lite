@@ -6,6 +6,12 @@ Release Notes
 
 This is a draft of what will be released. Notes are not fully accurate or final.
 
+New features
+^^^^^^^^^^^^
+
+ * New management command ``clearuserdata``, makes it easy to prepare a
+   prototype device for subsequent cloning. :url-issue:`5341`
+
 Bug fixes
 ^^^^^^^^^
 
