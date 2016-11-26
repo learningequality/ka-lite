@@ -1,12 +1,11 @@
 import json
 
 from django.conf import settings; logging = settings.LOG
-from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 
 from .base import get_default_language, set_default_language, set_request_language
-from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
+from fle_utils.internet.classes import JsonResponse
 from fle_utils.internet.decorators import api_handle_error_with_json
 
 @csrf_exempt
@@ -37,6 +36,8 @@ def set_server_or_user_default_language(request):
     returnUrl = ''
     allUsers = ''
 
+    # GET requests are used by RACHEL to jump to a specific page with the
+    # language already set so the user doesn't have to.
     if request.method == 'GET':
         data = request.GET
         if not 'lang' in data:
@@ -68,4 +69,3 @@ def set_server_or_user_default_language(request):
         return JsonResponse({"status": "OK"})
     else:
         return redirect(returnUrl)
-
