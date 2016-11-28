@@ -11,6 +11,11 @@ New features
 
  * New management command ``clearuserdata``, makes it easy to prepare a
    prototype device for subsequent cloning. :url-issue:`5341`
+ * Patch from Rachel means you can now go to a specific page in a specific
+   language:
+   ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
+   :url-issue:`5342` -
+   (Thanks: Jonathan Field)
 
 Bug fixes
 ^^^^^^^^^
