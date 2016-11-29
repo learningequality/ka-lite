@@ -19,7 +19,7 @@ django-appconf==1.0.1
 peewee==2.6.4
 python-dateutil==2.4.2
 django-annoying==0.8.4
-cherrypy==3.2.2
+cherrypy==3.3.0
 ifcfg==0.9.3
 importlib==1.0.3
 pbkdf2==1.3
