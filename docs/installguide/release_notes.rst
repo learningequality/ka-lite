@@ -17,6 +17,7 @@ New features
    :url-issue:`5342` -
    (Thanks: Jonathan Field)
 
+
 Bug fixes
 ^^^^^^^^^
 
@@ -31,6 +32,7 @@ Bug fixes
  * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
  * Redirect to front page if user logs in from the signup page :url-issue:`3926`
  * Progress bar missing when decimals in progress percentage :url-issue:`5321`
+ * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
 
 
 Known issues
