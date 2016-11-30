@@ -358,6 +358,7 @@ if not os.path.exists(USER_STATIC_FILES):
 STATICFILES_DIRS = (
     os.path.join(PACKAGE_PATH, 'static-libraries'),
     USER_STATIC_FILES,
+    ('srt', os.path.join(STATIC_ROOT, "srt"))
 )
 
 DEFAULT_ENCODING = 'utf-8'
