@@ -16,7 +16,6 @@ dependencies:
 test:
   override:
     - make assets
-    - bin/kalite manage retrievecontentpack empty en --foreground --template
     - make docs
     - kalite start --traceback -v2
     - kalite status
