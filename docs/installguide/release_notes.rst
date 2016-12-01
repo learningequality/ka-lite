@@ -31,6 +31,7 @@ Bug fixes
  * Use current year in footer text :url-issue:`5055`
  * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
  * Redirect to front page if user logs in from the signup page :url-issue:`3926`
+ * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
  * Progress bar missing when decimals in progress percentage :url-issue:`5321`
  * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``

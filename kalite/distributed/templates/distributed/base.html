@@ -120,6 +120,9 @@
 
             {# Body #}
             <div id="content-container" class="container" role="main">
+                <div id="ajax_user_error" style="display: none" class="alert alert-danger">
+                  {{ universal_js_user_error|safe }}
+                </div>
                 {% block outer_content %}
                     {% block precontent %}
                         {% include "distributed/partials/_messages.html" %}
