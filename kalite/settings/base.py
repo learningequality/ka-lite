@@ -209,8 +209,11 @@ STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(os.getenv('KALITE_CONTENT_ROOT', getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content'))))
+SRT_ROOT = os.path.join(STATIC_ROOT, "srt")
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
+if not os.path.exists(SRT_ROOT):
+    os.makedirs(SRT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
@@ -358,6 +361,7 @@ if not os.path.exists(USER_STATIC_FILES):
 STATICFILES_DIRS = (
     os.path.join(PACKAGE_PATH, 'static-libraries'),
     USER_STATIC_FILES,
+    ('srt', SRT_ROOT)
 )
 
 DEFAULT_ENCODING = 'utf-8'

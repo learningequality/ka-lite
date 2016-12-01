@@ -2,7 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 
-var vtt = require("videojs-vtt.js");  // Must precede video.js
+var vtt = require("vtt.js");  // Must precede video.js
 global.WebVTT = vtt.WebVTT;  // Required to be in the global scope by video.js
 
 var _V_ = require("video.js");
