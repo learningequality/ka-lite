@@ -35,5 +35,6 @@ def custom(request):
         "True": True,
         "False": False,
         "is_config_package_nalanda": "nalanda" in settings.CONFIG_PACKAGE,
-        "HIDE_CONTENT_RATING": settings.HIDE_CONTENT_RATING
+        "HIDE_CONTENT_RATING": settings.HIDE_CONTENT_RATING,
+        "universal_js_user_error": settings.AJAX_ERROR
     }
