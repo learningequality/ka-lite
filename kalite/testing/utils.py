@@ -28,7 +28,7 @@ class FuzzyInt(int):
         return self.__repr__()
 
     def __add__(self, x):
-        val = super(FuzzyInt, self).__add__(x)
+        super(FuzzyInt, self).__add__(x)
         self.lowest += x
         self.highest += x
         return self

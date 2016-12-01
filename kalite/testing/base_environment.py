@@ -3,7 +3,6 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
-import json
 import os
 import tempfile
 import shutil
@@ -15,6 +14,7 @@ from httplib import CannotSendRequest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from shutil import WindowsError
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections

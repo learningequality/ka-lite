@@ -3,7 +3,6 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
-import re
 import six
 import sys
 

@@ -433,18 +433,6 @@ def post(context, url, data=""):
     return request(context, url, method="POST", data=data)
 
 
-def get(context, url, data=""):
-    """ Sends a GET request to the testing server associated with context
-
-    context: A `behave` context
-    url: A relative url, i.e. "/zone/management/None" or "/securesync/logout"
-    data: A string containing the body of the request
-
-    Returns the response.
-    """
-    return request(context, url, method="GET", data=data, api_call=api_call)
-
-
 def request(context, url, method="GET", data=""):
     """ Make a request to the testing server associated with context
 

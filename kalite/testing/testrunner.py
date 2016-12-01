@@ -7,9 +7,9 @@ import shutil
 from django.conf import settings
 logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app, get_apps
+from django.db.models import get_app
 from django.core.management import call_command
-from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
+from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.utils import unittest
 
 from fle_utils.general import ensure_dir
