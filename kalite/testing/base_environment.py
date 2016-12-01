@@ -3,6 +3,7 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
+import logging
 import os
 import tempfile
 import shutil
@@ -28,6 +29,9 @@ from kalite.topic_tools.content_models import Item, set_database, annotate_conte
     delete_instances, get_random_content
 
 from securesync.models import Zone, Device, DeviceZone
+import random
+
+logger = logging.getLogger(__name__)
 
 
 def before_all(context):
@@ -61,16 +65,6 @@ def setup_content_paths(context, db):
     # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
     # depends on these specific values.
     context.unavailable_content_path = "khan/foo/bar/unavail"
-    context.available_content_path = get_random_content(kinds=["Exercise"], available=True)[0]['path']
-
-    # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
-    # It then updates the items with these paths with their update dicts, and then propagates
-    # availability changes up the topic tree - this means that we can alter the availability of one item
-    # and make all its parent topics available so that it is navigable to in integration tests.
-    def iterator_content_items(ids=None, channel="khan", language="en"):
-        return [(context.available_content_path, {"available": True})]
-
-    annotate_content_models(db=db, iterator_content_items=iterator_content_items)
 
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
@@ -83,6 +77,41 @@ def setup_content_paths(context, db):
             path=context.unavailable_content_path
         )
 
+    context._exercises = []
+
+    with Using(db, [Item], with_transaction=False):
+        # Root node
+        context._content_root = Item.create(
+            title="Khan Academy",
+            description="",
+            available=True,
+            files_complete=0,
+            total_files="1",
+            kind="Topic",
+            parent_id=None,
+            id="khan",
+            slug="khan",
+            path="khan/",
+            extra_fields="{}",
+            youtube_id=None,
+            size=0,
+            remote_size=315846064333,
+            sort_order=0
+        )
+        context._exercises.append(
+            Item.create(
+                title="An exercise",
+                parent=context._content_root.pk,
+                description="Solve this",
+                available=True,
+                kind="Exercise",
+                id="exercise1234",
+                slug="exercise",
+                path="khan/exercise"
+            )
+        )
+    context.available_content_path = random.choice(context._exercises).path
+
 
 @set_database
 def teardown_content_paths(context, db):
@@ -94,6 +123,9 @@ def teardown_content_paths(context, db):
     """
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item.delete_instance()
+        context._content_root.delete_instance()
+        for exercise in context._exercises:
+            exercise.delete_instance()
 
 
 def setup_sauce_browser(context):
