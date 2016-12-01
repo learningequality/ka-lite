@@ -373,10 +373,10 @@ JS_REVERSE_JS_MINIFY = False
 
 # https://github.com/learningequality/ka-lite/issues/5123
 AJAX_ERROR = ugettext_lazy(
-    """<p>Sorry, this page is having an unexpected problem - but this error """
+    """<p>Sorry, this page is having an unexpected problem - the error """
     """<strong>is not your fault</strong></p>"""
-    """<p>Please don't worry, and select another from 25,000 exercises in here """
-    """to continue learning...</p>"""
+    """<p>Don't let that stop you, try selecting another video or exercise """
+    """from ~30,000 videos and exercises to continue your learning...</p>"""
 )
 
 TASTYPIE_CANNED_ERROR = AJAX_ERROR
