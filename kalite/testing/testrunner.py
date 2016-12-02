@@ -143,7 +143,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         browser.quit()
 
         if not database_exists():
-            call_command("retrievecontentpack", "download", "en", minimal=True, foreground=True)
+            call_command("retrievecontentpack", "empty", "en", force=True, foreground=True)
             logging.info("Successfully setup content database")
         else:
             logging.info("Content database already exists")
