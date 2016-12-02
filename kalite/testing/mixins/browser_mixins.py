@@ -16,6 +16,7 @@ from kalite.facility.models import Facility
 from django.contrib.auth.models import User
 
 from kalite.testing.browser import hacks_for_phantomjs
+from kalite.testing.utils import switch_to_active_element
 
 FIND_ELEMENT_TIMEOUT = 3
 
@@ -103,7 +104,7 @@ class BrowserActionMixins(object):
     def browser_send_keys(self, keys, browser=None):
         """Convenience method to send keys to active_element in the browser"""
         browser = browser or self.browser
-        browser.switch_to_active_element().send_keys(keys)
+        switch_to_active_element(browser).send_keys(keys)
 
     def browser_check_django_message(self, message_type=None, contains=None, exact=None, num_messages=1):
         """Both central and distributed servers use the Django messaging system.
@@ -111,7 +112,11 @@ class BrowserActionMixins(object):
 
         # Get messages (and limit by type)
         if num_messages > 0:
-            messages = WebDriverWait(self.browser, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
+            messages = WebDriverWait(self.browser, 15).until(
+                EC.presence_of_all_elements_located(
+                    (By.CLASS_NAME, "alert")
+                )
+            )
         else:
             messages = []
 
@@ -148,15 +153,15 @@ class BrowserActionMixins(object):
         browser = browser or self.browser
 
         # Move to the next actable element.
-        browser.switch_to_active_element()
+        switch_to_active_element(browser)
         self.browser_send_keys(Keys.TAB, browser=browser)
         num_tabs = 1
 
         # Loop until you've arrived at a form element
         num_links = 0
         while num_tabs <= max_tabs and \
-                browser.switch_to_active_element().tag_name not in self.HtmlFormElements:
-            num_links += browser.switch_to_active_element().tag_name == "a"
+                switch_to_active_element(browser).tag_name not in self.HtmlFormElements:
+            num_links += switch_to_active_element(browser).tag_name == "a"
             self.browser_send_keys(Keys.TAB, browser=browser)
             num_tabs += 1
 
