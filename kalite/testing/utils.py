@@ -32,3 +32,15 @@ class FuzzyInt(int):
         self.lowest += x
         self.highest += x
         return self
+
+def switch_to_active_element(browser):
+    """
+    Compatibility change for Selenium 2.x and 3.x
+    """
+    # Deprecated as of Selenium 3.x, should change to
+    # browser.switch_to.active_element() 
+    element = browser.switch_to_active_element()
+    # Selenium 3.x
+    if isinstance(element, dict):
+        element = element['value']
+    return element
