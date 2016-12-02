@@ -35,10 +35,10 @@ Feature: Coach reports
         Then I should see the "<exercise>" marked for "<learner>" as "<progress text>" and coloured "<progress colour>"
 
     Examples: Learners
-        | learner | progress verbs | progress text | progress colour | exercise                           |
-        | some    | attempted      | 50%           | light blue      | relate-addition-and-subtraction    |
-        | all     | completed      | None          | dark green      | subtraction_1                      |
-        | struggle| struggling     | 30%           | red             | addition_2                         |
+        | learner | progress verbs | progress text | progress colour | exercise   |
+        | some    | attempted      | 50%           | light blue      | exercise1  |
+        | all     | completed      | None          | dark green      | exercise2  |
+        | struggle| struggling     | 30%           | red             | exercise3  |
 
     Scenario: I want to know more about an exercise
         Given I am on the tabular report

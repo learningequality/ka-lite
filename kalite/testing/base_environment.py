@@ -25,8 +25,8 @@ from peewee import Using
 from kalite.i18n.base import get_subtitle_file_path, get_subtitle_url
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database, annotate_content_models, create, get, \
-    delete_instances, get_random_content
+from kalite.topic_tools.content_models import Item, set_database, create, get, \
+    delete_instances
 
 from securesync.models import Zone, Device, DeviceZone
 import random
@@ -35,21 +35,23 @@ logger = logging.getLogger(__name__)
 
 
 def before_all(context):
-    pass
+    setup_content_paths(context)
 
 
 def after_all(context):
-    pass
+    teardown_content_paths(context)
 
 
 def before_feature(context, feature):
-    if "uses_content_paths" in context.tags:
-        setup_content_paths(context)
+    pass
+    # if "uses_content_paths" in context.tags:
+    #     setup_content_paths(context)
 
 
 def after_feature(context, feature):
-    if "uses_content_paths" in context.tags:
-        teardown_content_paths(context)
+    pass
+    # if "uses_content_paths" in context.tags:
+    #     teardown_content_paths(context)
 
 
 @set_database
@@ -98,18 +100,21 @@ def setup_content_paths(context, db):
             remote_size=315846064333,
             sort_order=0
         )
-        context._exercises.append(
-            Item.create(
-                title="An exercise",
-                parent=context._content_root.pk,
-                description="Solve this",
-                available=True,
-                kind="Exercise",
-                id="exercise1234",
-                slug="exercise",
-                path="khan/exercise"
+        # We need at least 10 exercises in some of the tests to generate enough
+        # data etc.
+        for _i in range(20):
+            context._exercises.append(
+                Item.create(
+                    title="An exercise {}".format(_i),
+                    parent=context._content_root.pk,
+                    description="Solve this",
+                    available=True,
+                    kind="Exercise",
+                    id="exercise{}".format(_i),
+                    slug="exercise{}".format(_i),
+                    path="khan/exercise{}".format(_i)
+                )
             )
-        )
     context.available_content_path = random.choice(context._exercises).path
 
 

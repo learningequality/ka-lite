@@ -70,13 +70,6 @@ def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
         return False
 
 
-def rgba_to_hex(rgba_string):
-    """
-    Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
-    """
-    return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
-
-
 def _assert_no_element_by(context, by, value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Raises a TimeoutException if the element is *still* found after wait_time seconds.
