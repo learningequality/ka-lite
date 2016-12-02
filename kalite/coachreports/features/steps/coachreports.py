@@ -17,10 +17,10 @@ from kalite.topic_tools.content_models import get_random_content
 from securesync.models import Device
 
 colour_legend = {
-    "light blue": ("#C0E7F3", "rgb(192, 231, 243)"),
-    "dark green": ("#5AA685", "rgb(90, 166, 133)"),
-    "red": ("#FD795B", "rgb(253, 121, 91)"),
-    "grey": ("#EEEEEE", "rgb(238, 238, 238)"),
+    "light blue": ("#C0E7F3", "rgb(192, 231, 243)", "rgba(192, 231, 243, 1)"),
+    "dark green": ("#5AA685", "rgb(90, 166, 133)", "rgba(90, 166, 133, 1)"),
+    "red": ("#FD795B", "rgb(253, 121, 91)", "rgba(253, 121, 91, 1)"),
+    "grey": ("#EEEEEE", "rgb(238, 238, 238)", "rgba(238, 238, 238, 1)"),
 }
 
 @given("I am on the coach report")
