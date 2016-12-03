@@ -5,21 +5,22 @@ Three main functions:
     - get_next_recommendations(user)
     - get_explore_recommendations(user)
 '''
+import collections
 import datetime
 import itertools
+import logging
 import random
-import collections
-import json
 
 from django.db.models import Count
-
+from kalite.facility.models import FacilityUser
+from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.topic_tools.content_models import get_content_item, get_topic_nodes_with_children, get_topic_contents, get_content_items
 
 from . import settings
 
-from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-from kalite.facility.models import FacilityUser
+logger = logging.getLogger(__name__)
+
 
 CACHE_VARS = []
 
@@ -235,7 +236,10 @@ def get_exercise_parents_lookup_table():
     for topic in tree:
         for subtopic_id in topic['children']:
             exercises = get_topic_contents(topic_id=subtopic_id, kinds=["Exercise"])
-
+            
+            if exercises is None:
+                raise RuntimeError("Caught exception, tried to find topic contents for {}".format(subtopic_id))
+            
             for ex in exercises:
                 if ex['id'] not in exercise_parents_lookup_table:
                     exercise_parents_lookup_table[ ex['id'] ] = {

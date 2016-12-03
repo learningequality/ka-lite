@@ -64,22 +64,10 @@ def setup_content_paths(context, db):
     :return: None
     """
 
-    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
-    # depends on these specific values.
-    context.unavailable_content_path = "khan/foo/bar/unavail"
-
-    with Using(db, [Item], with_transaction=False):
-        context._unavailable_item = Item.create(
-            title="Unavailable item",
-            description="baz",
-            available=False,
-            kind="Video",
-            id="3",
-            slug="unavail",
-            path=context.unavailable_content_path
-        )
-
     context._exercises = []
+    context._subtopics = []
+    context._subsubtopics = []
+    context.videos = []
 
     with Using(db, [Item], with_transaction=False):
         # Root node
@@ -90,7 +78,7 @@ def setup_content_paths(context, db):
             files_complete=0,
             total_files="1",
             kind="Topic",
-            parent_id=None,
+            parent=None,
             id="khan",
             slug="khan",
             path="khan/",
@@ -100,22 +88,100 @@ def setup_content_paths(context, db):
             remote_size=315846064333,
             sort_order=0
         )
-        # We need at least 10 exercises in some of the tests to generate enough
-        # data etc.
-        for _i in range(20):
-            context._exercises.append(
+        for _i in range(4):
+            context._subtopics.append(
                 Item.create(
-                    title="An exercise {}".format(_i),
-                    parent=context._content_root.pk,
-                    description="Solve this",
+                    title="Subtopic {}".format(_i),
+                    description="A subtopic",
                     available=True,
-                    kind="Exercise",
-                    id="exercise{}".format(_i),
-                    slug="exercise{}".format(_i),
-                    path="khan/exercise{}".format(_i)
+                    files_complete=0,
+                    total_files="0",
+                    kind="Topic",
+                    parent=context._content_root,
+                    id="subtopic{}".format(_i),
+                    slug="subtopic{}".format(_i),
+                    path="khan/subtopic{}/".format(_i),
+                    extra_fields="{}",
+                    youtube_id=None,
+                    size=0,
+                    remote_size=315846064333,
+                    sort_order=0
                 )
             )
+        
+        # Parts of the content recommendation system currently is hard-coded
+        # to look for 3rd level recommendations only and so will fail if we
+        # don't have this level of lookup
+        for subtopic in context._subtopics:
+            context._subsubtopics.append(
+                Item.create(
+                    title="Sub-Subtopic {}".format(_i),
+                    description="A subtopic",
+                    available=True,
+                    files_complete=0,
+                    total_files="0",
+                    kind="Topic",
+                    parent=subtopic,
+                    id="subtopic{}".format(_i),
+                    slug="subsubtopic{}".format(_i),
+                    path="{}subsubtopic{}/".format(subtopic.path, _i),
+                    extra_fields="{}",
+                    youtube_id=None,
+                    size=0,
+                    remote_size=315846064333,
+                    sort_order=0
+                )
+            )
+
+        # We need at least 10 exercises in some of the tests to generate enough
+        # data etc.
+        # ...and we need at least some exercises in each sub-subtopic
+        for parent in context._subsubtopics:
+            for _i in range(4):
+                context._exercises.append(
+                    Item.create(
+                        title="An exercise {}".format(_i),
+                        parent=parent,
+                        description="Solve this",
+                        available=True,
+                        kind="Exercise",
+                        id="exercise{}".format(_i),
+                        slug="exercise{}".format(_i),
+                        path="{}exercise{}/".format(parent.path, _i),
+                    )
+                )
+        # Add some videos, too, even though files don't exist
+        for parent in context._subsubtopics:
+            for _i in range(4):
+                context.videos.append(
+                    Item.create(
+                        title="A video {}".format(_i),
+                        parent=random.choice(context._subsubtopics),
+                        description="Watch this",
+                        available=True,
+                        kind="Video",
+                        id="video{}".format(_i),
+                        slug="video{}".format(_i),
+                        path="{}video{}/".format(parent.path, _i),
+                    )
+                )
     context.available_content_path = random.choice(context._exercises).path
+
+    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
+    # depends on these specific values.
+    context.unavailable_content_path = "khan/foo/bar/unavail"
+
+    with Using(db, [Item], with_transaction=False):
+        context._unavailable_item = Item.create(
+            title="Unavailable item",
+            description="baz",
+            available=False,
+            kind="Video",
+            id="unavail123",
+            slug="unavail",
+            path=context.unavailable_content_path,
+            parent=random.choice(context._subsubtopics).pk,
+        )
 
 
 @set_database

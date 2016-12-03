@@ -47,6 +47,8 @@ from kalite.facility.models import FacilityUser
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins, KALiteTimeout
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from selenium.webdriver.support.expected_conditions import staleness_of
+from contextlib import contextmanager
 
 
 # Maximum time to wait when trying to find elements
@@ -58,6 +60,15 @@ MAX_PAGE_LOAD_TIME = 30
 MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 2
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def wait_for_page_load(browser, timeout=MAX_PAGE_LOAD_TIME):
+    old_page = browser.find_element_by_tag_name('html')
+    yield
+    WebDriverWait(browser, timeout).until(
+        staleness_of(old_page)
+    )
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
@@ -131,13 +142,9 @@ def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     elem: a WebElement to click.
     wait_time: Optional. Max wait time for the page to load. Has a default value.
     """
-    # The body element should always be on the page.
-    wait_elem = context.browser.find_element_by_tag_name("body")
-    elem.click()
-    return WebDriverWait(context.browser, wait_time).until(
-        EC.staleness_of(wait_elem)
-    )
 
+    with wait_for_page_load(context.browser, timeout=10):
+        elem.click()
 
 def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MAX_WAIT_TIME):
     """ Click an element and then wait for another element to appear.
