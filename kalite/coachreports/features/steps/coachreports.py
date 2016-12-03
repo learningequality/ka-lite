@@ -27,11 +27,8 @@ colour_legend = {
 def step_impl(context):
     url = reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
     context.browser.get(build_url(context, url))
-    # TODO(benjaoming) : This takes an awful lot of time to load the first
-    # time it's built because of /api/coachreports/summary/?facility_id
-    # being super slow
     try:
-        find_id_with_wait(context, "summary_mainview", wait_time=60)
+        find_id_with_wait(context, "summary_mainview")
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -176,12 +173,8 @@ def impl(context):
 
 @when(u"I click on the Show Tabular Report button")
 def impl(context):
-    # benjaoming:
-    # This used to cause for a lot of wait, but was probably due to a large
-    # content db, now that it's minimal, we don't have to wait more than a
-    # few seconds...
     try:
-        find_id_with_wait(context, "show_tabular_report", wait_time=5).click()
+        find_id_with_wait(context, "show_tabular_report").click()
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -200,11 +193,7 @@ def impl(context):
 
 @when(u"I click on the Hide Tabular Report button")
 def impl(context):
-    # benjaoming:
-    # This used to cause for a lot of wait, but was probably due to a large
-    # content db, now that it's minimal, we don't have to wait more than a
-    # few seconds...
-    find_clickable_id_with_wait(context, "show_tabular_report", wait_time=5).click()
+    find_clickable_id_with_wait(context, "show_tabular_report").click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -269,15 +258,11 @@ def impl(context):
 
 @when(u"I click on the partial colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view",
-                                    wait_time=30)
+    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view",)
 
 @then(u"I should see a Hide Tabular Report button")
 def impl(context):
-    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
-    # of time for this to show up because
-    # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30)
+    tab_button = find_clickable_id_with_wait(context, "show_tabular_report")
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")
