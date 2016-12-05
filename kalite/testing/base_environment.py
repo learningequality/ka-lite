@@ -113,25 +113,26 @@ def setup_content_paths(context, db):
         # to look for 3rd level recommendations only and so will fail if we
         # don't have this level of lookup
         for subtopic in context._subtopics:
-            context._subsubtopics.append(
-                Item.create(
-                    title="Sub-Subtopic {}".format(_i),
-                    description="A subtopic",
-                    available=True,
-                    files_complete=0,
-                    total_files="0",
-                    kind="Topic",
-                    parent=subtopic,
-                    id="subtopic{}".format(_i),
-                    slug="subsubtopic{}".format(_i),
-                    path="{}subsubtopic{}/".format(subtopic.path, _i),
-                    extra_fields="{}",
-                    youtube_id=None,
-                    size=0,
-                    remote_size=315846064333,
-                    sort_order=0
+            for _i in range(4):
+                context._subsubtopics.append(
+                    Item.create(
+                        title="{} Subtopic {}".format(subtopic.title, _i),
+                        description="A subsubtopic",
+                        available=True,
+                        files_complete=4,
+                        total_files="4",
+                        kind="Topic",
+                        parent=subtopic,
+                        id="sub{}_{}".format(subtopic.id, _i),
+                        slug="subsubtopic{}_{}".format(subtopic.id, _i),
+                        path="{}subsubtopic{}/".format(subtopic.path, _i),
+                        extra_fields="{}",
+                        youtube_id=None,
+                        size=0,
+                        remote_size=315846064333,
+                        sort_order=0
+                    )
                 )
-            )
 
         # We need at least 10 exercises in some of the tests to generate enough
         # data etc.
@@ -152,7 +153,7 @@ def setup_content_paths(context, db):
                 )
         # Add some videos, too, even though files don't exist
         for parent in context._subsubtopics:
-            for _i in range(4):
+            for _i in range(5):
                 context.videos.append(
                     Item.create(
                         title="A video {}".format(_i),

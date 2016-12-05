@@ -98,8 +98,6 @@ def content_recommender(request):
         rec_dict[flag_name] = True
         return rec_dict
 
-    logger.info("{} {} {}".format(resume, next, explore))
-
     # retrieve resume recommendation(s) and set resume boolean flag
     resume_recommendations = [set_bool_flag("resume", rec) for rec in get_resume_recommendations(user, request)] if resume else []
 

@@ -35,7 +35,8 @@ def impl(context):
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
-    # Note: First load from the content recommendation API endpoint is longer, as a cache item gets built.
+    # Note: First load from the content recommendation API endpoint is
+    # longer, as a cache item gets built.
     find_id_with_wait(context, "content-rec-wrapper")
 
 @when(u'the home page is loaded')

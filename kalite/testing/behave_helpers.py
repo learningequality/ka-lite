@@ -52,7 +52,7 @@ from contextlib import contextmanager
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 30
+MAX_WAIT_TIME = 3000
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 30
 # When checking for something we don't expect to be found, add extra time for
