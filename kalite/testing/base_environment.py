@@ -141,28 +141,28 @@ def setup_content_paths(context, db):
             for _i in range(4):
                 context._exercises.append(
                     Item.create(
-                        title="An exercise {}".format(_i),
+                        title="Exercise {} in {}".format(_i, parent.title),
                         parent=parent,
                         description="Solve this",
                         available=True,
                         kind="Exercise",
-                        id="exercise{}".format(_i),
-                        slug="exercise{}".format(_i),
+                        id="{}_exercise{}".format(parent.id, _i),
+                        slug="{}_exercise{}".format(parent.id, _i),
                         path="{}exercise{}/".format(parent.path, _i),
                     )
                 )
         # Add some videos, too, even though files don't exist
         for parent in context._subsubtopics:
-            for _i in range(5):
+            for _i in range(4):
                 context.videos.append(
                     Item.create(
-                        title="A video {}".format(_i),
+                        title="Video {} in {}".format(_i, parent.title),
                         parent=random.choice(context._subsubtopics),
                         description="Watch this",
                         available=True,
                         kind="Video",
-                        id="video{}".format(_i),
-                        slug="video{}".format(_i),
+                        id="{}_video{}".format(parent.id, _i),
+                        slug="{}_video{}".format(parent.id, _i),
                         path="{}video{}/".format(parent.path, _i),
                     )
                 )
@@ -196,8 +196,11 @@ def teardown_content_paths(context, db):
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item.delete_instance()
         context._content_root.delete_instance()
-        for exercise in context._exercises:
-            exercise.delete_instance()
+        for item in (context._exercises +
+                     context.videos +
+                     context._subsubtopics +
+                     context._subtopics):
+            item.delete_instance()
 
 
 def setup_sauce_browser(context):
