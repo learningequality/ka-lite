@@ -89,7 +89,7 @@ def setup_content_paths(context, db):
             sort_order=0
         )
         for _i in range(4):
-            slug = "subtopic{}".format(_i)
+            slug = "topic{}".format(_i)
             context._subtopics.append(
                 Item.create(
                     title="Subtopic {}".format(_i),
@@ -114,7 +114,7 @@ def setup_content_paths(context, db):
         # don't have this level of lookup
         for subtopic in context._subtopics:
             for _i in range(4):
-                slug = "subsubtopic-{}-{}".format(subtopic.pk, _i)
+                slug = "{}-{}".format(subtopic.id, _i)
                 context._subsubtopics.append(
                     Item.create(
                         title="{} Subtopic {}".format(subtopic.title, _i),
@@ -140,7 +140,7 @@ def setup_content_paths(context, db):
         # ...and we need at least some exercises in each sub-subtopic
         for parent in context._subsubtopics:
             for _i in range(4):
-                slug = "exercise{}-{}".format(parent.pk, _i)
+                slug = "{}-exercise-{}".format(parent.id, _i)
                 context._exercises.append(
                     Item.create(
                         title="Exercise {} in {}".format(_i, parent.title),
@@ -158,7 +158,7 @@ def setup_content_paths(context, db):
         # Add some videos, too, even though files don't exist
         for parent in context._subsubtopics:
             for _i in range(4):
-                slug = "video{}-{}".format(parent.pk, _i)
+                slug = "{}-video-{}".format(parent.pk, _i)
                 context.videos.append(
                     Item.create(
                         title="Video {} in {}".format(_i, parent.title),
