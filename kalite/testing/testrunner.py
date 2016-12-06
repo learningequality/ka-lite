@@ -20,7 +20,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
-from kalite.topic_tools.base import database_exists
+from kalite.topic_tools.base import database_exists, database_path
 
 
 def get_app_dir(app_module):
@@ -142,7 +142,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         logging.info("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
 
-        if not database_exists():
+        if not database_exists() or os.path.getsize(database_path()) < 1024 * 1024:
             call_command("retrievecontentpack", "empty", "en", force=True, foreground=True)
             logging.info("Successfully setup content database")
         else:

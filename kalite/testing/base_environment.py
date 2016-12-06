@@ -89,23 +89,23 @@ def setup_content_paths(context, db):
             sort_order=0
         )
         for _i in range(4):
+            slug = "subtopic{}".format(_i)
             context._subtopics.append(
                 Item.create(
                     title="Subtopic {}".format(_i),
                     description="A subtopic",
                     available=True,
                     files_complete=0,
-                    total_files="0",
+                    total_files="4",
                     kind="Topic",
                     parent=context._content_root,
-                    id="subtopic{}".format(_i),
-                    slug="subtopic{}".format(_i),
-                    path="khan/subtopic{}/".format(_i),
+                    id=slug,
+                    slug=slug,
+                    path="khan/{}/".format(slug),
                     extra_fields="{}",
-                    youtube_id=None,
                     size=0,
-                    remote_size=315846064333,
-                    sort_order=0
+                    remote_size=1,
+                    sort_order=_i,
                 )
             )
         
@@ -114,6 +114,7 @@ def setup_content_paths(context, db):
         # don't have this level of lookup
         for subtopic in context._subtopics:
             for _i in range(4):
+                slug = "subsubtopic-{}-{}".format(subtopic.pk, _i)
                 context._subsubtopics.append(
                     Item.create(
                         title="{} Subtopic {}".format(subtopic.title, _i),
@@ -123,14 +124,14 @@ def setup_content_paths(context, db):
                         total_files="4",
                         kind="Topic",
                         parent=subtopic,
-                        id="sub{}_{}".format(subtopic.id, _i),
-                        slug="subsubtopic{}_{}".format(subtopic.id, _i),
-                        path="{}subsubtopic{}/".format(subtopic.path, _i),
-                        extra_fields="{}",
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(subtopic.path, slug),
                         youtube_id=None,
+                        extra_fields="{}",
                         size=0,
-                        remote_size=315846064333,
-                        sort_order=0
+                        remote_size=1,
+                        sort_order=_i,
                     )
                 )
 
@@ -139,6 +140,7 @@ def setup_content_paths(context, db):
         # ...and we need at least some exercises in each sub-subtopic
         for parent in context._subsubtopics:
             for _i in range(4):
+                slug = "exercise{}-{}".format(parent.pk, _i)
                 context._exercises.append(
                     Item.create(
                         title="Exercise {} in {}".format(_i, parent.title),
@@ -146,14 +148,17 @@ def setup_content_paths(context, db):
                         description="Solve this",
                         available=True,
                         kind="Exercise",
-                        id="{}_exercise{}".format(parent.id, _i),
-                        slug="{}_exercise{}".format(parent.id, _i),
-                        path="{}exercise{}/".format(parent.path, _i),
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(parent.path, slug),
+                        extra_fields="{}",
+                        sort_order=_i
                     )
                 )
         # Add some videos, too, even though files don't exist
         for parent in context._subsubtopics:
             for _i in range(4):
+                slug = "video{}-{}".format(parent.pk, _i)
                 context.videos.append(
                     Item.create(
                         title="Video {} in {}".format(_i, parent.title),
@@ -161,9 +166,14 @@ def setup_content_paths(context, db):
                         description="Watch this",
                         available=True,
                         kind="Video",
-                        id="{}_video{}".format(parent.id, _i),
-                        slug="{}_video{}".format(parent.id, _i),
-                        path="{}video{}/".format(parent.path, _i),
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(parent.path, slug),
+                        extra_fields={
+                            "subtitle_urls": [],
+                            "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
+                        },
+                        sort_order=_i
                     )
                 )
     context.available_content_path = random.choice(context._exercises).path
@@ -394,6 +404,9 @@ def _make_video(context):
     context.video = create(item_dict)
 
     subtitle_path = get_subtitle_file_path(lang_code=lang_code, youtube_id=youtube_id)
+    subtitle_dir = os.path.dirname(subtitle_path)
+    if not os.path.exists(subtitle_dir):
+        os.makedirs(subtitle_dir)
     with open(subtitle_path, "w") as f:
         f.write("foo")
     context._subtitle_file_path = subtitle_path
