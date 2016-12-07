@@ -182,6 +182,8 @@ def setup_content_paths(context, db):
     # depends on these specific values.
     context.unavailable_content_path = "khan/foo/bar/unavail"
 
+    context.searchable_term = "Subtopic"
+
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
             title="Unavailable item",

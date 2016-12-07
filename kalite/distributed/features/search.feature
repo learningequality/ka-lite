@@ -5,9 +5,9 @@ Feature: Search Autocomplete on Homepage
         And I enter nothing in the search bar
         Then The search button is disabled
 
-    Scenario: Search for 'Math'
+    Scenario: Search for something
         Given I am on the homepage
-        When I search for 'Math'
+        When I search for something
         Then I should see a list of options
 
     Scenario: Search for Some Content and Navigate

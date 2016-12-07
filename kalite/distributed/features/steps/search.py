@@ -4,24 +4,15 @@ from kalite.testing.behave_helpers import *
 
 TIMEOUT = 3
 
-@when("I search for 'Math'")
-def step_impl(context):
-    search_for(context, "Math")
 
 @when("I search for something")
 def step_impl(context):
-    search_for(context, "Basic")
+    search_for(context, context.searchable_term)
 
 @when("I click on the first option")
 def step_impl(context):
-    def clicked(driver):
-        try:
-            menu_item = find_css_class_with_wait(context, "ui-menu-item")
-            return click_and_wait_for_page_load(context, menu_item)
-        except StaleElementReferenceException:
-            return False
-
-    WebDriverWait(context.browser, 60).until(clicked)
+    elem = find_css_class_with_wait(context, "ui-menu-item")
+    click_and_wait_for_page_load(context, elem)
 
 @then("I should see a list of options")
 def step_impl(context):
