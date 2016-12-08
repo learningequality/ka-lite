@@ -9,12 +9,12 @@ TIMEOUT = 30
 
 @given(u"I open some unavailable content")
 def step_impl(context):
-    context.browser.get(build_url(context, reverse("learn") + context.unavailable_content_path))
+    context.browser.get(build_url(context, reverse("learn") + context.content_unavailable_content_path))
 
 
 @given(u"I open some available content")
 def step_impl(context):
-    context.browser.get(build_url(context, reverse("learn") + context.available_content_path))
+    context.browser.get(build_url(context, reverse("learn") + context.content_available_content_path))
 
 
 @then(u"I should see an alert")

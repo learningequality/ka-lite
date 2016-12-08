@@ -218,7 +218,7 @@ def impl(context):
 def impl(context):
     # Use exercises from the context, otherwise we risk getting non-unique
     # spill-overs from non-isolated tests that created non-unique exercises.
-    exercises = context.exercises[:10]
+    exercises = context.content_exercises[:10]
     # Flush this data because of UNIQUE errors - something isn't properly
     # isolated in our testing.
     ExerciseLog.objects.all().delete()

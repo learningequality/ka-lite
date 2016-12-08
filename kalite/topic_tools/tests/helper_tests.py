@@ -68,8 +68,8 @@ class TestHelperMethods(KALiteTestCase):
     def test_exercises_from_topics(self):
         '''get_exercises_from_topics()'''
 
-        expected = [u'counting-out-1-20-objects', u'counting-objects', u'one-more--one-less']
-        actual = get_exercises_from_topics(['cc-early-math-counting'])
+        expected = [e.id for e in self.content_exercises[0:4]]
+        actual = get_exercises_from_topics([self.content_subsubtopics[0].id])
 
         self.assertEqual(expected, actual)
 
