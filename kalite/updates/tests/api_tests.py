@@ -4,7 +4,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from kalite.main.tests.base import MainTestCase
-from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
+from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
