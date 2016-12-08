@@ -19,9 +19,9 @@ class TestNextMethods(KALiteTestCase):
 	NEW_STREAK_PROGRESS_LARGER = 10
 	NEW_POINTS_SMALLER = 0
 	NEW_STREAK_PROGRESS_SMALLER = 0
-	EXERCISE_ID = "topic0-0-exercise-0"
-	EXERCISE_ID2 = "topic0-0-exercise-1"
-	EXERCISE_ID_STRUGGLE = "topic0-0-exercise-2"
+	EXERCISE_ID = None  # set in setUp()
+	EXERCISE_ID2 = None  # set in setUp()
+	EXERCISE_ID_STRUGGLE = None  # set in setUp()
 	USERNAME1 = "test_user_next1"
 	USERNAME2 = "test_user_next2"
 	PASSWORD = "dummies"
@@ -36,6 +36,10 @@ class TestNextMethods(KALiteTestCase):
 	
 		super(TestNextMethods, self).setUp()
 	
+		self.EXERCISE_ID = self.content_exercises[0].id
+		self.EXERCISE_ID2 = self.content_exercises[1].id
+		self.EXERCISE_ID_STRUGGLE = self.content_exercises[2].id
+		
 		# create a facility and user that can be referred to in models across tests
 		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()

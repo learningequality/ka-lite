@@ -36,14 +36,14 @@ def content_db_init(instance):
     # These are static properties because BDD tests call this class in a
     # static way (TODO: design flaw)
     instance.content_root = None
-    instance.subtopics = []
-    instance.subsubtopics = []
-    instance.exercises = []
-    instance.videos = []
-    instance.unavailable_item = None
-    instance.unavailable_content_path = "khan/foo/bar/unavail"
-    instance.available_content_path = None
-    instance.searchable_term = "Subtopic"
+    instance.content_subtopics = []
+    instance.content_subsubtopics = []
+    instance.content_exercises = []
+    instance.content_videos = []
+    instance.content_unavailable_item = None
+    instance.content_unavailable_content_path = "khan/foo/bar/unavail"
+    instance.content_available_content_path = None
+    instance.content_searchable_term = "Subtopic"
 
 
 @set_database
@@ -53,12 +53,12 @@ def teardown_content_db(instance, db):
     to reuse it.
     """
     with Using(db, [Item], with_transaction=False):
-        instance.unavailable_item.delete_instance()
+        instance.content_unavailable_item.delete_instance()
         instance.content_root.delete_instance()
-        for item in (instance.exercises +
-                     instance.videos +
-                     instance.subsubtopics +
-                     instance.subtopics):
+        for item in (instance.content_exercises +
+                     instance.content_videos +
+                     instance.content_subsubtopics +
+                     instance.content_subtopics):
             item.delete_instance()
 
 
@@ -86,7 +86,7 @@ def setup_content_db(instance, db):
         )
         for _i in range(4):
             slug = "topic{}".format(_i)
-            instance.subtopics.append(
+            instance.content_subtopics.append(
                 Item.create(
                     title="Subtopic {}".format(_i),
                     description="A subtopic",
@@ -107,10 +107,10 @@ def setup_content_db(instance, db):
         # Parts of the content recommendation system currently is hard-coded
         # to look for 3rd level recommendations only and so will fail if we
         # don't have this level of lookup
-        for subtopic in instance.subtopics:
+        for subtopic in instance.content_subtopics:
             for _i in range(4):
                 slug = "{}-{}".format(subtopic.id, _i)
-                instance.subsubtopics.append(
+                instance.content_subsubtopics.append(
                     Item.create(
                         title="{} Subtopic {}".format(subtopic.title, _i),
                         description="A subsubtopic",
@@ -132,7 +132,7 @@ def setup_content_db(instance, db):
         # We need at least 10 exercises in some of the tests to generate enough
         # data etc.
         # ...and we need at least some exercises in each sub-subtopic
-        for parent in instance.subsubtopics:
+        for parent in instance.content_subsubtopics:
             # Make former created exercise the prerequisite of the next one
             prerequisite = None
             for _i in range(4):
@@ -152,16 +152,16 @@ def setup_content_db(instance, db):
                     sort_order=_i,
                     **extra_fields
                 )
-                instance.exercises.append(new_exercise)
+                instance.content_exercises.append(new_exercise)
                 prerequisite = new_exercise
         # Add some videos, too, even though files don't exist
-        for parent in instance.subsubtopics:
+        for parent in instance.content_subsubtopics:
             for _i in range(4):
                 slug = "{}-video-{}".format(parent.pk, _i)
-                instance.videos.append(
+                instance.content_videos.append(
                     Item.create(
                         title="Video {} in {}".format(_i, parent.title),
-                        parent=random.choice(instance.subsubtopics),
+                        parent=random.choice(instance.content_subsubtopics),
                         description="Watch this",
                         available=True,
                         kind="Video",
@@ -177,18 +177,18 @@ def setup_content_db(instance, db):
                 )
 
     with Using(db, [Item], with_transaction=False):
-        instance.unavailable_item = Item.create(
+        instance.content_unavailable_item = Item.create(
             title="Unavailable item",
             description="baz",
             available=False,
             kind="Video",
             id="unavail123",
             slug="unavail",
-            path=instance.unavailable_content_path,
-            parent=random.choice(instance.subsubtopics).pk,
+            path=instance.content_unavailable_content_path,
+            parent=random.choice(instance.content_subsubtopics).pk,
         )
     
-    instance.available_content_path = random.choice(instance.exercises).path
+    instance.content_available_content_path = random.choice(instance.content_exercises).path
 
 
 class KALiteTestCase(CreateDeviceMixin, TestCase):
