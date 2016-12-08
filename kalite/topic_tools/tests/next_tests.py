@@ -34,6 +34,8 @@ class TestNextMethods(KALiteTestCase):
 	def setUp(self):
 		'''Performed before every test'''
 	
+		super(TestNextMethods, self).setUp()
+	
 		# create a facility and user that can be referred to in models across tests
 		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()
