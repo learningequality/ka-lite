@@ -30,6 +30,8 @@ class TestHelperMethods(KALiteTestCase):
     def setUp(self):
         '''Performed before every test'''
 
+        super(TestHelperMethods, self).setUp()
+
         # user + facility
         self.facility = Facility(name=self.FACILITY)
         self.facility.save()
@@ -59,6 +61,7 @@ class TestHelperMethods(KALiteTestCase):
 
     def tearDown(self):
         '''Performed after each test'''
+        super(TestHelperMethods, self).tearDown()
         self.user_with_activity = None
         self.user_with_no_activity = None
 

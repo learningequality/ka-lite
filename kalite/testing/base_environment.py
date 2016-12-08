@@ -20,26 +20,26 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
 from django.db.transaction import TransactionManagementError
-from peewee import Using
 
 from kalite.i18n.base import get_subtitle_file_path, get_subtitle_url
 from kalite.testing.base import KALiteTestCase
+from kalite.testing import base as testing_base
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database, create, get, \
-    delete_instances
+from kalite.topic_tools.content_models import create, get, delete_instances
 
 from securesync.models import Zone, Device, DeviceZone
-import random
+
 
 logger = logging.getLogger(__name__)
 
 
 def before_all(context):
-    setup_content_paths(context)
+    pass
+    # setup_content_paths(context)
 
 
 def after_all(context):
-    teardown_content_paths(context)
+    pass
 
 
 def before_feature(context, feature):
@@ -54,8 +54,7 @@ def after_feature(context, feature):
     #     teardown_content_paths(context)
 
 
-@set_database
-def setup_content_paths(context, db):
+def setup_content_paths(context):
     """
     Creaters available content items and adds their urls to the context object.
 
@@ -63,156 +62,7 @@ def setup_content_paths(context, db):
         will be added.
     :return: None
     """
-
-    context._exercises = []
-    context._subtopics = []
-    context._subsubtopics = []
-    context.videos = []
-
-    with Using(db, [Item], with_transaction=False):
-        # Root node
-        context._content_root = Item.create(
-            title="Khan Academy",
-            description="",
-            available=True,
-            files_complete=0,
-            total_files="1",
-            kind="Topic",
-            parent=None,
-            id="khan",
-            slug="khan",
-            path="khan/",
-            extra_fields="{}",
-            youtube_id=None,
-            size=0,
-            remote_size=315846064333,
-            sort_order=0
-        )
-        for _i in range(4):
-            slug = "topic{}".format(_i)
-            context._subtopics.append(
-                Item.create(
-                    title="Subtopic {}".format(_i),
-                    description="A subtopic",
-                    available=True,
-                    files_complete=0,
-                    total_files="4",
-                    kind="Topic",
-                    parent=context._content_root,
-                    id=slug,
-                    slug=slug,
-                    path="khan/{}/".format(slug),
-                    extra_fields="{}",
-                    size=0,
-                    remote_size=1,
-                    sort_order=_i,
-                )
-            )
-        
-        # Parts of the content recommendation system currently is hard-coded
-        # to look for 3rd level recommendations only and so will fail if we
-        # don't have this level of lookup
-        for subtopic in context._subtopics:
-            for _i in range(4):
-                slug = "{}-{}".format(subtopic.id, _i)
-                context._subsubtopics.append(
-                    Item.create(
-                        title="{} Subtopic {}".format(subtopic.title, _i),
-                        description="A subsubtopic",
-                        available=True,
-                        files_complete=4,
-                        total_files="4",
-                        kind="Topic",
-                        parent=subtopic,
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(subtopic.path, slug),
-                        youtube_id=None,
-                        extra_fields="{}",
-                        size=0,
-                        remote_size=1,
-                        sort_order=_i,
-                    )
-                )
-
-        # We need at least 10 exercises in some of the tests to generate enough
-        # data etc.
-        # ...and we need at least some exercises in each sub-subtopic
-        for parent in context._subsubtopics:
-            for _i in range(4):
-                slug = "{}-exercise-{}".format(parent.id, _i)
-                context._exercises.append(
-                    Item.create(
-                        title="Exercise {} in {}".format(_i, parent.title),
-                        parent=parent,
-                        description="Solve this",
-                        available=True,
-                        kind="Exercise",
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(parent.path, slug),
-                        extra_fields="{}",
-                        sort_order=_i
-                    )
-                )
-        # Add some videos, too, even though files don't exist
-        for parent in context._subsubtopics:
-            for _i in range(4):
-                slug = "{}-video-{}".format(parent.pk, _i)
-                context.videos.append(
-                    Item.create(
-                        title="Video {} in {}".format(_i, parent.title),
-                        parent=random.choice(context._subsubtopics),
-                        description="Watch this",
-                        available=True,
-                        kind="Video",
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(parent.path, slug),
-                        extra_fields={
-                            "subtitle_urls": [],
-                            "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
-                        },
-                        sort_order=_i
-                    )
-                )
-    context.available_content_path = random.choice(context._exercises).path
-
-    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
-    # depends on these specific values.
-    context.unavailable_content_path = "khan/foo/bar/unavail"
-
-    context.searchable_term = "Subtopic"
-
-    with Using(db, [Item], with_transaction=False):
-        context._unavailable_item = Item.create(
-            title="Unavailable item",
-            description="baz",
-            available=False,
-            kind="Video",
-            id="unavail123",
-            slug="unavail",
-            path=context.unavailable_content_path,
-            parent=random.choice(context._subsubtopics).pk,
-        )
-
-
-@set_database
-def teardown_content_paths(context, db):
-    """
-    The opposite of ``setup_content_urls``. Removes content items created there.
-
-    :param context: A behave context, which keeps a reference to the Items so we can clean them up.
-    :return: None.
-    """
-    with Using(db, [Item], with_transaction=False):
-        context._unavailable_item.delete_instance()
-        context._content_root.delete_instance()
-        for item in (context._exercises +
-                     context.videos +
-                     context._subsubtopics +
-                     context._subtopics):
-            item.delete_instance()
+    pass
 
 
 def setup_sauce_browser(context):
@@ -352,6 +202,8 @@ def database_setup(context):
     implementation details each _feature_ is wrapped in a TestCase. This and database_teardown should simulate the
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
+    testing_base.content_db_init(context)
+    testing_base.setup_content_db(context)
     KALiteTestCase.setUpDatabase()
 
 
@@ -366,6 +218,8 @@ def database_teardown(context):
             call_command("flush", database=alias, interactive=False)
         except TransactionManagementError as e:
             print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
+
+    testing_base.teardown_content_db(context)
 
 
 def do_fake_registration():

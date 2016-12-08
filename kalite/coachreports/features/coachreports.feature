@@ -36,9 +36,9 @@ Feature: Coach reports
 
     Examples: Learners
         | learner | progress verbs | progress text | progress colour | exercise            |
-        | some    | attempted      | 50%           | light blue      | topic0-0-exercise-0  |
-        | all     | completed      | None          | dark green      | topic0-0-exercise-1  |
-        | struggle| struggling     | 30%           | red             | topic0-0-exercise-2  |
+        | some    | attempted      | 50%           | light blue      | topic0-0-exercise-0 |
+        | all     | completed      | None          | dark green      | topic0-0-exercise-1 |
+        | struggle| struggling     | 30%           | red             | topic0-0-exercise-2 |
 
     Scenario: I want to know more about an exercise
         Given I am on the tabular report

@@ -18,6 +18,175 @@ from django.test import TestCase, LiveServerTestCase
 from .browser import setup_browser
 from .client import KALiteClient
 from .mixins.securesync_mixins import CreateDeviceMixin
+from peewee import Using
+from kalite.topic_tools.content_models import set_database, Item
+import random
+
+
+def content_db_init(instance):
+    """
+    Instance is anything we think should store the below variables, it's
+    because of a strange design of the Behave test framework in which we
+    cannot use conventional TestCase instances. Instead it uses the 'context'
+    instance for all functions.
+    
+    This and the below functions are used to configure the content database
+    fixture in a universal pattern.
+    """
+    # These are static properties because BDD tests call this class in a
+    # static way (TODO: design flaw)
+    instance.content_root = None
+    instance.subtopics = []
+    instance.subsubtopics = []
+    instance.exercises = []
+    instance.videos = []
+    instance.unavailable_item = None
+    instance.unavailable_content_path = "khan/foo/bar/unavail"
+    instance.available_content_path = None
+    instance.searchable_term = "Subtopic"
+
+
+@set_database
+def teardown_content_db(instance, db):
+    """
+    Seems to split out in a classmethod because BDD base_environment wants
+    to reuse it.
+    """
+    with Using(db, [Item], with_transaction=False):
+        instance.unavailable_item.delete_instance()
+        instance.content_root.delete_instance()
+        for item in (instance.exercises +
+                     instance.videos +
+                     instance.subsubtopics +
+                     instance.subtopics):
+            item.delete_instance()
+
+
+@set_database
+def setup_content_db(instance, db):
+
+    # Setup the content.db (defaults to the en version)
+    with Using(db, [Item], with_transaction=False):
+        # Root node
+        instance.content_root = Item.create(
+            title="Khan Academy",
+            description="",
+            available=True,
+            files_complete=0,
+            total_files="1",
+            kind="Topic",
+            parent=None,
+            id="khan",
+            slug="khan",
+            path="khan/",
+            extra_fields="{}",
+            youtube_id=None,
+            size=0,
+            remote_size=315846064333,
+            sort_order=0
+        )
+        for _i in range(4):
+            slug = "topic{}".format(_i)
+            instance.subtopics.append(
+                Item.create(
+                    title="Subtopic {}".format(_i),
+                    description="A subtopic",
+                    available=True,
+                    files_complete=0,
+                    total_files="4",
+                    kind="Topic",
+                    parent=instance.content_root,
+                    id=slug,
+                    slug=slug,
+                    path="khan/{}/".format(slug),
+                    extra_fields="{}",
+                    size=0,
+                    remote_size=1,
+                    sort_order=_i,
+                )
+            )
+        
+        # Parts of the content recommendation system currently is hard-coded
+        # to look for 3rd level recommendations only and so will fail if we
+        # don't have this level of lookup
+        for subtopic in instance.subtopics:
+            for _i in range(4):
+                slug = "{}-{}".format(subtopic.id, _i)
+                instance.subsubtopics.append(
+                    Item.create(
+                        title="{} Subtopic {}".format(subtopic.title, _i),
+                        description="A subsubtopic",
+                        available=True,
+                        files_complete=4,
+                        total_files="4",
+                        kind="Topic",
+                        parent=subtopic,
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(subtopic.path, slug),
+                        youtube_id=None,
+                        extra_fields="{}",
+                        size=0,
+                        remote_size=1,
+                        sort_order=_i,
+                    )
+                )
+
+        # We need at least 10 exercises in some of the tests to generate enough
+        # data etc.
+        # ...and we need at least some exercises in each sub-subtopic
+        for parent in instance.subsubtopics:
+            for _i in range(4):
+                slug = "{}-exercise-{}".format(parent.id, _i)
+                instance.exercises.append(
+                    Item.create(
+                        title="Exercise {} in {}".format(_i, parent.title),
+                        parent=parent,
+                        description="Solve this",
+                        available=True,
+                        kind="Exercise",
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(parent.path, slug),
+                        extra_fields="{}",
+                        sort_order=_i
+                    )
+                )
+        # Add some videos, too, even though files don't exist
+        for parent in instance.subsubtopics:
+            for _i in range(4):
+                slug = "{}-video-{}".format(parent.pk, _i)
+                instance.videos.append(
+                    Item.create(
+                        title="Video {} in {}".format(_i, parent.title),
+                        parent=random.choice(instance.subsubtopics),
+                        description="Watch this",
+                        available=True,
+                        kind="Video",
+                        id=slug,
+                        slug=slug,
+                        path="{}{}/".format(parent.path, slug),
+                        extra_fields={
+                            "subtitle_urls": [],
+                            "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
+                        },
+                        sort_order=_i
+                    )
+                )
+
+    with Using(db, [Item], with_transaction=False):
+        instance.unavailable_item = Item.create(
+            title="Unavailable item",
+            description="baz",
+            available=False,
+            kind="Video",
+            id="unavail123",
+            slug="unavail",
+            path=instance.unavailable_content_path,
+            parent=random.choice(instance.subsubtopics).pk,
+        )
+    
+    instance.available_content_path = random.choice(instance.exercises).path
 
 
 class KALiteTestCase(CreateDeviceMixin, TestCase):
@@ -25,7 +194,13 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
 
     def setUp(self):
         self.setUpDatabase()
+        content_db_init(self)
+        setup_content_db(self)
         super(KALiteTestCase, self).setUp()
+
+    def tearDown(self):
+        teardown_content_db(self)
+        super(KALiteTestCase, self).tearDown()
 
     @classmethod
     def setUpDatabase(cls):
@@ -33,6 +208,9 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
         Meant to be hijacked by the behave testing framework in "before_scenario", since behave scenarios are analogous
         to TestCases, and behave features are analogous to test suites, but due to implementation details features are
         run as TestCases. Therefore scenarios call this class method to simulate being TestCases.
+        
+        Seems to split out in a classmethod because BDD base_environment wants
+        to reuse it.
         """
         # Do database setup stuff that's common to all test cases.
         cls.setup_fake_device()
