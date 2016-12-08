@@ -19,9 +19,9 @@ class TestNextMethods(KALiteTestCase):
 	NEW_STREAK_PROGRESS_LARGER = 10
 	NEW_POINTS_SMALLER = 0
 	NEW_STREAK_PROGRESS_SMALLER = 0
-	EXERCISE_ID = "number_line"
-	EXERCISE_ID2 = "radius_diameter_and_circumference"
-	EXERCISE_ID_STRUGGLE = "counting-out-1-20-objects"
+	EXERCISE_ID = "topic0-0-exercise-0"
+	EXERCISE_ID2 = "topic0-0-exercise-1"
+	EXERCISE_ID_STRUGGLE = "topic0-0-exercise-2"
 	USERNAME1 = "test_user_next1"
 	USERNAME2 = "test_user_next2"
 	PASSWORD = "dummies"
@@ -92,7 +92,7 @@ class TestNextMethods(KALiteTestCase):
 		'''get_group_recommendations()'''
 
 		user = FacilityUser.objects.filter(username=self.USERNAME1)[0]
-		expected = ["radius_diameter_and_circumference"]
+		expected = [self.EXERCISE_ID2]
 		actual = get_group_recommendations(user)
 
 		self.assertEqual(expected, actual, "Group recommendations incorrect.")
@@ -111,9 +111,9 @@ class TestNextMethods(KALiteTestCase):
 
 	def test_exercise_prereqs(self):
 		'''get_exercise_prereqs()'''
-		ex_id = 'equivalent_fractions'
+		ex_id = self.EXERCISE_ID2
 
-		expected = ['visualizing-equivalent-fractions']
+		expected = [self.EXERCISE_ID]
 		actual = get_exercise_prereqs([ex_id])
 		
 		self.assertEqual(expected, actual, "Exercise Prereqs incorrect.")

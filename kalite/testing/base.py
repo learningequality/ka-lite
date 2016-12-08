@@ -81,7 +81,6 @@ def setup_content_db(instance, db):
             path="khan/",
             extra_fields="{}",
             youtube_id=None,
-            size=0,
             remote_size=315846064333,
             sort_order=0
         )
@@ -100,7 +99,6 @@ def setup_content_db(instance, db):
                     slug=slug,
                     path="khan/{}/".format(slug),
                     extra_fields="{}",
-                    size=0,
                     remote_size=1,
                     sort_order=_i,
                 )
@@ -126,7 +124,6 @@ def setup_content_db(instance, db):
                         path="{}{}/".format(subtopic.path, slug),
                         youtube_id=None,
                         extra_fields="{}",
-                        size=0,
                         remote_size=1,
                         sort_order=_i,
                     )
@@ -136,22 +133,27 @@ def setup_content_db(instance, db):
         # data etc.
         # ...and we need at least some exercises in each sub-subtopic
         for parent in instance.subsubtopics:
+            # Make former created exercise the prerequisite of the next one
+            prerequisite = None
             for _i in range(4):
                 slug = "{}-exercise-{}".format(parent.id, _i)
-                instance.exercises.append(
-                    Item.create(
-                        title="Exercise {} in {}".format(_i, parent.title),
-                        parent=parent,
-                        description="Solve this",
-                        available=True,
-                        kind="Exercise",
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(parent.path, slug),
-                        extra_fields="{}",
-                        sort_order=_i
-                    )
+                extra_fields = {}
+                if prerequisite:
+                    extra_fields['prerequisites'] = [prerequisite.id]
+                new_exercise = Item.create(
+                    title="Exercise {} in {}".format(_i, parent.title),
+                    parent=parent,
+                    description="Solve this",
+                    available=True,
+                    kind="Exercise",
+                    id=slug,
+                    slug=slug,
+                    path="{}{}/".format(parent.path, slug),
+                    sort_order=_i,
+                    **extra_fields
                 )
+                instance.exercises.append(new_exercise)
+                prerequisite = new_exercise
         # Add some videos, too, even though files don't exist
         for parent in instance.subsubtopics:
             for _i in range(4):
