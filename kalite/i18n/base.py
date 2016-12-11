@@ -197,7 +197,7 @@ def _get_installed_language_packs():
     On-disk method to show currently installed languages and meta data.
     """
 
-    # There's always English...
+    # There's always English, but without contents...
     installed_language_packs = [{
         'code': 'en',
         'software_version': SHORTVERSION,

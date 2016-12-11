@@ -9,8 +9,6 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from itertools import islice
-
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
@@ -24,7 +22,7 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
-from kalite.i18n.base import outdated_langpacks
+from kalite.i18n.base import outdated_langpacks, get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
@@ -67,6 +65,30 @@ def check_setup_status(handler):
                 messages.warning(request, mark_safe(
                     _("Please login with the admin account you created, then create your facility and register this device to complete the setup.")))
 
+        if get_installed_language_packs()['en']['language_pack_version'] == 0:
+            alert_msg = "<p>{}</p>".format(_(
+                "Dear Admin, you need to download a full version of the English "
+                "language pack for KA Lite to work."
+            )) + "<p><a href=\"{url}\">{msg}</a></p>".format(
+                url=reverse("update_languages"),
+                msg=_("Go to Language Management")
+            )
+            alert_msg = mark_safe(alert_msg)
+            messages.warning(
+                request,
+                alert_msg
+            )
+        else:
+            outdated_langpack_list = list(outdated_langpacks())
+            if outdated_langpack_list:
+                pretty_lang_names = " --- ".join(lang.get("name", "") for lang in outdated_langpack_list)
+                messages.warning(
+                    request, _(
+                        "Dear Admin, please log in and upgrade the following "
+                        "languages as soon as possible: {}"
+                    ).format(pretty_lang_names)
+                )
+
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
 
@@ -89,13 +111,6 @@ def homepage(request):
     """
     Homepage.
     """
-    def _alert_outdated_languages(langpacks):
-        pretty_lang_names = " --- ".join(lang.get("name", "") for lang in langpacks)
-        messages.warning(request, _("Dear Admin, please log in and upgrade the following languages as soon as possible: {}").format(pretty_lang_names))
-
-    outdated_langpack_list = list(outdated_langpacks())
-    if outdated_langpack_list:
-        _alert_outdated_languages(outdated_langpack_list)
     return {}
 
 

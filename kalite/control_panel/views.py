@@ -33,6 +33,7 @@ from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.version import VERSION
 from kalite import PACKAGE_PATH
+from kalite.distributed.views import check_setup_status
 
 
 UNGROUPED = "Ungrouped"
@@ -75,6 +76,7 @@ def process_zone_form(request, zone_id):
 
 
 @require_authorized_admin
+@check_setup_status
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
