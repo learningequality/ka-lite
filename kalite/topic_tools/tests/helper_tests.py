@@ -71,6 +71,8 @@ class TestHelperMethods(KALiteTestCase):
         expected = [e.id for e in self.content_exercises[0:4]]
         actual = get_exercises_from_topics([self.content_subsubtopics[0].id])
 
+        actual = map(lambda s: str(s), actual)
+
         self.assertEqual(expected, actual)
 
     def test_most_recent_exercises(self):
