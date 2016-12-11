@@ -1,6 +1,7 @@
 import json
 
 import os
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from kalite.main.tests.base import MainTestCase
@@ -11,6 +12,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.topic_tools.content_models import get_content_item
 from mock import patch
+import unittest
 
 
 
@@ -52,6 +54,7 @@ class TestAdminApiCalls(MainTestCase):
             os.remove(self.fake_video_file)
 
 
+    @unittest.skipIf(settings.RUNNING_IN_CI, 'usually times out on travis')
     def test_delete_non_existing_video(self):
         """
         "Delete" a video through the API that never existed.
@@ -68,6 +71,7 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
 
+    @unittest.skipIf(settings.RUNNING_IN_CI, 'usually times out on travis')
     def test_delete_existing_video_file(self):
         """
         Delete a video through the API, when only the video exists on disk (not as an object)
