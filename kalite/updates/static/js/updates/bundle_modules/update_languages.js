@@ -66,6 +66,23 @@ function display_languages() {
     // show list of installed languages
     //
     $("table.installed-languages").empty();
+    
+    var english_installed = false;
+    installed.forEach(function(lang, index) {
+      if (lang['code'] == 'en') {
+        english_installed = true;
+        return;
+      }
+    });
+    
+    // No English
+    if (!english_installed) {
+        var empty_row = sprintf("<tr class=\"warning\"><td colspan=\"100\"><em>%(empty_msg)s</em></td></tr>", {
+            empty_msg: gettext("You have to download at least the English content pack.")
+        });
+        $("table.installed-languages").append(empty_row);
+    }
+    
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
