@@ -5,7 +5,6 @@ environment.py specific to the this app
 # These are auto-discovered by Behave? So nevermind that they're unused?
 from kalite.testing.base_environment import before_all, after_all, before_feature, after_feature, before_scenario as base_before_scenario, after_scenario
 
-import random
 import datetime
 
 from kalite.facility.models import FacilityUser
@@ -17,7 +16,11 @@ def before_scenario(context, scenario):
 
     if "with_progress" in context.tags:
         user = FacilityUser.objects.get(username=context.user, facility=getattr(context, "facility", None))
-        exercises = random.sample(context.content_exercises, 2)
+        
+        # Log 2 exercises, the first two, not some random exercises because
+        # the tests should be consistent and the logged exercises need to
+        # correlate with videos below if content recommendation should work
+        exercises = context.content_exercises[:2]
         for exercise in exercises:
             log = ExerciseLog(
                 exercise_id=exercise.id,
@@ -29,8 +32,9 @@ def before_scenario(context, scenario):
             log.save()
         context.content_exercises = exercises
 
-        # Mark 2 videos watched
-        videos = random.sample(context.content_videos, 2)
+        # Mark 2 videos watched, the first two, not some random videos because
+        # the tests should be consistent...
+        videos = context.content_videos[:2]
 
         for video in videos:
             log = VideoLog(
@@ -40,5 +44,5 @@ def before_scenario(context, scenario):
                 total_seconds_watched=100,
                 points=600,
                 latest_activity_timestamp=datetime.datetime.now()
-                )
+            )
             log.save()

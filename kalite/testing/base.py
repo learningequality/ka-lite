@@ -112,7 +112,7 @@ def setup_content_db(instance, db):
                 slug = "{}-{}".format(subtopic.id, _i)
                 instance.content_subsubtopics.append(
                     Item.create(
-                        title="{} Subtopic {}".format(subtopic.title, _i),
+                        title="{} Subsubtopic {}".format(subtopic.title, _i),
                         description="A subsubtopic",
                         available=True,
                         files_complete=4,

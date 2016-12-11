@@ -55,6 +55,9 @@ class TestAdminApiCalls(MainTestCase):
     def test_delete_non_existing_video(self):
         """
         "Delete" a video through the API that never existed.
+
+        This is broken because database is accessed by another process during
+        parallel tests
         """
         os.remove(self.fake_video_file)
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
@@ -68,6 +71,9 @@ class TestAdminApiCalls(MainTestCase):
     def test_delete_existing_video_file(self):
         """
         Delete a video through the API, when only the video exists on disk (not as an object)
+        
+        This is broken because database is accessed by another process during
+        parallel tests
         """
         self.assertTrue(os.path.exists(self.fake_video_file), "Video file should exist on disk.")
 

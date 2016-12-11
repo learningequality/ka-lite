@@ -7,7 +7,7 @@ TIMEOUT = 3
 
 @when("I search for something")
 def step_impl(context):
-    search_for(context, context.searchable_term)
+    search_for(context, context.content_searchable_term)
 
 @when("I click on the first option")
 def step_impl(context):
