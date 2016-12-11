@@ -201,7 +201,7 @@ def _get_installed_language_packs():
     installed_language_packs = [{
         'code': 'en',
         'software_version': SHORTVERSION,
-        'language_pack_version': 0,
+        'language_pack_version': 0,  # Set to '0', overwritten by ACTUAL content pack
         'percent_translated': 100,
         'subtitle_count': 0,
         'name': 'English',
