@@ -17,12 +17,12 @@ def impl(context):
 
 @then(u'the last in-progress video/exercise should be shown')
 def impl(context):
-    assert get_content_item(content_id=context.videos[1].get("id")).get("path") in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
+    assert get_content_item(content_id=context.content_videos[1].id)['path'] in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
 
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):
     element = find_css_class_with_wait(context, "content-nextsteps-topic-link")
-    click_and_wait_for_page_load(context, element.find_element_by_xpath(".//div"), wait_time=15)
+    click_and_wait_for_page_load(context, element, wait_time=5)
 
 @then(u'I should be taken to that topic')
 def impl(context):
@@ -31,12 +31,13 @@ def impl(context):
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
     element = find_css_class_with_wait(context, "content-nextsteps-lesson-link")
-    click_and_wait_for_page_load(context, element.find_element_by_xpath(".//div[2]"), wait_time=15)
+    click_and_wait_for_page_load(context, element)
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
-    # Note: First load from the content recommendation API endpoint is longer, as a cache item gets built.
-    find_id_with_wait(context, "content-rec-wrapper", wait_time=60)
+    # Note: First load from the content recommendation API endpoint is
+    # longer, as a cache item gets built.
+    find_id_with_wait(context, "content-rec-wrapper")
 
 @when(u'the home page is loaded')
 def impl(context):

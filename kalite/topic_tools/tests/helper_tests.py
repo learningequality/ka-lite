@@ -30,6 +30,8 @@ class TestHelperMethods(KALiteTestCase):
     def setUp(self):
         '''Performed before every test'''
 
+        super(TestHelperMethods, self).setUp()
+
         # user + facility
         self.facility = Facility(name=self.FACILITY)
         self.facility.save()
@@ -59,14 +61,17 @@ class TestHelperMethods(KALiteTestCase):
 
     def tearDown(self):
         '''Performed after each test'''
+        super(TestHelperMethods, self).tearDown()
         self.user_with_activity = None
         self.user_with_no_activity = None
 
     def test_exercises_from_topics(self):
         '''get_exercises_from_topics()'''
 
-        expected = [u'counting-out-1-20-objects', u'counting-objects', u'one-more--one-less']
-        actual = get_exercises_from_topics(['cc-early-math-counting'])
+        expected = [e.id for e in self.content_exercises[0:4]]
+        actual = get_exercises_from_topics([self.content_subsubtopics[0].id])
+
+        actual = map(lambda s: str(s), actual)
 
         self.assertEqual(expected, actual)
 

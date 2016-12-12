@@ -22,4 +22,5 @@ CHANNEL = getattr(settings, "CHANNEL", "khan")
 
 KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
-TOPIC_RECOMMENDATION_DEPTH = 3
+# How many topics to recommend
+TOPIC_RECOMMENDATION_SIZE = 3

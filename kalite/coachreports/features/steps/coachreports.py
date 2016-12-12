@@ -3,11 +3,9 @@ import random
 
 from behave import *
 from kalite.testing.behave_helpers import *
-from django.core.urlresolvers import reverse
 
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
 
 from kalite.facility.models import FacilityGroup
 
@@ -19,21 +17,18 @@ from kalite.topic_tools.content_models import get_random_content
 from securesync.models import Device
 
 colour_legend = {
-    "light blue": "#C0E7F3",
-    "dark green": "#5AA685",
-    "red": "#FD795B",
-    "grey": "#EEEEEE",
+    "light blue": ("#C0E7F3", "rgb(192, 231, 243)", "rgba(192, 231, 243, 1)"),
+    "dark green": ("#5AA685", "rgb(90, 166, 133)", "rgba(90, 166, 133, 1)"),
+    "red": ("#FD795B", "rgb(253, 121, 91)", "rgba(253, 121, 91, 1)"),
+    "grey": ("#EEEEEE", "rgb(238, 238, 238)", "rgba(238, 238, 238, 1)"),
 }
 
 @given("I am on the coach report")
 def step_impl(context):
     url = reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
     context.browser.get(build_url(context, url))
-    # TODO(benjaoming) : This takes an awful lot of time to load the first
-    # time it's built because of /api/coachreports/summary/?facility_id
-    # being super slow
     try:
-        find_id_with_wait(context, "summary_mainview", wait_time=60)
+        find_id_with_wait(context, "summary_mainview")
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -108,7 +103,7 @@ def create_some_learner_data():
     exercises = get_random_content(kinds=["Exercise"], limit=len(attempt_states))  # Important they are *distinct*
     for state in attempt_states:
         exercise = exercises.pop()
-        log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise.get("id"), user=user)
+        log, __ = ExerciseLog.objects.get_or_create(exercise_id=exercise.get("id"), user=user)
         if "not started" != state[0]:
             log.streak_progress, log.attempts = state[1:]
             for i in range(0, log.attempts):
@@ -158,7 +153,8 @@ def impl(context, exercise, learner, progress_text, progress_colour):
     data_row = find_id_with_wait(context, user.id)
     cell = data_row.find_element_by_css_selector("td[value={exercise}]".format(exercise=exercise))
     assert cell.text == progress_text, "Progress text for {learner}, on {exercise} incorrect".format(learner=learner, exercise=exercise)
-    assert rgba_to_hex(cell.value_of_css_property("background-color")) == colour_legend[progress_colour]
+    assert cell.value_of_css_property("background-color") in colour_legend[progress_colour]
+
 
 @when(u"I click on the learner name")
 def impl(context):
@@ -177,11 +173,8 @@ def impl(context):
 
 @when(u"I click on the Show Tabular Report button")
 def impl(context):
-    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
-    # of time for this to show up because
-    # /api/coachreports/summary/?facility_id=XXX is super slow
     try:
-        find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+        find_id_with_wait(context, "show_tabular_report").click()
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -200,10 +193,7 @@ def impl(context):
 
 @when(u"I click on the Hide Tabular Report button")
 def impl(context):
-    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
-    # of time for this to show up because
-    # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+    find_clickable_id_with_wait(context, "show_tabular_report").click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -226,16 +216,21 @@ def impl(context):
 
 @given(u"all learners have completed ten exercises")
 def impl(context):
-    exercises = get_random_content(kinds=["Exercise"], limit=10)
+    # Use exercises from the context, otherwise we risk getting non-unique
+    # spill-overs from non-isolated tests that created non-unique exercises.
+    exercises = context.content_exercises[:10]
+    # Flush this data because of UNIQUE errors - something isn't properly
+    # isolated in our testing.
+    ExerciseLog.objects.all().delete()
     for user in FacilityUser.objects.all():
         for exercise in exercises:
-            log, created = ExerciseLog.objects.get_or_create(
-                exercise_id=exercise.get("id"),
+            ExerciseLog.objects.get_or_create(
+                exercise_id=exercise.id,
                 user=user,
                 streak_progress=100,
                 attempts=15,
                 latest_activity_timestamp=datetime.datetime.now()
-                )
+            )
 
 
 @given(u"there are two groups")
@@ -263,15 +258,12 @@ def impl(context):
 
 @when(u"I click on the partial colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view",
-                                    wait_time=30)
+    element = find_css_with_wait(context, "td.partial")
+    click_and_wait_for_id_to_appear(context, element, "details-panel-view",)
 
 @then(u"I should see a Hide Tabular Report button")
 def impl(context):
-    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
-    # of time for this to show up because
-    # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30)
+    tab_button = find_clickable_id_with_wait(context, "show_tabular_report")
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")

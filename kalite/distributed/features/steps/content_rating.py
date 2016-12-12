@@ -6,12 +6,9 @@ from behave import *
 from kalite.testing.behave_helpers import *
 
 from kalite.main.models import ContentRating
-from kalite.facility.models import FacilityUser
-from kalite.testing.mixins.facility_mixins import FacilityMixins
 from securesync.models import Device
 
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.ui import WebDriverWait
 
 
 RATING_CONTAINER_ID = "rating-container"
