@@ -3,7 +3,7 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
-import json
+import logging
 import os
 import tempfile
 import shutil
@@ -15,23 +15,27 @@ from httplib import CannotSendRequest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from shutil import WindowsError
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
 from django.db.transaction import TransactionManagementError
-from peewee import Using
 
 from kalite.i18n.base import get_subtitle_file_path, get_subtitle_url
 from kalite.testing.base import KALiteTestCase
+from kalite.testing import base as testing_base
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database, annotate_content_models, create, get, \
-    delete_instances, get_random_content
+from kalite.topic_tools.content_models import create, get, delete_instances
 
 from securesync.models import Zone, Device, DeviceZone
 
 
+logger = logging.getLogger(__name__)
+
+
 def before_all(context):
     pass
+    # setup_content_paths(context)
 
 
 def after_all(context):
@@ -39,17 +43,18 @@ def after_all(context):
 
 
 def before_feature(context, feature):
-    if "uses_content_paths" in context.tags:
-        setup_content_paths(context)
+    pass
+    # if "uses_content_paths" in context.tags:
+    #     setup_content_paths(context)
 
 
 def after_feature(context, feature):
-    if "uses_content_paths" in context.tags:
-        teardown_content_paths(context)
+    pass
+    # if "uses_content_paths" in context.tags:
+    #     teardown_content_paths(context)
 
 
-@set_database
-def setup_content_paths(context, db):
+def setup_content_paths(context):
     """
     Creaters available content items and adds their urls to the context object.
 
@@ -57,43 +62,7 @@ def setup_content_paths(context, db):
         will be added.
     :return: None
     """
-
-    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
-    # depends on these specific values.
-    context.unavailable_content_path = "khan/foo/bar/unavail"
-    context.available_content_path = get_random_content(kinds=["Exercise"], available=True)[0]['path']
-
-    # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
-    # It then updates the items with these paths with their update dicts, and then propagates
-    # availability changes up the topic tree - this means that we can alter the availability of one item
-    # and make all its parent topics available so that it is navigable to in integration tests.
-    def iterator_content_items(ids=None, channel="khan", language="en"):
-        return [(context.available_content_path, {"available": True})]
-
-    annotate_content_models(db=db, iterator_content_items=iterator_content_items)
-
-    with Using(db, [Item], with_transaction=False):
-        context._unavailable_item = Item.create(
-            title="Unavailable item",
-            description="baz",
-            available=False,
-            kind="Video",
-            id="3",
-            slug="unavail",
-            path=context.unavailable_content_path
-        )
-
-
-@set_database
-def teardown_content_paths(context, db):
-    """
-    The opposite of ``setup_content_urls``. Removes content items created there.
-
-    :param context: A behave context, which keeps a reference to the Items so we can clean them up.
-    :return: None.
-    """
-    with Using(db, [Item], with_transaction=False):
-        context._unavailable_item.delete_instance()
+    pass
 
 
 def setup_sauce_browser(context):
@@ -233,6 +202,8 @@ def database_setup(context):
     implementation details each _feature_ is wrapped in a TestCase. This and database_teardown should simulate the
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
+    testing_base.content_db_init(context)
+    testing_base.setup_content_db(context)
     KALiteTestCase.setUpDatabase()
 
 
@@ -247,6 +218,8 @@ def database_teardown(context):
             call_command("flush", database=alias, interactive=False)
         except TransactionManagementError as e:
             print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
+
+    testing_base.teardown_content_db(context)
 
 
 def do_fake_registration():
@@ -287,6 +260,9 @@ def _make_video(context):
     context.video = create(item_dict)
 
     subtitle_path = get_subtitle_file_path(lang_code=lang_code, youtube_id=youtube_id)
+    subtitle_dir = os.path.dirname(subtitle_path)
+    if not os.path.exists(subtitle_dir):
+        os.makedirs(subtitle_dir)
     with open(subtitle_path, "w") as f:
         f.write("foo")
     context._subtitle_file_path = subtitle_path

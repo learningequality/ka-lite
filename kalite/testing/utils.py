@@ -28,7 +28,19 @@ class FuzzyInt(int):
         return self.__repr__()
 
     def __add__(self, x):
-        val = super(FuzzyInt, self).__add__(x)
+        super(FuzzyInt, self).__add__(x)
         self.lowest += x
         self.highest += x
         return self
+
+def switch_to_active_element(browser):
+    """
+    Compatibility change for Selenium 2.x and 3.x
+    """
+    # Deprecated as of Selenium 3.x, should change to
+    # browser.switch_to.active_element() 
+    element = browser.switch_to_active_element()
+    # Selenium 3.x
+    if isinstance(element, dict):
+        element = element['value']
+    return element

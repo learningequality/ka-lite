@@ -15,7 +15,7 @@ class CreateFacilityMixin(object):
         fields = CreateFacilityMixin.DEFAULTS.copy()
         fields.update(**kwargs)
 
-        obj, created = Facility.objects.get_or_create(**fields)
+        obj, __ = Facility.objects.get_or_create(**fields)
         return obj
 
 
