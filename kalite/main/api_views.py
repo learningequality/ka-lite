@@ -5,6 +5,8 @@ Here, these are focused on:
 * GET student progress (video, exercise)
 * topic tree views (search, knowledge map)
 """
+import logging
+
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
@@ -16,6 +18,10 @@ from kalite.topic_tools.content_models import get_topic_nodes, get_content_item,
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 from kalite.distributed.api_views import get_messages_for_api_calls
+
+
+logger = logging.getLogger(__name__)
+
 
 @api_handle_error_with_json
 def topic_tree(request, channel):

@@ -88,7 +88,7 @@ assets:
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage migrate
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
-	# bin/kalite manage retrievecontentpack download en --minimal --foreground --template
+	bin/kalite manage retrievecontentpack empty en --foreground --template
 
 release: dist man
 	ls -l dist
