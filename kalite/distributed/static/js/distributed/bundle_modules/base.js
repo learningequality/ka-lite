@@ -33,8 +33,14 @@ require("../../../css/distributed/khan-site.css");
 
 require("../../../css/distributed/khan-lite.less");
 
+var ColorPalette = require("../color_palette/color_palette");
+
 // Related to showing elements on screen
 $(function(){
+    
+    new ColorPalette({
+        el:".color_palette_view"
+    });
 
     if (!Modernizr.canvas) {
         $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatilibity.js");

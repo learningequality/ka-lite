@@ -12,22 +12,22 @@
 <!-- Prevents nav bar from showing up for students/guests on learn tab -->
 {% if request.is_admin %}
 {% if is_config_package_nalanda %}
-<div class="teach-nav">
+<div class="teach-nav k-acn-border">
     <ul>
         <div class="mobile-nav">
-            <li class="reports {% block reports_active %}{% endblock reports_active %}">
-                <a href="{% url 'coach_reports' zone_id=zone_id %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a>
+            <li class="reports {% block reports_active %}{% endblock reports_active %} k-acn-border k-acn-hover">
+                <a class="k-acn-hover" href="{% url 'coach_reports' zone_id=zone_id %}" title="{% trans 'Track the progress of your learners' %}"><div class="k-acn-hover"><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a>
             </li>
-            <li class="playlist {% block playlist_active %}{% endblock playlist_active %}">
-                <a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604"></span><br/>{% trans "Playlists" %}</div></a>
+            <li class="playlist {% block playlist_active %}{% endblock playlist_active %} k-acn-hover k-acn-border">
+                <a class="link-width k-acn-hover" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604 k-acn-hover"></span><br/>{% trans "Playlists" %}</div></a>
             </li>
         </div>
         <div class="mobile-nav">
-            <li class="exams {% block exams-active %}{% endblock exams-active %}">
-                <a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602"></span><br/>{% trans "Tests" %}</div></a>
+            <li class="exams {% block exams-active %}{% endblock exams-active %} k-acn-hover k-acn-border">
+                <a class="k-acn-hover" href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602 k-acn-hover"></span><br/>{% trans "Tests" %}</div></a>
             </li>
-            <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}">
-                <a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
+            <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %} k-acn-hover k-acn-border">
+                <a class="k-acn-hover" href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div class="k-acn-hover" style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
             </li>
         </div>  
         <!-- Jessica: Commenting out for now to put learn back in 1st level navbar
