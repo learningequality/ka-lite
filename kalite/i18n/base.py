@@ -188,6 +188,10 @@ INSTALLED_LANGUAGES_CACHE = None
 CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
 def get_installed_language_packs(force=False):
     global INSTALLED_LANGUAGES_CACHE
+    # Never use the cache when the English content pack isn't installed, this
+    # ensures that the message disappears when we finally have a cache.
+    if INSTALLED_LANGUAGES_CACHE and INSTALLED_LANGUAGES_CACHE['en']['language_pack_version'] == 0:
+        force = True
     if not INSTALLED_LANGUAGES_CACHE or force:
         INSTALLED_LANGUAGES_CACHE = _get_installed_language_packs()
     return INSTALLED_LANGUAGES_CACHE
