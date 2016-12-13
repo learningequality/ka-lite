@@ -35,6 +35,7 @@ Bug fixes
  * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
  * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
  * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
+ * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
  * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
