@@ -4,7 +4,6 @@ machine:
 
 dependencies:
   cache_directories:
-    - "content"
     - "sc-latest-linux"
   override:
     - pip install -r requirements_sphinx.txt
