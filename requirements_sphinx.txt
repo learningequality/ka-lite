@@ -1,4 +1,5 @@
 -r requirements_test.txt
+docutils <0.13.1
 sphinx
 sphinx_rtd_theme
 sphinx-intl
