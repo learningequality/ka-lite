@@ -259,7 +259,7 @@ def get_exercises_from_topics(topicId_list):
         if topic:
             exercises = get_topic_contents(topic_id=topic, kinds=["Exercise"])[:5] #can change this line to allow for more to be returned
             for e in exercises:
-                exs += [e['id']] #only add the id to the list
+                exs.append(e['id'])  # only add the id to the list
 
     return exs
 
