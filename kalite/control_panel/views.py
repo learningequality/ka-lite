@@ -126,6 +126,17 @@ def zone_management(request, zone_id="None"):
         facilities = Facility.objects.all()
     for facility in list(facilities.order_by("name")):
 
+        # Because of
+        # https://bugs.python.org/issue10513
+        activity = list(
+            user_activity.order_by("-last_activity_datetime", "-end_datetime")
+        )
+        if len(activity) > 0:
+            activity = activity[0]
+        else:
+            # Doesn't look robust at all
+            activity = exercise_activity.order_by("-completion_timestamp")[0:1]
+
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
         facility_data[facility.id] = {
@@ -134,7 +145,7 @@ def zone_management(request, zone_id="None"):
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
             "meta_data_in_need": check_meta_data(facility),
-            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
+            "last_time_used": activity,
         }
 
     context.update({
