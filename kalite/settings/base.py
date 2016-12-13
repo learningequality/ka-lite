@@ -208,7 +208,16 @@ STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 # database with assessment items.
 
 # Content path-related settings
-CONTENT_ROOT = os.path.realpath(os.getenv('KALITE_CONTENT_ROOT', getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content'))))
+CONTENT_ROOT = os.path.realpath(
+    os.getenv(
+        'KALITE_CONTENT_ROOT', getattr(
+            local_settings,
+            "CONTENT_ROOT",
+            os.path.join(USER_DATA_ROOT, 'content')
+        )
+    )
+)
+
 SRT_ROOT = os.path.join(STATIC_ROOT, "srt")
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
@@ -480,8 +489,6 @@ from kalite.legacy.updates_settings import *
 
 KALITE_TEST_RUNNER = "kalite.testing.testrunner.KALiteTestRunner"
 TEST_RUNNER = KALITE_TEST_RUNNER
-
-RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
 
 RUNNING_IN_CI = bool(os.environ.get("CI"))
 

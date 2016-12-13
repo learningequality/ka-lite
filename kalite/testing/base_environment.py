@@ -16,6 +16,7 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from shutil import WindowsError
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
@@ -135,7 +136,7 @@ def before_scenario(context, scenario):
     if "registered_device" in context.tags:
         do_fake_registration()
 
-    if os.environ.get("TRAVIS", False):  # Indicates we're running on remote build server
+    if settings.RUNNING_IN_CI:  # Indicates we're running on remote build server
         setup_sauce_browser(context)
     else:
         setup_local_browser(context)
