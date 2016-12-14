@@ -5,6 +5,7 @@ machine:
 dependencies:
   cache_directories:
     - "sc-latest-linux"
+    - "node_modules"
   override:
     - pip install -r requirements_sphinx.txt
     - pip install -e .
