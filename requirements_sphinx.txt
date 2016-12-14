@@ -1,6 +1,5 @@
 -r requirements_test.txt
-docutils <0.13.1
-sphinx
+sphinx>=1.5.1
 sphinx_rtd_theme
 sphinx-intl
 # Required by screenshots.py to take screenshots in headless manner
