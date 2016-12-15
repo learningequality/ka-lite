@@ -1,6 +1,7 @@
 
 <div class="row" class="content-nextsteps-lesson">
-  <div class="col-xs-3 content-nextsteps-lesson-link" onclick="location.href='/learn/{{ path }}'">
+  <a href="/learn/{{ path }}">
+  <div class="col-xs-3 content-nextsteps-lesson-link">
     <center>
     <!--ALT for image gets read from 'description' so it doesn't need to be read twice-->
       {{#if content_urls.thumbnail }}
@@ -15,8 +16,10 @@
       {{/if}}
     </center>
   </div>
-
-  <div class="col-xs-6" onclick="location.href='/learn/{{ path }}'">
+  </a>
+  
+  <a href="/learn/{{ path }}">
+  <div class="col-xs-6">
       <h2 class="h4">
         <span class="small">{{ topic.title }}:</span>
         <br />
@@ -31,5 +34,6 @@
       <!--Radina: Since glyph is invisible, adding 'sr-only' topic title-->
       <span class="sr-only">{{ topic.title }}</span>
   </div>
+  </a>
   <hr class="module_divider">
 </div>

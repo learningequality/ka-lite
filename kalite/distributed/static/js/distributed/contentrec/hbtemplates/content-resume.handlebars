@@ -10,7 +10,8 @@
     <hr class="module_divider" />
   </div>
   <!--Where the video thumbnail and description go-->
-  <div id="content-resume-thumbnail" class="content-resume-topic-link" onclick="location.href='/learn/{{ path }}'">
+  <a href="/learn/{{ path }}">
+  <div id="content-resume-thumbnail" class="content-resume-topic-link">
     {{#if content_urls.thumbnail }}
     <div class="row">
       <center>
@@ -69,4 +70,5 @@
     </div>
     {{/if}}
   </div>
+  </a>
 </div>

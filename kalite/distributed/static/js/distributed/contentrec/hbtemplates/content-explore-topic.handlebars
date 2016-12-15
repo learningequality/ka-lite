@@ -1,5 +1,6 @@
 <!--likely to be a link to the subject in the sidenav tree-->
-<div class="content-explore-topic content-explore-topic-link" onclick="location.href='/learn/{{suggested_topic.path}}'">
+<a href="/learn/{{suggested_topic.path}}">
+<div class="content-explore-topic content-explore-topic-link">
   <div class="row">
     <div class="col-xs-12">
         <p class="up10">{{_ "Based on your interest in" }} <b>{{ interest_topic.title }}</b><span class="sr-only">{{_ ", we recommend you" }}</span>:</p>
@@ -20,4 +21,4 @@
   </div>
 
 </div>
-
+</a>
