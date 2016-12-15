@@ -19,7 +19,7 @@ help:
 # used for release and dist targets
 format?=gztar
 
-clean: clean-build clean-pyc clean-test
+clean: clean-build clean-pyc clean-test clean-assets
 
 clean-build:
 	rm -fr build/
@@ -43,6 +43,11 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
+
+clean-assets:
+	npm cache clean
+	rm -rf kalite/database/templates/
+	rm -rf .kalite_dist_tmp
 
 lint:
 	pep8 kalite
@@ -80,8 +85,6 @@ man:
 	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
-	# Necessary because NPM may have wrong versions in the cache
-	npm cache clean
 	npm install --production
 	node build.js
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput

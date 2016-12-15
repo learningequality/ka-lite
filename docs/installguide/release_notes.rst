@@ -39,6 +39,7 @@ Bug fixes
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
  * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
+ * **Dev** Circle CI now caches node build output between each test build, reduces test time by 2 minutes.
 
 
 Known issues
