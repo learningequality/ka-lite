@@ -64,10 +64,10 @@ and if you are connected to the internet, this will also give you automatic upda
 On Ubuntu, do this::
 
     sudo apt-get install software-properties-common python-software-properties
-    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite'
+    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite.list'
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
     sudo apt-get update
-    sudo apt-get install ka-lite
+    sudo apt-get install ka-lite  # ...or 'ka-lite-raspberry-pi'
 
 
 .. _gtk-installation:

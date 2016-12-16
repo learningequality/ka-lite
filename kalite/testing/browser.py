@@ -79,7 +79,7 @@ def wait_for_page_change(browser, source_url=None, page_source=None, wait_time=0
     """Given a selenium browser, wait until the browser has completed.
     Code taken from: https://github.com/dragoon/django-selenium/blob/master/django_selenium/testcases.py"""
 
-    for i in range(max_retries):
+    for __ in range(max_retries):
         if source_url is not None and browser.current_url != source_url:
             break
         elif page_source is not None and browser.page_source != page_source:

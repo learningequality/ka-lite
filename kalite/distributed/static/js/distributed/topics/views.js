@@ -495,7 +495,10 @@ var TopicContainerInnerView = BaseView.extend({
 
     deferred_node_by_slug: function(slug, callback) {
         // Convenience method to return a node by a passed in slug
+        console.log("loaded ?");
+        console.log(this.collection.loaded);
         if (this.collection.loaded === true) {
+            console.log(slug);
             this.node_by_slug(slug, callback);
         } else {
             var self = this;
@@ -731,6 +734,7 @@ var TopicContainerOuterView = BaseView.extend({
         // without actually showing anything.
         var kind;
         var id;
+
         if( entry !== undefined ) {
             kind = entry.get("kind") || entry.get("entity_kind");
             id = entry.get("id") || entry.get("entity_id");

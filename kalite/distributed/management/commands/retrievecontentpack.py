@@ -16,7 +16,10 @@ from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
     download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
     extract_content_db, get_localized_exercise_dirpath
+from kalite.topic_tools import settings as topic_settings
 from kalite.updates.management.utils import UpdatesStaticCommand
+from peewee import SqliteDatabase
+from kalite.topic_tools.content_models import Item, AssessmentItem
 
 logging = django_settings.LOG
 
@@ -28,22 +31,13 @@ class Command(UpdatesStaticCommand):
 
     Usage:
     kalite manage retrievecontentpack download <lang>
+    kalite manage retrievecontentpack empty <lang>
     kalite manage retrievecontentpack local <lang> <packpath>
     kalite manage retrievecontentpack -h | --help
 
     """
 
     option_list = UpdatesStaticCommand.option_list + (
-        make_option(
-            "", "--minimal",
-            action="store_true",
-            dest="minimal",
-            default=False,
-            help=(
-                "0.16 legacy: Try fetching a minimal version of the content "
-                "pack without assessment items."
-            )
-        ),
         make_option(
             "", "--template",
             action="store_true",
@@ -53,6 +47,15 @@ class Command(UpdatesStaticCommand):
                 "Extract contents of the content pack into template "
                 "directories which source distribution uses to bundle in "
                 "content db's (and nothing more at the moment)"
+            ),
+        ),
+        make_option(
+            "-f", "--force",
+            action="store_true",
+            dest="force",
+            default=False,
+            help=(
+                "Overwrite existing user data if it exists."
             ),
         ),
     )
@@ -70,12 +73,17 @@ class Command(UpdatesStaticCommand):
         self.setup(options)
 
         operation = args[0]
-        self.minimal = options.get('minimal', False)
         self.foreground = options.get('foreground', False)
         self.is_template = options.get('template', False)
+        self.force = options.get('force', False)
 
         if self.is_template:
             ensure_dir(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR)
+        
+        # This is sort of undefined, because templates are always assumed fine
+        # to overwrite
+        if self.is_template and self.force:
+            raise CommandError("Cannot combine --force and --template.")
 
         if operation == "download":
             self.start(_("Downloading content pack."))
@@ -83,15 +91,60 @@ class Command(UpdatesStaticCommand):
         elif operation == "local":
             self.start(_("Installing a local content pack."))
             self.local(*args, **options)
+        elif operation == "empty":
+            self.empty(*args, **options)
         else:
             raise CommandError("Unknown operation: %s" % operation)
+
+    def empty(self, *args, **options):
+        """
+        Creates an empty content database for the Khan channel. This ensures
+        that an empty content database exists in the default distribution and
+        for tests.
+        
+        Especially useful for creating an *EMPTY TEMPLATE*
+        
+        retrievecontentpack empty en --template
+        """
+        lang = args[1]
+        if not options.get('template', False):
+            content_db_path = topic_settings.CONTENT_DATABASE_PATH.format(
+                channel=topic_settings.CHANNEL,
+                language=lang,
+            )
+        else:
+            content_db_path = topic_settings.CONTENT_DATABASE_TEMPLATE_PATH.format(
+                channel=topic_settings.CHANNEL,
+                language=lang,
+            )
+        if os.path.exists(content_db_path):
+            if options.get("force", False):
+                os.unlink(content_db_path)
+            else:
+                raise CommandError(
+                    "Content database already exists: {}".format(
+                        content_db_path
+                    )
+                )
+        db = SqliteDatabase(
+            content_db_path
+        )
+        db.connect()
+        db.create_table(Item, safe=True)
+        db.create_table(AssessmentItem, safe=True)
+        db.close()
+        self.complete(
+            _("Saved empty content database in {}.").format(
+                content_db_path
+            )
+        )
 
     def download(self, *args, **options):
 
         lang = args[1]
 
         with tempfile.NamedTemporaryFile() as f:
-            zf = download_content_pack(f, lang, minimal=self.minimal)
+            zf = download_content_pack(f, lang)
             self.process_content_pack(zf, lang)
             zf.close()
 

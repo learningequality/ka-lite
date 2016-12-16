@@ -175,8 +175,8 @@ def get_assessment_items_filename():
 
 def detect_content_packs(options):
 
-    if settings.RUNNING_IN_TRAVIS:  # skip if we're running on Travis
-        logging.warning("Running in Travis; skipping content pack download.")
+    if settings.RUNNING_IN_CI:  # skip if we're running on Travis
+        logging.warning("Running in CI; skipping content pack download.")
         return
 
     preseeded_content_packs = False

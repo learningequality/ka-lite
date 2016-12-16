@@ -9,7 +9,7 @@ Notable urls include:
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.http import HttpResponseRedirect
+from django.http.response import HttpResponsePermanentRedirect, HttpResponseRedirect
 
 from . import api_urls
 import kalite.dynamic_assets.urls
@@ -27,7 +27,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
-    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
+    url(r'^favicon.ico/?$', lambda request: HttpResponsePermanentRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
 )
 
 

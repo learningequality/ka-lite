@@ -7,11 +7,12 @@ from ..models import VideoLog, ExerciseLog
 from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.client import KALiteClient
-from kalite.topic_tools.content_models import set_database, Using, Item, get_or_create
+from kalite.topic_tools.content_models import get_or_create
 
 
 class ContentItemApiViewTestCase(KALiteClientTestCase):
     def setUp(self, db=None):
+        super(ContentItemApiViewTestCase, self).setUp()
         item_attributes = {
             u"title": u"My Cool Item",
             u"description": u"A description!",
