@@ -480,6 +480,21 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
 
+    # Daemonize at this point, no more user output is needed
+    if daemonize:
+
+        from django.utils.daemonize import become_daemon
+        kwargs = {}
+        # Truncate the file
+        open(SERVER_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        kwargs['out_log'] = SERVER_LOG
+        kwargs['err_log'] = SERVER_LOG
+        become_daemon(**kwargs)
+        # Write the new PID
+        with open(PID_FILE, 'w') as f:
+            f.write("%d\n%d" % (os.getpid(), port))
+
     manage('initialize_kalite')
 
     # Remove the startup lock at this point
@@ -495,21 +510,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     print("\thttp://127.0.0.1:%s/\n" % port)
     for addr in get_urls_proxy(output_pipe=sys.stdout):
         sys.stdout.write("\t{}\n".format(addr))
-
-    # Daemonize at this point, no more user output is needed
-    if daemonize:
-
-        from django.utils.daemonize import become_daemon
-        kwargs = {}
-        # Truncate the file
-        open(SERVER_LOG, "w").truncate()
-        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
-        kwargs['out_log'] = SERVER_LOG
-        kwargs['err_log'] = SERVER_LOG
-        become_daemon(**kwargs)
-        # Write the new PID
-        with open(PID_FILE, 'w') as f:
-            f.write("%d\n%d" % (os.getpid(), port))
 
     # Start the job scheduler (not Celery yet...)
     cron_thread = None
