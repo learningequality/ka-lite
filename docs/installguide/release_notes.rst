@@ -40,6 +40,7 @@ Bug fixes
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
  * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
  * **Dev** Circle CI now caches node build output between each test build, reduces test time by 2 minutes.
+ * **Dev** Circle CI updated from Ubuntu 12.04 to 14.04 + Python 2.7.11
 
 
 Known issues
