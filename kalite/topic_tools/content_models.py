@@ -717,7 +717,11 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
                         for attr, val in item_data.iteritems():
                             setattr(item, attr, val)
                         item.save()
-                        parents_to_update[item.parent.pk] = item.parent
+
+                        # Be robust by checking that the item has a parent
+                        # before appending it...
+                        if item.parent:
+                            parents_to_update[item.parent.pk] = item.parent
 
             while parents_to_update:
                 new_parents_to_update = {}

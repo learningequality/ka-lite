@@ -16,28 +16,26 @@ and more.
 """
 import os
 import re
-import json
-import copy
 import glob
 
 from django.conf import settings as django_settings
 logging = django_settings.LOG
 
-from django.contrib import messages
-from django.db import DatabaseError
 from django.utils.translation import gettext as _
-
-from fle_utils.general import json_ascii_decoder
 
 from . import settings
 
 CACHE_VARS = []
 
 
-def database_exists(channel="khan", language="en", database_path=None):
-    path = database_path or settings.CONTENT_DATABASE_PATH.format(channel=channel, language=language)
+def database_path(channel="khan", language="en"):
+    return settings.CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
-    return os.path.exists(path)
+
+def database_exists(channel="khan", language="en"):
+    f = database_path(channel, language)
+    return os.path.exists(f) and os.path.getsize(f) > 0
+
 
 def available_content_databases():
     """

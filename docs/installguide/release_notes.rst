@@ -34,7 +34,13 @@ Bug fixes
  * Progress bar missing when decimals in progress percentage :url-issue:`5321`
  * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
  * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
+ * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
+ * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
+ * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
+ * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
+ * **Dev** Circle CI now caches node build output between each test build, reduces test time by 2 minutes.
+ * **Dev** Circle CI updated from Ubuntu 12.04 to 14.04 + Python 2.7.11
 
 
 Known issues
@@ -342,6 +348,7 @@ You *must* use the ``kalite`` command that comes with your new installation.
 The path you should specify is the base project directory -- it should contain the ``kalite`` directory, which should in turn contain the ``database`` directory.
 Follow the on-screen prompts to complete the migration. You should then no longer use the old installation, and should consider deleting it.
 
+
 0.13.0
 ------
 
@@ -374,3 +381,61 @@ Raspberry Pi
 If you're updating a current Raspberry Pi installation, make sure to put this in your ``local_settings.py`` to avoid slow performance:
 
     DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+    
+
+
+Purging *pyc files
+^^^^^^^^^^^^^^^^^^
+
+Previously, kalite would look for ``*pyc`` files every time it was launched,
+and that was quite a waste since its only useful when upgrading. In dev
+environments, we recommend that the developer keeps track of these issues
+on his/her own as with any other project.
+
+Tips:
+http://blog.daniel-watkins.co.uk/2013/02/removing-pyc-files-coda.html
+
+> Luckily, it's pretty easy to fix this in git, using hooks, specifically the
+> post-checkout hook. To do that, add the following to .git/hooks/post-checkout, and make the file executable:
+
+::
+
+    #!/bin/bash
+    find $(git rev-parse --show-cdup) -name "*.pyc" -delete
+
+For the normal user, reset assured that the upgrade notes contain more
+info.
+
+
+Which version can I upgrade from?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+0.12
+
+
+Changes in ``scripts/``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``scripts/`` directory now has everything OSX-specific in ``mac/``
+and Windows stuff in ``win/``.
+
+These scripts are intended to all deprecate sooner down the road as such
+platform-specific logic will be maintained in separate distribution projects.
+
+Scripts have been modified to continue to work but you are encouraged to
+make your system setup only invoke the `kalite` in the `bin/` directory.
+
+
+Starting and stopping kalite
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting and stopping kalite is now performed from the new command line interface
+`kalite`. Examples::
+
+    kalite start  # Starts the server
+    kalite stop  # Stops the server
+    kalite restart  # Restarts the server
+    kalite status  # Returns the current status of kalite, 0=stopped, 1=running
+    kalite manage  # A proxy for the manage.py command.
+    kalite manage shell  # Gives you a django shell
+

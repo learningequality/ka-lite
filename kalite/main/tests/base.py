@@ -3,12 +3,8 @@
 import os
 import shutil
 import tempfile
-import random
 
 from django.conf import settings
-from django.core import cache
-from django.core.cache.backends.filebased import FileBasedCache
-from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
 from kalite.topic_tools.content_models import get_random_content, update_item
