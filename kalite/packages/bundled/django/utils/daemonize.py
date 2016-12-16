@@ -40,9 +40,9 @@ else:
         """
         os.chdir(our_home_dir)
         os.umask(umask)
-        sys.stdin.close()
-        sys.stdout.close()
-        sys.stderr.close()
+        # sys.stdin.close()
+        # sys.stdout.close()
+        # sys.stderr.close()
         if err_log:
             sys.stderr = open(err_log, 'a', 0)
         else:
