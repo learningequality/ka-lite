@@ -136,7 +136,7 @@ def before_scenario(context, scenario):
     if "registered_device" in context.tags:
         do_fake_registration()
 
-    if settings.RUNNING_IN_CI:  # Indicates we're running on remote build server
+    if False and settings.RUNNING_IN_CI:  # Indicates we're running on remote build server
         setup_sauce_browser(context)
     else:
         setup_local_browser(context)
