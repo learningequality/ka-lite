@@ -19,8 +19,10 @@ global._ = _;
 global.sessionModel = new SessionModel();
 
 $(document).ajaxError(
-  function(e, xhr, options) {
-    $("#ajax_user_error").show();
+  function(e, xhr, options, error) {
+    if (xhr.status == 500) {
+      $("#ajax_user_error").show();
+    }
   }
 );
 
