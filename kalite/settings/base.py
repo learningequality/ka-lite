@@ -67,7 +67,8 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+            'formatter': 'standard',
+            'stream': sys.stdout,
         },
     },
     'loggers': {
@@ -108,13 +109,6 @@ LOGGING = {
         },
     }
 }
-
-# Disable the logging output on Windows, as it's broken, and was causing problems.
-# See: https://github.com/learningequality/ka-lite/issues/5030
-# TODO(jamalex): if we can get logging working properly on Windows, this can be removed
-if os.name == "nt":
-    LOGGING["handlers"]["console"]["class"] = "django.utils.log.NullHandler"
-
 
 DB_TEMPLATE_DIR = os.path.join(
     os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],

@@ -480,8 +480,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
 
-    manage('initialize_kalite')
-
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
@@ -493,8 +491,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         print("\thttp://%s:%s/" % (addr, port))
     print("To access KA Lite from this machine, try the following address:")
     print("\thttp://127.0.0.1:%s/\n" % port)
-    for addr in get_urls_proxy(output_pipe=sys.stdout):
-        sys.stdout.write("\t{}\n".format(addr))
 
     # Daemonize at this point, no more user output is needed
     if daemonize:
@@ -510,6 +506,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
+
+    manage('initialize_kalite')
+
+    for addr in get_urls_proxy(output_pipe=sys.stdout):
+        sys.stdout.write("\t{}\n".format(addr))
 
     # Start the job scheduler (not Celery yet...)
     cron_thread = None
