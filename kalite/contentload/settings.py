@@ -12,12 +12,6 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
-# OUTDATED - Special setting for Khan Academy content, was only used for
-# assessment item unpacking. All assessment items have been moved from this
-# location in distributed.management.commands.setup
-OLD_ASSESSMENT_ITEMS_LOCATION = os.path.join(settings.CONTENT_ROOT, "khan")
-
-
 # Where assessment items are stored in general (but no additional channels
 # exist yet so it's all hard-coded for KHAN_ASSESSMENT_ITEM_ROOT below)
 ASSESSMENT_ITEM_ROOT = os.path.join(settings.CONTENT_ROOT, 'assessment')
@@ -28,7 +22,3 @@ if not os.path.exists(ASSESSMENT_ITEM_ROOT):
 KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
     os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
-
-# Default locations of specific elements from the assessment items bundle.
-# Files will be forced into this location when running unpack_assessment_zip
-KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
