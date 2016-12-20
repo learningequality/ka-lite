@@ -502,14 +502,16 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
 
     # Print output to user about where to find the server
     addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):")
+    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
     for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:")
+        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
+    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
     sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
 
     for addr in get_urls_proxy(output_pipe=sys.stdout):
         sys.stdout.write("\t{}\n".format(addr))
+
+    sys.stdout.write("\n")
 
     # Start the job scheduler (not Celery yet...)
     cron_thread = None
