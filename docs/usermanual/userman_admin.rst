@@ -665,8 +665,11 @@ _________________
   With this setting, users must be logged in order to access videos & exercises
 * ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
   Disables user sign ups.
-* ``HIDE_CONTENT_RATING = <True or false> (default = False)``
+* ``HIDE_CONTENT_RATING = <True or False> (default = False)``
   Hides content feedback, i.e. the star rating box below videos
+* ``RESTRICTED_TEACHER_PERMISSIONS = <True or False> (default = False)``
+  Restricts teachers from editing student accounts. Useful especially at larger
+  institutions where permissions should be reserved for admins.
 
 
 Online Synchronization
