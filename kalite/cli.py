@@ -55,7 +55,6 @@ Planned features:
 """
 from __future__ import print_function
 import atexit
-import subprocess
 import platform
 import os
 import socket
@@ -484,14 +483,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
 
-    # Print output to user about where to find the server
-    addresses = get_ip_addresses(include_loopback=False)
-    print("To access KA Lite from another connected computer, try the following address(es):")
-    for addr in addresses:
-        print("\thttp://%s:%s/" % (addr, port))
-    print("To access KA Lite from this machine, try the following address:")
-    print("\thttp://127.0.0.1:%s/\n" % port)
-
     # Daemonize at this point, no more user output is needed
     if daemonize:
 
@@ -508,6 +499,14 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             f.write("%d\n%d" % (os.getpid(), port))
 
     manage('initialize_kalite')
+
+    # Print output to user about where to find the server
+    addresses = get_ip_addresses(include_loopback=False)
+    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):")
+    for addr in addresses:
+        sys.stdout.write("\thttp://%s:%s/" % (addr, port))
+    sys.stdout.write("To access KA Lite from this machine, try the following address:")
+    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
 
     for addr in get_urls_proxy(output_pipe=sys.stdout):
         sys.stdout.write("\t{}\n".format(addr))

@@ -20,6 +20,7 @@ test:
     - make assets
     - make docs
     - kalite start --traceback -v2
+    - sleep 1s  # Necessary for server to be ready
     - kalite status
     - kalite stop --traceback -v2
     - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*,kalite/packages/*" bin/kalite manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,kalite/packages/*,*/tests/*,*/migrations/*" bin/kalite manage test --no-bdd;; esac:
