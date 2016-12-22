@@ -24,6 +24,9 @@ build/
 .pip-downloads/
 .kalite/packages/dist/
 
+# Created by Selenium / Firefox
+geckodriver.log
+
 # User cache data generated at runtime
 cache/
 
