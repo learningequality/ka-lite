@@ -34,7 +34,7 @@ def custom(request):
         "SHORTVERSION": version.SHORTVERSION,
         "True": True,
         "False": False,
-        "is_config_package_nalanda": "nalanda" in settings.CONFIG_PACKAGE,
+        "is_config_package_nalanda": getattr(settings, 'NALANDA', False),
         "HIDE_CONTENT_RATING": settings.HIDE_CONTENT_RATING,
         "universal_js_user_error": settings.AJAX_ERROR
     }

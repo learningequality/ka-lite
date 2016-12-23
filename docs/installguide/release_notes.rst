@@ -72,6 +72,7 @@ Code cleanup
  * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
  * The parts of ``kalite.testing`` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
  * The whole ``kalite.basetests`` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
+ * Both `CONFIG_PACKAGE` and `local_settings` raised an exception, all code pertaining these settings has been removed and settings code is now much more readable :url-issue:`5375`
  * ``kalite.updates.management.commands.classes`` refactored so it doesn't show up as a command ``classes`` (nb: it wasn't a command!).
  * ``python-packages/fle_utils/build``, unused build utility from 2013.
  * The ``manage.py`` script has been removed from the source tree (use ``bin/kalite manage <command>`` instead.)

@@ -65,7 +65,6 @@ class DeviceUnregisteredTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowse
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
-    @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     def test_device_unregistered(self):
         """
         Tests that a device is initially unregistered, and that it can

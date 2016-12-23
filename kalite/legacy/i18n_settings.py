@@ -18,11 +18,6 @@ This will be cleaned up in KA Lite 0.14
 import logging
 import os
 
-try:
-    from kalite import local_settings
-except ImportError:
-    local_settings = object()
-
 
 #######################
 # Functions to support settings
@@ -72,16 +67,13 @@ if os.path.isfile(__dubbed_video_mapping_source) and not os.path.isfile(DUBBED_V
     )
 
 # Whether to turn on crowdin's in-context localization feature
-IN_CONTEXT_LOCALIZED = getattr(local_settings, "IN_CONTEXT_LOCALIZED", False)
+IN_CONTEXT_LOCALIZED = False
 
 # This is a bit more involved, as we need to hand out to a function to calculate
 #   the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
 #   languages. Anything not in here is not accepted by Django, and will simply show
 #   English instead of the selected language.
-if getattr(local_settings, 'LANGUAGES', None):
-    LANGUAGES = local_settings.LANGUAGES
-else:
-    try:
-        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
-    except Exception as e:
-        logging.error("Error loading %s (%s); Django will use its own builtin LANGUAGES list." % (LANG_LOOKUP_FILEPATH, e))
+try:
+    LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+except Exception as e:
+    logging.error("Error loading %s (%s); Django will use its own builtin LANGUAGES list." % (LANG_LOOKUP_FILEPATH, e))
