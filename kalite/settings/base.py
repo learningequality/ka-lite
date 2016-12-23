@@ -4,22 +4,10 @@ from kalite import version
 import logging
 import os
 import sys
-import warnings
 
 from kalite import ROOT_DATA_PATH, PACKAGE_PATH
-from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 from django.utils.translation import ugettext_lazy
-
-try:
-    from kalite import local_settings
-    raise RemovedInKALite_v016_Error(
-        "The local_settings.py method for using custom settings has been removed."
-        "In order to use custom settings, please add them to the special 'settings.py'"
-        "file found in the '.kalite' subdirectory in your home directory."
-    )
-except ImportError:
-    local_settings = object()
 
 
 ##############################
@@ -27,11 +15,8 @@ except ImportError:
 ##############################
 
 # Used everywhere, so ... set it up top.
-DEBUG = getattr(local_settings, "DEBUG", False)
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-if DEBUG:
-    warnings.warn("Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 
 ##############################
@@ -40,10 +25,10 @@ if DEBUG:
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
-LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
+LOGGING_LEVEL = logging.INFO
 
 # We should use local module level logging.getLogger
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG = logging.getLogger("kalite")
 
 LOGGING = {
     'version': 1,
@@ -171,7 +156,7 @@ if not os.path.exists(USER_DATA_ROOT):
 USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 
-LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
+LOCALE_PATHS = (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR)
 if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
     os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
@@ -204,11 +189,8 @@ STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(
     os.getenv(
-        'KALITE_CONTENT_ROOT', getattr(
-            local_settings,
-            "CONTENT_ROOT",
-            os.path.join(USER_DATA_ROOT, 'content')
-        )
+        'KALITE_CONTENT_ROOT',
+        os.path.join(USER_DATA_ROOT, 'content')
     )
 )
 
@@ -217,14 +199,10 @@ if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
 if not os.path.exists(SRT_ROOT):
     os.makedirs(SRT_ROOT)
-CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
-
-# Overwrite stuff from local_settings
-MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
-STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
-MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
-STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
+CONTENT_URL = "/content/"
+MEDIA_URL = "/media/"
+STATIC_URL = "/static/"
 
 
 # Context data included by ka lite's context processor
@@ -239,48 +217,43 @@ KALITE_CHANNEL_CONTEXT_DATA = {
 }
 
 
-DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
-
-DATABASES = getattr(local_settings, "DATABASES", {
+DATABASES = {
     "default": {
-        "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": DEFAULT_DATABASE_PATH,
         "OPTIONS": {
             "timeout": 60,
         },
     }
-})
+}
 
-INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
-ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
+INTERNAL_IPS = ("127.0.0.1",)
+ALLOWED_HOSTS = ['*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = getattr(local_settings, "TIME_ZONE", None)
+TIME_ZONE = None
 # USE_TZ         = True  # needed for timezone-aware datetimes
 # (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = getattr(local_settings, "LANGUAGE_CODE", "en")
+LANGUAGE_CODE = "en"
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = getattr(local_settings, "USE_I18N", True)
+USE_I18N = True
 
 # If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
-USE_L10N = getattr(local_settings, "USE_L10N", False)
+USE_L10N = False
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY_FILE = getattr(
-    local_settings,
-    "SECRET_KEY_FILE",
-    os.path.join(USER_DATA_ROOT, "secretkey.txt")
+SECRET_KEY_FILE = os.path.join(USER_DATA_ROOT, "secretkey.txt"
 )
 try:
     with open(SECRET_KEY_FILE) as f:
-        SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
+        SECRET_KEY = f.read()
 except IOError:
     sys.stderr.write("Generating a new secret key file {}...\n\n".format(SECRET_KEY_FILE))
 
@@ -321,8 +294,6 @@ INSTALLED_APPS = [
     'kalite.control_panel',
 ]
 
-INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -340,7 +311,7 @@ MIDDLEWARE_CLASSES = [
     'kalite.distributed.middleware.LogRequests',
     'django.middleware.gzip.GZipMiddleware',
     'kalite.distributed.middleware.SessionIdleTimeout'
-] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
+]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.i18n',
@@ -349,7 +320,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.request',
     'kalite.distributed.custom_context_processors.custom',
     'django.contrib.messages.context_processors.messages',
-] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
+]
 
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
@@ -398,17 +369,15 @@ TASTYPIE_CANNED_ERROR = AJAX_ERROR
 _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+CACHE_TIME = _max_cache_time
 
 # Sessions use the default cache, and we want a local memory cache for that.
-CACHE_LOCATION = os.path.realpath(getattr(
-    local_settings,
-    "CACHE_LOCATION",
+CACHE_LOCATION = os.path.realpath(
     os.path.join(
         USER_DATA_ROOT,
         'cache',
     )
-))
+)
 
 CACHES = {
     "default": {
@@ -416,7 +385,7 @@ CACHES = {
         'LOCATION': CACHE_LOCATION,  # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME,  # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5 * 2000)  # 2000 entries=~10,000 files
+            'MAX_ENTRIES': 5 * 2000  # 2000 entries=~10,000 files
         },
     }
 }
@@ -426,8 +395,7 @@ CACHES = {
 KEY_PREFIX = version.VERSION
 
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(
-    local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
 SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
@@ -445,7 +413,7 @@ API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
 # TODO(jamalex): re-enable this to something sensible, once #2800 is resolved
-SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
+SESSION_IDLE_TIMEOUT = 0
 
 
 # TODO(benjaoming): Use reverse_lazy for this sort of stuff
@@ -453,7 +421,7 @@ LOGIN_URL = "/?login=true"
 LOGOUT_URL = "/securesync/api/user/logout/"
 
 # 18 threads seems a sweet spot
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
+CHERRYPY_THREAD_COUNT = 18
 
 # PRAGMAs to pass to SQLite when we first open the content DBs for reading. Used mostly for optimizations.
 CONTENT_DB_SQLITE_PRAGMAS = []
@@ -486,7 +454,7 @@ TEST_RUNNER = KALITE_TEST_RUNNER
 
 RUNNING_IN_CI = bool(os.environ.get("CI"))
 
-TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["medium", "long"])  # can be
+TESTS_TO_SKIP = ["medium", "long"]
 assert not (set(TESTS_TO_SKIP) - set(["short", "medium", "long"])), "TESTS_TO_SKIP must contain only 'short', 'medium', and 'long'"
 
-AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+AUTO_LOAD_TEST = False

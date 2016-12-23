@@ -27,7 +27,7 @@ CHERRYPY_PORT = HTTP_PORT
 ########################
 
 # A deprecated setting that shouldn't be used
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+CONFIG_PACKAGE = []
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
