@@ -42,12 +42,6 @@ There are many ways to set an environment variable either temporarily or permane
 
 The change requires that you first stop the server, change the ``KALITE_HOME`` environment variable, and then copy the contents from the default ``.kalite`` directory to the new directory you just specified. When you start the server again, all your files should be seamlessly detected at that location.
 
-Is there somewhere I can find Spanish language content organized by topic?
---------------------------------------------------------------------------
-
-Yes! Thanks to the efforts of an awesome volunteer deploying KA Lite and other OER in the Sacred Valley in Peru, you can download blocks of Spanish Lanugage content from his public `Google Drive folder`_. You can also follow his deployment at http://www.huacamayu.org/.
-
-.. _Google Drive folder: https://drive.google.com/#folders/0B5qtw8M1ijVVMTF5NU40VVZMbk0
 
 I would like to download the videos for KA Lite via BitTorrent, is this possible?
 ---------------------------------------------------------------------------------
