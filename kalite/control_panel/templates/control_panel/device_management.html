@@ -31,6 +31,8 @@
 {% block headjs %}{{ block.super }}
 <script>
     $(function() {
+    window.ZONE_ID = "{{ zone_id }}";
+    window.DEVICE_ID = "{{ device_id }}";
         $(".toggle-sync-details a").click(function() {
             // Toggle text 
             var toggle_text = $(".sync-details").is(":visible") ? gettext('show details') : gettext('hide details');
@@ -48,7 +50,7 @@
 {% block buttons %}{{ block.super }}
     {% if is_own_device %}
         <div class="server-online-only">
-            <a class="registered-only btn btn-success" href="javascript:force_sync()">{% trans "Sync to central server!" %}</a>
+            <a class="registered-only btn btn-success" href="javascript:force_sync(ZONE_ID, DEVICE_ID)">{% trans "Sync to central server!" %}</a>
             <a class="not-registered-only btn btn-success" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
