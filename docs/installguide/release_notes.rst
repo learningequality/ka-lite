@@ -6,6 +6,44 @@ Release Notes
 
 This is a draft of what will be released. Notes are not fully accurate or final.
 
+Content
+^^^^^^^
+
+Contents have been rebuilt from upstream Khan Academy. We have solved issues
+regarding merging contents from Youtube and KhanAcademy.org, meaning that
+inaccuracies in 0.16 content packs are solved.
+
+ - Fixed/added in 0.17:
+   - Arabic
+   - Kannada
+   - Malay
+   - Polish
+   - Swahili
+   - Zulu
+ - Updated:
+   - Bulgarian
+   - English
+   - Bengali
+   - Danish
+   - German
+   - Spanish, Castilian
+   - French
+   - Hindi
+   - Indonesian
+   - Georgian
+   - Portuguese, Brazil
+   - Portuguese, Portugal
+   - Tamil
+   - Xhosa
+
+.. note::
+  After upgrading to version 0.17, you should visit the *Manage* tab to
+  upgrade your language and videos.
+  
+  You should **always** upgrade the English content pack because it contains
+  exercise data needed by the other content packs.
+
+
 New features
 ^^^^^^^^^^^^
 
