@@ -14,31 +14,20 @@ regarding merging contents from Youtube and KhanAcademy.org, meaning that
 inaccuracies in 0.16 content packs are solved.
 
  - Fixed/added in 0.17:
-   - Arabic
-   - Kannada
-   - Malay
-   - Polish
-   - Swahili
-   - Zulu
+   - Kannada, Malay, Polish, Swahili, Zulu
  - Updated:
-   - Bulgarian
-   - English
-   - Bengali
-   - Danish
-   - German
-   - Spanish, Castilian
-   - French
-   - Hindi
-   - Indonesian
-   - Georgian
-   - Portuguese, Brazil
-   - Portuguese, Portugal
-   - Tamil
-   - Xhosa
+   - Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
+     Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
+     Tamil, Xhosa
+ - Known issues:
+   - Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
+
 
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
-  upgrade your language and videos.
+  upgrade your language and videos. You can also use
+  ``kalite manage retrievecontentpack`` to automate the download and
+  installation of new content packs.
   
   You should **always** upgrade the English content pack because it contains
   exercise data needed by the other content packs.
@@ -90,6 +79,7 @@ Known issues
  * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
  * **Windows** 8 installation on 32bit is reported to take ~1 hour before eventually finishing.
  * **Development**: Selenium tests on Firefox 48+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``
+ * **Firefox 47** Subtitles are mis-aligned in the video player. This is fixed by upgrading Firefox.
 
 
 .. note::
