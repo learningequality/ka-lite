@@ -292,6 +292,7 @@ INSTALLED_APPS = [
     'kalite.inline',
     'kalite.i18n',
     'kalite.control_panel',
+    'kalite.benchmarking',
 ]
 
 MIDDLEWARE_CLASSES = [
