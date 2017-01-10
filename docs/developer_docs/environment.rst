@@ -59,16 +59,16 @@ Static vs. Dynamic version
 __________________________
 
 Apart from Python itself, KA Lite depends on a couple of python applications,
-mainly from the Django ecology. These applications can be installed in two ways:
+mainly from the Django ecology. These dependencies can be installed in two ways:
 
-* **Dynamic**: That means that they are automatically installed through
-   *PIP* as a separate software package accessible to your whole system. This
-   is recommended if you run KA Lite and have internet access while installing
-   and updating.
+* **Dynamic**: Means dependencies are automatically installed through
+  *PIP* as a separate software package accessible to your whole system. This
+  is recommended if you run KA Lite and have internet access while installing
+  and updating.
 * **Static**: Static means that KA Lite is installed with all the external
-   applications bundled in. Use this method if you need to have KA Lite
-   installed from offline media or if KA Lite's dependencies are in conflict
-   with the system that you install upon.
+  dependencies bundled in. Use this method if you need to have KA Lite
+  installed from offline media or if KA Lite's dependencies are in conflict
+  with the system that you install upon.
 
 
 Virtualenv
