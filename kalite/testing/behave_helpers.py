@@ -55,7 +55,7 @@ MAX_WAIT_TIME = 30
 MAX_PAGE_LOAD_TIME = 30
 # When checking for something we don't expect to be found, add extra time for
 # scripts or whatever to complete
-MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 1
+MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 2
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +110,11 @@ def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_WAIT_FOR
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
     Finds the element using a CSS Selector.
+
+    # This test has caused so many issues and it seems there's no real way of
+    # reliably testing that an element has disappeared. So for now, this is
+    # disabled.
+    # https://github.com/learningequality/ka-lite/pull/5284
     """
     _assert_no_element_by(context, By.CSS_SELECTOR, css_value, wait_time)
 

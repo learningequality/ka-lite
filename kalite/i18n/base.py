@@ -4,9 +4,10 @@ import re
 import shutil
 import urllib
 import zipfile
-from collections_local_copy import OrderedDict
 from distutils.version import LooseVersion
+from fle_utils.collections_local_copy import OrderedDict
 from fle_utils.internet.webcache import invalidate_web_cache
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.http import HttpRequest
 from django.utils import translation

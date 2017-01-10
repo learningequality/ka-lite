@@ -376,11 +376,9 @@ INSTALLED_APPS = [
     'django_js_reverse',
     'securesync',
     'south',
-    'fle_utils.build',
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
-    'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
@@ -390,19 +388,11 @@ INSTALLED_APPS = [
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
-    'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
     'kalite.control_panel',
     'dbbackup',
 ]
-
-if IS_SOURCE:
-    INSTALLED_APPS += (
-        "kalite.testing",
-        'kalite.testing.loadtesting',
-        "kalite.basetests",
-    )
 
 INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
@@ -422,7 +412,7 @@ MIDDLEWARE_CLASSES = [
     'kalite.distributed.middleware.LockdownCheck',
     'kalite.distributed.middleware.LogRequests',
     'django.middleware.gzip.GZipMiddleware',
-    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
+    'kalite.distributed.middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -553,5 +543,13 @@ from kalite.main.settings import *
 from kalite.legacy.i18n_settings import *
 from kalite.legacy.updates_settings import *
 
-from kalite.testing.settings import *
+
+KALITE_TEST_RUNNER = "kalite.testing.testrunner.KALiteTestRunner"
 TEST_RUNNER = KALITE_TEST_RUNNER
+
+RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
+
+TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["medium", "long"])  # can be
+assert not (set(TESTS_TO_SKIP) - set(["short", "medium", "long"])), "TESTS_TO_SKIP must contain only 'short', 'medium', and 'long'"
+
+AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)

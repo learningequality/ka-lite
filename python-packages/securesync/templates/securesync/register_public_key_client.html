@@ -48,6 +48,14 @@
     <p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
     {% endif %}
 
+    {% if not unregistered %}
+    <p>
+      <a class="btn btn-success" role="button" id="online-register" href="{% url 'zone_redirect' %}">
+        {% trans "Continue to management" %}
+      </a>
+    </p>
+    {% endif %}
+
 
     {% if unregistered %}
     <div class="row">
