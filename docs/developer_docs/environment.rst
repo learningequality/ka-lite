@@ -27,6 +27,14 @@ KA Lite is like a normal django project, if you have done Django before, you wil
      
      pip install -r requirements_dev.txt
 
+#. Build static assets such as javascript::
+     
+     make assets
+
+#. Run the setup, which will bootstrap the database::
+     
+     kalite manage setup
+
 #. Run a development server and use development settings like this::
      
      kalite manage runserver --settings=kalite.project.settings.dev
