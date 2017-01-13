@@ -13,5 +13,4 @@ Useful stuff our devs think that the rest of our devs ought to know about.
     Logging <logging>
     Inline help <inline>
     Documentation <documentation>
-    Documentation screenshots <screenshots>
 
