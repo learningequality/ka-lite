@@ -1,5 +1,14 @@
 #!/usr/bin/env python
-"""
+from __future__ import print_function
+import platform
+import os
+import socket
+import sys
+import time
+import traceback
+
+
+USAGE = """
 KA Lite (Khan Academy Lite)
 
 Supported by Foundation for Learning Equality
@@ -53,14 +62,18 @@ Planned features:
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
 
 """
-from __future__ import print_function
-import atexit
-import platform
-import os
-import socket
-import sys
-import time
-import traceback
+
+
+__doc__ = """
+KA Lite Command Line Interface (CLI)
+====================================
+
+Auto-generated usage instructions from ``kalite -h``::
+
+{usage:s}
+
+""".format(usage="\n".join(map(lambda x: "    " + x, USAGE.split("\n"))))
+
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -89,22 +102,6 @@ sys.path = [
 import httplib
 import re
 import cherrypy
-
-
-# We do not understand --option value, only --option=value.
-# Similarly, we don't understand -o Foo, only -oFoo
-# Match all patterns as above and fail if they exist
-# With single-dash options, there's a corner case if a dash appears in a positional argument, like so:
-#     kalite manage retrievecontentpack local es-ES foo.zip
-# Be sure to match whitespace *before* the option starts, so that dashes *inside* arguments are okay!
-# (?!...) is a negative lookahead assertion. It only matches if the ... pattern *isn't* found!
-__validate_cmd_options = re.compile(r"\s--?[^\s]+\s+(?!--|-[\w])")
-if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. "
-                     "The option parser gets confused if you do otherwise."
-                     "\nAdditionally, please put all Django management command options *after* positional arguments."
-                     "\n\nWill be fixed in a future release.")
-    sys.exit(1)
 
 from threading import Thread
 from docopt import DocoptExit, printable_usage, parse_defaults, \
@@ -814,9 +811,24 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
 
 def main():
 
+    # We do not understand --option value, only --option=value.
+    # Similarly, we don't understand -o Foo, only -oFoo
+    # Match all patterns as above and fail if they exist
+    # With single-dash options, there's a corner case if a dash appears in a positional argument, like so:
+    #     kalite manage retrievecontentpack local es-ES foo.zip
+    # Be sure to match whitespace *before* the option starts, so that dashes *inside* arguments are okay!
+    # (?!...) is a negative lookahead assertion. It only matches if the ... pattern *isn't* found!
+    __validate_cmd_options = re.compile(r"\s--?[^\s]+\s+(?!--|-[\w])")
+    if __validate_cmd_options.search(" ".join(sys.argv[1:])):
+        sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. "
+                         "The option parser gets confused if you do otherwise."
+                         "\nAdditionally, please put all Django management command options *after* positional arguments."
+                         "\n\nWill be fixed in a future release.")
+        sys.exit(1)
+
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
-    arguments = docopt(__doc__, version=str(kalite.__version__), options_first=False)
+    arguments = docopt(USAGE, version=str(kalite.__version__), options_first=False)
 
     settings_module = arguments.pop('--settings', None)
     if settings_module:

@@ -1,6 +1,6 @@
-
 Administrator User Manual
 =========================
+
 **Who is an "administrator"?**
 
 A person who :
