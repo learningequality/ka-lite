@@ -10,6 +10,20 @@ have complete ka-lite installation one would need a 64GB MicroSD Card
 34GB in size (see :ref:`system-requirements`).
 
 
+Overview
+________
+
+
+Installing KA Lite on a Raspberry Pi by using the specialized
+``ka-lite-raspberry-pi`` package will install a couple of dependencies for
+Raspbian. One of them is Nginx, a web server.
+
+The main benefit of this setup is that static files are handled by Nginx,
+meaning all images, javascript files and videos are served by a more efficient
+application. In older more limited versions of Raspberry Pi, this was critical
+because of limited hardware.
+
+
 Step 1: Install Raspbian
 ________________________
 
@@ -72,7 +86,7 @@ process. Generally the default value is ok.
     If you want to receive automatic updates from online sources, you can
     also use :ref:`ppa-installation`.
 
-During the setup it will ask to download assessment.zip that has all exercises. This file is around 500MB and it will take time depending on the internet connection.
+During the setup it will ask to download the English content pack that has all exercises. It is also fundamental to all other language contents, and thus mandatory to run any kind of installation. This file is around 800MB and it will take time to download depending on the internet connection.
 
 
 Step 3: Usage
@@ -102,3 +116,32 @@ Please make sure that all these files once copied, they have permissions to be v
 
 .. image:: File_Permission.png
   :class: screenshot 
+  
+  
+Step 5: Replication to other devices
+------------------------------------
+
+We are working on a command that resets the device registration allowing you to
+copy the ``~/.kalite`` folder with all the downloaded videos onto a blank device.
+
+For now, the basic steps are:
+  
+ #. Prepare the seed device, your prototype using the above steps. Then:
+     
+      #. Download and install all desired videos and content packs.
+      #. Remove ``~/.kalite/secretkey.txt``
+      #. Remove ``~/.kalite/database/data.sqlite``
+      #. Copy the ``~/.kalite`` folder to a removable device. It's likely NOT going to save you time to compress it to .zip or .gz.
+
+ #. On the target device:
+     
+     #. Install KA Lite using the steps above.
+     #. Stop kalite: ``sudo service ka-lite stop``
+     #. Remove the whole ``~/.kalite`` folder
+     #. Copy in the ``.kalite`` from your seed device to your target device's HOME (``~/``) folder.
+     #. Make sure permissions are given to the ``pi`` user (or other configured user)
+     #. Start kalite: ``sudo service ka-lite start``
+
+After this, the target device should have the same content packs, videos etc. But it will be unregistered. Depending on your deployments internet connectivity, you may want to register it before deploying it.
+
+In any case, you should always manually test a device before deploying it.
