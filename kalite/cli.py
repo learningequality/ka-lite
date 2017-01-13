@@ -135,9 +135,6 @@ NODE_PID_FILE = os.path.join(KALITE_HOME, 'kalite_node.pid')
 
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
-# if this environment variable is set, we activate the profiling machinery
-PROFILE = os.environ.get("PROFILE")
-
 # TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
 # TODO: Can be configured in django settings which is really odd because that's
@@ -405,9 +402,6 @@ def manage(command, args=None, as_thread=False):
     args = update_default_args(["--traceback"], args)
 
     if not as_thread:
-        if PROFILE:
-            profile_memory()
-
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalite' or 'kalite.__main__' (a part from the top most text in `kalite manage help`
@@ -775,59 +769,6 @@ def url():
     sys.stderr.write("{msg:s} ({code:d})\n".format(
         code=status_code, msg=verbose_status))
     return status_code
-
-
-def profile_memory():
-    print("activating profile infrastructure.")
-
-    import csv
-    import resource  # @UnresolvedImport
-    import signal
-    import sparkline
-
-    starttime = time.time()
-
-    mem_usage = []
-
-    def print_results():
-        try:
-            highest_mem_usage = next(s for s in sorted(mem_usage, key=lambda x: x['mem_usage'], reverse=True))
-        except StopIteration:
-            highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
-
-        graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
-
-        print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
-
-    def write_profile_results(filename=None):
-
-        if not filename:
-            filename = os.path.join(os.getcwd(), "memory_profile.log")
-
-        with open(filename, "w") as f:
-            si_es_vi = csv.DictWriter(f, ["pid", "timestamp", "mem_usage"])
-            si_es_vi.writeheader()
-            for _, content in enumerate(mem_usage):
-                si_es_vi.writerow(content)
-
-    def handle_exit():
-        write_profile_results()
-        print_results()
-
-    def collect_mem_usage(_sig, _frame):
-        """
-        Callback for when we get a SIGPROF from the kernel. When called,
-        we record the time and memory usage.
-        """
-        pid = os.getpid()
-        m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        curtime = time.time() - starttime
-        mem_usage.append({"pid": pid, "timestamp": curtime, "mem_usage": m / 1024})
-
-    signal.setitimer(signal.ITIMER_PROF, 1, 1)
-
-    signal.signal(signal.SIGPROF, collect_mem_usage)
-    atexit.register(handle_exit)
 
 
 # TODO(benjaoming): When this PR is merged, we can stop this crazyness

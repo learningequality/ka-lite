@@ -13,15 +13,14 @@ Contents have been rebuilt from upstream Khan Academy. We have solved issues
 regarding merging contents from Youtube and KhanAcademy.org, meaning that
 inaccuracies in 0.16 content packs are solved.
 
- - Fixed/added in 0.17:
-   - Kannada, Malay, Polish, Swahili, Zulu
- - Updated:
-   - Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
-     Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
-     Tamil, Xhosa
- - Known issues:
-   - Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
-
+ * Fixed/added in 0.17:
+    * Kannada, Malay, Polish, Swahili, Zulu
+ * Updated:
+    * Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
+      Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
+      Tamil, Xhosa
+ * Known issues:
+    * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
 
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
@@ -109,6 +108,8 @@ Code cleanup
  * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
  * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
  * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
+ * Removed profiling via ``PROFILE=yes`` (broken since 0.16)
+
 
 Debian/Ubuntu installer
 ^^^^^^^^^^^^^^^^^^^^^^^
