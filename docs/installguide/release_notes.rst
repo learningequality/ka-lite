@@ -6,6 +6,32 @@ Release Notes
 
 This is a draft of what will be released. Notes are not fully accurate or final.
 
+Content
+^^^^^^^
+
+Contents have been rebuilt from upstream Khan Academy. We have solved issues
+regarding merging contents from Youtube and KhanAcademy.org, meaning that
+inaccuracies in 0.16 content packs are solved.
+
+ * Fixed/added in 0.17:
+    * Kannada, Malay, Polish, Swahili, Zulu
+ * Updated:
+    * Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
+      Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
+      Tamil, Xhosa
+ * Known issues:
+    * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
+
+.. note::
+  After upgrading to version 0.17, you should visit the *Manage* tab to
+  upgrade your language and videos. You can also use
+  ``kalite manage retrievecontentpack`` to automate the download and
+  installation of new content packs.
+  
+  You should **always** upgrade the English content pack because it contains
+  exercise data needed by the other content packs.
+
+
 New features
 ^^^^^^^^^^^^
 
@@ -50,16 +76,19 @@ Known issues
 
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in other way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
  * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
- * **Windows** 8 installation on 32bit is reported to take ~1 hour before eventually finishing.
- * **Development**: Selenium tests on Firefox 48+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``
+ * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
+ * **Development**: Selenium tests on Firefox 48\+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``.
+ * **Firefox 47**: Subtitles are mis-aligned in the video player. This is fixed by upgrading Firefox.
 
 
 .. note::
-    Code and command cleanups listed below are harmless if you installed KA Lite
-    using an installer and only relevant in these cases:
-     * You run a specialized setup or deployment
-     * Your deployment is 1½+ years old
-     * You're a KA Lite developer
+  Code and command cleanups listed below are harmless if you installed KA Lite
+  using an installer and only relevant in these cases:
+
+   * You run a specialized setup or deployment
+   * Your deployment is 1½+ years old
+   * You're a KA Lite developer
+
 
 Code cleanup
 ^^^^^^^^^^^^
@@ -81,6 +110,8 @@ Code cleanup
  * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
  * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
  * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
+ * Removed profiling via ``PROFILE=yes`` (broken since 0.16)
+
 
 Debian/Ubuntu installer
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -310,15 +341,14 @@ Bug fixes
 General
 ^^^^^^^
 
-* KA Lite is officially supported on OSX 10.11 (El Capitan).
-* We've revamped the language packs into a new format, called content packs.
-  This results in significantly faster startup times across the board.
-.. WARNING::
-   You will have to redownload all your languages to fully support 0.16.
+ * KA Lite is officially supported on OSX 10.11 (El Capitan).
+ * We've revamped the language packs into a new format, called content packs.
+   This results in significantly faster startup times across the board.
+   .. WARNING::
+     You will have to redownload all your languages to fully support 0.16.
+ * We introduced a new beta inline help system. Check this out by going to the Facility management page and clicking "Show me how!"
+ * A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
-* We introduced a new beta inline help system. Check this out by going to the
-  Facility management page and clicking "Show me how!"
-* A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
 0.15.0
 ------
@@ -387,8 +417,8 @@ If you're updating a current Raspberry Pi installation, make sure to put this in
     
 
 
-Purging *pyc files
-^^^^^^^^^^^^^^^^^^
+Purging \*pyc files
+^^^^^^^^^^^^^^^^^^^
 
 Previously, kalite would look for ``*pyc`` files every time it was launched,
 and that was quite a waste since its only useful when upgrading. In dev

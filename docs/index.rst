@@ -21,8 +21,7 @@ check our `Forums`_!
     Installation Guide <installguide/install_main>
     User Manual <usermanual/userman_main>
     FAQ <faq>
-    Contributing <developer_docs/contributing>
-    Dev Guide <developer_docs/index>
+    Developer Docs <developer_docs/index>
 
 
 .. include:: ../README.rst
