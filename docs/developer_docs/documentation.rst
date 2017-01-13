@@ -25,8 +25,7 @@ Documentation development
    be started. To build the docs::
    
        pip install -r requirements_sphinx.txt  # To install software for building docs
-       cd docs
-       make html
+       make docs
 
 #. You can view the docs in a browser by opening *docs/_build/html/index.html*.
 #. After you are satisfied with your changes push them to your fork of the ka-lite project, and then open a PR.
