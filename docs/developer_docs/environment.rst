@@ -39,22 +39,6 @@ Now, every time you work on your development environment, just remember to switc
 .. _github: https://github.com/learningequality/ka-lite
 
 
-Running directly from source
-____________________________
-
-
-KA Lite can also be run as a "source distribution" for development purposes.
-By this, we just mean a git checkout (from `our github <https://github.com/learningequality/ka-lite/>`_).
-
-.. note:: Running directly from source will also maintain all user data in that
-          same directory! This is convenient for having several versions of
-          kalite with different data on the same computer.
-
-If you are able to use pip and install conventional python packages from an
-online source, then the quickest option to install the latest stable release
-of KA Lite is ``pip install ka-lite` or `pip install ka-lite-static``.
-
-
 Static vs. Dynamic version
 __________________________
 
