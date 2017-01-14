@@ -23,7 +23,7 @@ Once installed, a new command ``kalite`` is available from your terminal:
 
 .. warning::
 
-  On Ubuntu/Debian/RaspberryPi, when installed via a .deb package, you should start and stop your server with system commands ``sudo service ka-lite start/stop/restart``. The reason is that kalite runs with a configured user account.
+  When the KA Lite software is installed using a .deb package, on Ubuntu, Debian, or Raspbian, do not use the ``kalite`` command directly.  Instead, use system commands like ``sudo service ka-lite start``, ``sudo service ka-lite stop`` or ``sudo service ka-lite restart``.
   
   Using the package ``ka-lite-raspberry-pi``, it runs on a different port.
   
