@@ -5,13 +5,19 @@ Once installed, a new command ``kalite`` is available from your terminal:
 
 .. code-block:: bash
 
-  # Runs the server in the background (as a daemon)
-  kalite start/stop/restart
+  # Start the server in the background (as a daemon)
+  kalite start
+
+  # Stop the server
+  kalite stop
+
+  # Stop and start the server in the background (as a daemon)
+  kalite restart
 
   # Runs a foreground process where you can see output of the server
   kalite start --foreground
 
-  # Shows all other available management commands
+  # Show available commands
   kalite manage help
 
 
