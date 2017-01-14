@@ -21,11 +21,6 @@ Once installed, a new command ``kalite`` is available from your terminal:
   kalite manage help
 
 
-.. note::
-
-  The commands above reload the Python code on changes, but they do *not* run python tests.
-
-
 .. warning::
 
   On Ubuntu/Debian/RaspberryPi, when installed via a .deb package, you should start and stop your server with system commands ``sudo service ka-lite start/stop/restart``. The reason is that kalite runs with a configured user account.
