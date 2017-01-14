@@ -1,7 +1,7 @@
 The ``kalite`` command
 ======================
 
-Once installed, a new command ``kalite`` is available from your system's terminal':
+Once installed, a new command ``kalite`` is available from your system's terminal:
 
 .. code-block:: bash
 
