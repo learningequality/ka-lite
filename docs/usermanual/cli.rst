@@ -1,28 +1,29 @@
 The ``kalite`` command
 ======================
 
-Once installed, a new command ``kalite`` is available from your system's terminal':
+Once installed, a new command ``kalite`` is available from your terminal:
 
 .. code-block:: bash
 
-  # Runs the server in the background (as a daemon)
-  kalite start/stop/restart
+  # Start the server in the background (as a daemon)
+  kalite start
+
+  # Stop the server
+  kalite stop
+
+  # Stop and start the server in the background (as a daemon)
+  kalite restart
 
   # Runs a foreground process where you can see output of the server
   kalite start --foreground
 
-  # Shows all other available management commands
+  # Show available commands
   kalite manage help
-
-
-.. note::
-
-  The commands above reload the Python code on changes, but they do *not* run python tests.
 
 
 .. warning::
 
-  On Ubuntu/Debian/RaspberryPi, when installed via a .deb package, you should start and stop your server with system commands ``sudo service ka-lite start/stop/restart``. The reason is that kalite runs with a configured user account.
+  When the KA Lite software is installed using a .deb package, on Ubuntu, Debian, or Raspbian, do not use the ``kalite`` command directly.  Instead, use system commands like ``sudo service ka-lite start``, ``sudo service ka-lite stop`` or ``sudo service ka-lite restart``.
   
   Using the package ``ka-lite-raspberry-pi``, it runs on a different port.
   
