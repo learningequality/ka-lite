@@ -121,16 +121,21 @@ Please make sure that all these files once copied, they have permissions to be v
 Step 5: Replication to other devices
 ------------------------------------
 
-We are working on a command that resets the device registration allowing you to
-copy the ``~/.kalite`` folder with all the downloaded videos onto a blank device.
-
-For now, the basic steps are:
+Here are the basic steps to manually replicate from one KA Lite device to
+another. We advice you to write your own scripts to automate this process if you
+are deploying to more than just a couple of devices.
   
  #. Prepare the seed device, your prototype using the above steps. Then:
      
       #. Download and install all desired videos and content packs.
-      #. Remove ``~/.kalite/secretkey.txt``
-      #. Remove ``~/.kalite/database/data.sqlite``
+      #. To remove the data that should NOT be replicated to other devices, run::
+
+             kalite manage clearuserdata
+
+         To run the same command as a different user::
+
+             sudo su -l USERNAME -c kalite manage clearuserdata
+
       #. Copy the ``~/.kalite`` folder to a removable device. It's likely NOT going to save you time to compress it to .zip or .gz.
 
  #. On the target device:
