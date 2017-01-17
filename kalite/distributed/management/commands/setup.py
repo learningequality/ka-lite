@@ -470,15 +470,7 @@ class Command(BaseCommand):
         logging.info("Copying static media...")
         ensure_dir(settings.STATIC_ROOT)
 
-        # The following file ignores have to be preserved from a
-        # collectstatic(clear=True), due to being bundled with content packs,
-        # and we thus have now way of getting them back.
-        collectstatic_ignores = [
-            # subtitle files come with language packs -- don't delete
-            "*.vtt", "*.srt",
-        ]
-        call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
-                     clear=True)
+        call_command("collectstatic", interactive=False, verbosity=0, clear=True)
         call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env
