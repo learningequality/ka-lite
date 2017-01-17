@@ -196,7 +196,7 @@ function updateDisplay(process_name, progress_log) {
         select_update_elements(process_name, ".progressbar-current").progressbar({value: 100*progress_log.stage_percent});
         select_update_elements(process_name, ".progressbar-overall").progressbar({value: 100*progress_log.process_percent});
 
-        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.1f%% complete (%(cur_stage)d of %(num_stages)d)"), {
+        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.1f%% complete (%(cur_stage)d of %(num_stages)d)") + " ", {
             cur_stage: parseInt(progress_log.cur_stage_num),
             num_stages: parseInt(progress_log.total_stages),
             percent_complete: 100*progress_log.process_percent
