@@ -9,7 +9,7 @@ This is a draft of what will be released. Notes are not fully accurate or final.
 Content
 ^^^^^^^
 
-Contents have been rebuilt from upstream Khan Academy. We have solved issues
+Contents have been updated from upstream Khan Academy. We have solved issues
 regarding merging contents from Youtube and KhanAcademy.org, meaning that
 inaccuracies in 0.16 content packs are solved.
 
@@ -37,8 +37,8 @@ New features
 
  * New management command ``clearuserdata``, makes it easy to prepare a
    prototype device for subsequent cloning. :url-issue:`5341`
- * Patch from Rachel means you can now go to a specific page in a specific
-   language:
+ * Patch from Rachel means you can now deeplink a page in a specific
+   language, using this URL shortcut:
    ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
    :url-issue:`5342` -
    (Thanks: Jonathan Field)
