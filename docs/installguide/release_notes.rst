@@ -63,6 +63,7 @@ Bug fixes
  * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
  * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
  * Installation works with latest ``pip 9``. :url-issue:`5319`
+ * ``kalite manage contentpackchecker all --update`` wrongly retrieved all available content packs. Now only updates *installed* content packs.
  * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50

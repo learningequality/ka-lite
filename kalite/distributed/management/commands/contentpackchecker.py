@@ -1,7 +1,6 @@
 import glob
 import json
 import os
-import requests
 
 from optparse import make_option
 
@@ -12,9 +11,7 @@ from django.core.management.base import BaseCommand
 from kalite.topic_tools.content_models import Item, set_database, parse_data, AssessmentItem
 
 from kalite.i18n.base import get_locale_path, get_subtitle_file_path as get_subtitle_path, \
-    get_localized_exercise_dirpath
-
-from kalite.version import SHORTVERSION
+    get_localized_exercise_dirpath, get_installed_language_packs
 
 logging = django_settings.LOG
 
@@ -52,11 +49,7 @@ class Command(BaseCommand):
 
         if languages[0] == "all":
 
-            metadata_url = "https://learningequality.org/downloads/ka-lite/{version}/content/contentpacks/all_metadata.json".format(version=SHORTVERSION)
-
-            metadata = json.loads(requests.get(metadata_url).content)
-
-            languages = [lang["code"] for lang in metadata]
+            languages = get_installed_language_packs(force=True).keys()
 
         if options["update"]:
             for language in languages:
