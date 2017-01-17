@@ -1,8 +1,10 @@
 Release Notes
 =============
 
-0.17 (unreleased)
------------------
+0.17.0 (unreleased)
+-------------------
+
+Please read our release notes before installing.
 
 This is a draft of what will be released. Notes are not fully accurate or final.
 
@@ -13,14 +15,16 @@ Contents have been updated from upstream Khan Academy. We have solved issues
 regarding merging contents from Youtube and KhanAcademy.org, meaning that
 inaccuracies in 0.16 content packs are solved.
 
- * Fixed/added in 0.17:
+ * Languages fixed/added in 0.17:
     * Kannada, Malay, Polish, Swahili, Zulu
- * Updated:
+ * Languages updated:
     * Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
       Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
       Tamil, Xhosa
- * Known issues:
+ * Languages with remaining issues:
     * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
+ * General updates:
+    * Many exercises are rearranged and updated, as with javascript libraries. This will solve an unknown number of javascript errors, for instance :url-issue:`5316`
 
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
@@ -29,7 +33,9 @@ inaccuracies in 0.16 content packs are solved.
   installation of new content packs.
   
   You should **always** upgrade the English content pack because it contains
-  exercise data needed by the other content packs.
+  exercise data needed by the other content packs. However, most installers
+  bundle the English content pack, so after updating the software, you may find
+  that you only need to upgrade other installed languages.
 
 
 New features
@@ -42,6 +48,8 @@ New features
    ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
    :url-issue:`5342` -
    (Thanks: Jonathan Field)
+ * OSX 10.11 (El Capitan) + MacOS Sierra 10.12 are now supported.
+ * Updates for improved Raspbian Jessie support.
 
 
 Bug fixes
