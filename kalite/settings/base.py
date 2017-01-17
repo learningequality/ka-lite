@@ -63,7 +63,7 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['null'],
             'level': 'DEBUG',
             'propagate': False,
         },
