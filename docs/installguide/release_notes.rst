@@ -72,6 +72,7 @@ Bug fixes
  * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
  * Installation works with latest ``pip 9``. :url-issue:`5319`
  * ``kalite manage contentpackchecker all --update`` wrongly retrieved all available content packs. Now only updates *installed* content packs.
+ * No content pack files are placed in ``STATIC_ROOT``, ensuring that ``kalite manage collectstatic`` will not remove any files from content packs (subtitles!). :url-issue:`5386` :url-issue:`5073`
  * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
