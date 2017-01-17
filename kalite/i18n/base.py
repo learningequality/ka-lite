@@ -36,10 +36,6 @@ class LanguageNotFoundError(Exception):
     pass
 
 
-def get_localized_exercise_dirpath(lang_code):
-    return os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke", "exercises", lang_code)  # Translations live in user data space
-
-
 def get_locale_path(lang_code=None):
     """returns the location of the given language code, or the default locale root
     if none is provided."""
@@ -344,7 +340,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code)]
+    langpack_resource_paths = [get_subtitle_file_path(lang_code), get_locale_path(lang_code)]
 
     for langpack_resource_path in langpack_resource_paths:
         try:

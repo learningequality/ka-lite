@@ -476,9 +476,6 @@ class Command(BaseCommand):
         collectstatic_ignores = [
             # subtitle files come with language packs -- don't delete
             "*.vtt", "*.srt",
-            # exercises come with language packs, and we have no way to
-            # replicate
-            "*/perseus/ke/exercises/*",
         ]
         call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
                      clear=True)
