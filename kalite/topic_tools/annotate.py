@@ -118,7 +118,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
                 # Generate subtitle URLs for any subtitles that do exist for this content item
                 subtitle_urls = [{
                     "code": lc,
-                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.vtt".format(code=lc, id=content.get("id")),
+                    "url": django_settings.CONTENT_URL + "srt/{code}/subtitles/{id}.vtt".format(code=lc, id=content.get("id")),
                     "name": get_language_name(lc)
                     } for lc in subtitle_lang_codes]
 
