@@ -250,5 +250,6 @@ Recent efficient versions of ad blockers and anti-trackers have started to block
 scripts from third-party servers, including the server we use to register a
 device against.
 
-The solution is to add an exception to unblock ``staging.learningequality.org``.
+The solution is to add an exception to unblock ``hub.learningequality.org``
+(or ``staging.learningequality.org`` if you are a developer).
 
