@@ -29,7 +29,7 @@ inaccuracies in 0.16 content packs are solved.
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
   upgrade your language and videos. You can also use
-  ``kalite manage retrievecontentpack`` to automate the download and
+  ``kalite manage contentpackchecker all --update`` to automate the download and
   installation of new content packs.
   
   You should **always** upgrade the English content pack because it contains
