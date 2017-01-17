@@ -1,35 +1,41 @@
 Release Notes
 =============
 
-0.17 (unreleased)
------------------
+0.17.0 (unreleased)
+-------------------
+
+Please read our release notes before installing.
 
 This is a draft of what will be released. Notes are not fully accurate or final.
 
 Content
 ^^^^^^^
 
-Contents have been rebuilt from upstream Khan Academy. We have solved issues
+Contents have been updated from upstream Khan Academy. We have solved issues
 regarding merging contents from Youtube and KhanAcademy.org, meaning that
 inaccuracies in 0.16 content packs are solved.
 
- * Fixed/added in 0.17:
+ * Languages fixed/added in 0.17:
     * Kannada, Malay, Polish, Swahili, Zulu
- * Updated:
+ * Languages updated:
     * Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
       Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
       Tamil, Xhosa
- * Known issues:
+ * Languages with remaining issues:
     * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
+ * General updates:
+    * Many exercises are rearranged and updated, as with javascript libraries. This will solve an unknown number of javascript errors, for instance :url-issue:`5316`
 
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
   upgrade your language and videos. You can also use
-  ``kalite manage retrievecontentpack`` to automate the download and
+  ``kalite manage contentpackchecker all --update`` to automate the download and
   installation of new content packs.
   
   You should **always** upgrade the English content pack because it contains
-  exercise data needed by the other content packs.
+  exercise data needed by the other content packs. However, most installers
+  bundle the English content pack, so after updating the software, you may find
+  that you only need to upgrade other installed languages.
 
 
 New features
@@ -37,11 +43,13 @@ New features
 
  * New management command ``clearuserdata``, makes it easy to prepare a
    prototype device for subsequent cloning. :url-issue:`5341`
- * Patch from Rachel means you can now go to a specific page in a specific
-   language:
+ * Patch from Rachel means you can now deeplink a page in a specific
+   language, using this URL shortcut:
    ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
    :url-issue:`5342` -
    (Thanks: Jonathan Field)
+ * OSX 10.11 (El Capitan) + MacOS Sierra 10.12 are now supported.
+ * Updates for improved Raspbian Jessie support.
 
 
 Bug fixes
@@ -63,6 +71,7 @@ Bug fixes
  * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
  * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
  * Installation works with latest ``pip 9``. :url-issue:`5319`
+ * No content pack files are placed in ``STATIC_ROOT``, ensuring that ``kalite manage collectstatic`` will not remove any files from content packs (subtitles!). :url-issue:`5386` :url-issue:`5073`
  * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50

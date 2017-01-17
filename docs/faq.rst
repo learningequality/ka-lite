@@ -242,3 +242,14 @@ I can't see videos in Firefox on Ubuntu/Debian!
 -----------------------------------------------
 
 Install `Ubuntu restricted extras package <https://apps.ubuntu.com/cat/applications/ubuntu-restricted-extras/>`_ in the Ubuntu Software Center.
+
+I am online but device registration freezes
+-------------------------------------------
+
+Recent efficient versions of ad blockers and anti-trackers have started to block
+scripts from third-party servers, including the server we use to register a
+device against.
+
+The solution is to add an exception to unblock ``hub.learningequality.org``
+(or ``staging.learningequality.org`` if you are a developer).
+
