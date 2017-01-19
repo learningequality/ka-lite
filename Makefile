@@ -95,7 +95,7 @@ assets:
 
 release: dist man
 	ls -l dist
-	echo "uploading above to PyPi, using twine"
+	echo "Uploading dist/* to PyPi, using twine"
 	twine upload -s --sign-with gpg2 dist/*
 
 dist: clean docs assets
