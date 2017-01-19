@@ -98,6 +98,9 @@ release: dist man
 	echo "Uploading dist/* to PyPi, using twine"
 	twine upload -s --sign-with gpg2 dist/*
 
+sdist: clean docs assets
+	python setup.py sdist --formats=$(format) --static
+
 dist: clean docs assets
 	# python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
