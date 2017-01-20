@@ -24,6 +24,7 @@ inaccuracies in 0.16 content packs are solved.
  * Languages with remaining issues:
     * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
  * General updates:
+    * English subtitles are now available by default for all videos in the English content pack.
     * Many exercises are rearranged and updated, as with javascript libraries. This will solve an unknown number of javascript errors, for instance :url-issue:`5316`
 
 .. note::
