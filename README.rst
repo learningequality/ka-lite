@@ -52,14 +52,14 @@ Get involved!
 Roadmap
 -------
 
-During 2017, Learning Equality is launching the successor of KA Lite. It's
+Later in 2017, Learning Equality will be launching the successor of KA Lite. It's
 called `Kolibri <http://github.com/learningequality/kolibri>`__ and will have
-all the features of KA Lite, but also be a platform for many other offline
-educational sources.
+very similar features to KA Lite, but will also be a platform for many other
+educational resources besides Khan Academy's.
 
-Because of the reported popularity of KA Lite, we are continuing our
-efforts to support deployments by providing fixes problems that may occur and
-thus directly effect current usage. For instance issues related to new
+Because of the popularity of KA Lite, we are continuing
+to support deployments by providing fixes to problems that
+directly affect current usage. These include issues related to new
 browsers, operating systems etc. We are also still optimizing regarding
 performance issues.
 
