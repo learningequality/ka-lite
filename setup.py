@@ -79,15 +79,7 @@ RAW_REQUIREMENTS = filter(lambda x: bool(x), RAW_REQUIREMENTS)
 
 # Special parser for http://blah#egg=asdasd-1.2.3
 DIST_REQUIREMENTS = []
-DEPENDENCY_LINKS = []
 for req in RAW_REQUIREMENTS:
-    if req.startswith("https://"):
-        DEPENDENCY_LINKS.append(req)
-        __, req = req.split("#egg=")
-        dashed_components = req.split("-")
-        version = dashed_components[-1]
-        req_name = "-".join(dashed_components[:-1])
-        req = "{req:s}=={version:s}".format(req=req_name, version=version)
     DIST_REQUIREMENTS.append(req)
 
 # Requirements if doing a build with --static
@@ -254,11 +246,6 @@ if STATIC_BUILD:
         # The below is not an option, then we skip mimeparse
         # opts.no_binary = ':all:'  # Do not use any binary files (whl)
         opts.no_clean = NO_CLEAN
-        # Hotfix for the one single tastypie dependency link. Not nice.
-        # To be removed as soon as an upstream tastypie fixes our
-        # Django 1.5 issue
-        # Removed in pip 9!
-        opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
@@ -334,7 +321,6 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
-    dependency_links=DEPENDENCY_LINKS,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
