@@ -15,7 +15,7 @@ by `Learning Equality <https://learningequality.org/>`__
    :target: http://ka-lite.readthedocs.org/
 
 `Khan Academy <http://www.khanacademy.org/>`__'s core mission is to
-"provide a free world-class education for anyone anywhere", and as `70%
+"provide a free world-class education for anyone anywhere", and as over `60%
 of the world's population is without access to the
 internet <http://en.wikipedia.org/wiki/Global_Internet_usage>`__,
 primarily in the developing world, providing an alternative delivery
@@ -48,6 +48,30 @@ Get involved!
 -  Report bugs by `creating issues <https://github.com/learningequality/ka-lite/wiki/Report-Bugs-by-Creating-Issues>`__
 -  Read more about the project's motivation at `Introducing KA Lite, an offline version of Khan
    Academy <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
+
+Roadmap
+-------
+
+Later in 2017, Learning Equality will be launching the successor of KA Lite. It's
+called `Kolibri <http://github.com/learningequality/kolibri>`__ and will have
+very similar features to KA Lite, but will also be a platform for many other
+educational resources besides Khan Academy's.
+
+Because of the popularity of KA Lite, we are continuing
+to support deployments by providing fixes to problems that
+directly affect current usage. These include issues related to new
+browsers, operating systems etc. We are also still optimizing regarding
+performance issues.
+
+If you are creating a new deployment at this very moment, feel assured that
+KA Lite is still alive and will be maintained for the rest of 2017, after which
+point we will be recommending that you migrate to Kolibri.
+
+In the meantime, if you need new features in KA Lite, we welcome you to join
+the community and contribute. In other words, we (Learning Equality) encourages
+you (community members), to feel empowered and take responsibility for the
+future of KA Lite.
+
 
 Connect
 ^^^^^^^
