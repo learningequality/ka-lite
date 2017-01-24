@@ -64,11 +64,13 @@ browsers, operating systems etc. We are also still optimizing regarding
 performance issues.
 
 If you are creating a new deployment at this very moment, feel assured that
-KA Lite is still alive and will be maintained for the rest of 2017.
+KA Lite is still alive and will be maintained for the rest of 2017, after which
+point we will be recommending that you migrate to Kolibri.
 
-In case you need KA Lite to continue to grow its features, you should join the
-community. In other words, we (Learning Equality) encourages you (community
-members), to feel empowered and take responsibility for the future of KA Lite.
+In the meantime, if you need new features in KA Lite, we welcome you to join
+the community and contribute. In other words, we (Learning Equality) encourages
+you (community members), to feel empowered and take responsibility for the
+future of KA Lite.
 
 
 Connect
