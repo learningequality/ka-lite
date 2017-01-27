@@ -1,19 +1,22 @@
 Release Notes
 =============
 
-0.17.0 (unreleased)
--------------------
+If you are upgrading KA Lite from a previous version, please always take time 
+to read the release notes.
 
-Please read our release notes before installing.
+.. warning:: You should only upgrade one major version at a time. For instance,
+  upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
+  ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
-This is a draft of what will be released. Notes are not fully accurate or final.
+0.17.0
+------
 
 Content
 ^^^^^^^
 
 Contents have been updated from upstream Khan Academy. We have solved issues
-regarding merging contents from Youtube and KhanAcademy.org, meaning that
-inaccuracies in 0.16 content packs are solved.
+regarding contents merged from both Youtube and KhanAcademy.org, meaning that
+previous inaccuracies in 0.16 content packs are now solved.
 
  * Languages fixed/added in 0.17:
     * Kannada, Malay, Polish, Swahili, Zulu
@@ -29,7 +32,7 @@ inaccuracies in 0.16 content packs are solved.
 
 .. note::
   After upgrading to version 0.17, you should visit the *Manage* tab to
-  upgrade your language and videos. You can also use
+  upgrade your languages and videos. You can also use
   ``kalite manage contentpackchecker all --update`` to automate the download and
   installation of new content packs.
   
@@ -49,7 +52,6 @@ New features
    ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
    :url-issue:`5342` -
    (Thanks: Jonathan Field)
- * OSX 10.11 (El Capitan) + MacOS Sierra 10.12 are now supported.
  * Updates for improved Raspbian Jessie support.
 
 
@@ -132,6 +134,19 @@ Debian/Ubuntu installer
  * No Python files (`*.py`) are placed in `/usr/share/kalite`.
  * Systemd support introduced, fixes specific bug on unupdated Raspbian Jesse `learningequality/installers#422 <https://github.com/learningequality/installers/pull/422>`__
 
+
+Mac installer
+^^^^^^^^^^^^^
+
+ * OSX 10.11 (El Capitan) + MacOS Sierra 10.12 are now supported.
+ * User friendly warning message when port 8008 is occupied
+ * Uses PEX instead of PyRun
+
+
+Windows installer
+^^^^^^^^^^^^^^^^^
+
+ * Static data is now removed during uninstallation
 
 Command cleanup
 ^^^^^^^^^^^^^^^
