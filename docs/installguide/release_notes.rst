@@ -47,7 +47,7 @@ New features
 
  * New management command ``clearuserdata``, makes it easy to prepare a
    prototype device for subsequent cloning. :url-issue:`5341`
- * Patch from Rachel means you can now deeplink a page in a specific
+ * Patch from Rachel means you can now deep link a page in a specific
    language, using this URL shortcut:
    ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
    :url-issue:`5342` -
@@ -87,11 +87,11 @@ Bug fixes
 Known issues
 ^^^^^^^^^^^^
 
- * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in other way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+ * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
  * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
  * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
  * **Development**: Selenium tests on Firefox 48\+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``.
- * **Firefox 47**: Subtitles are mis-aligned in the video player. This is fixed by upgrading Firefox.
+ * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
 
 
 .. note::
@@ -111,15 +111,15 @@ Code cleanup
  * Fixed unreliable BDD test :url-issue:`5270`
  * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
  * ``kalitectl.py`` has been removed, instead we invoke ``kalite.__main__`` from ``bin/kalite``.
- * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) has been removed. It is all located as "package data", meaning that several upgrade issues are fixed moving forwards.
- * The parts of ``kalite.testing`` application that were related to benchmarks. These commands have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
+ * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) have been removed. Everything is now distributed as "package data", meaning that several upgrade issues are fixed moving forwards.
+ * The parts of ``kalite.testing`` application related to benchmarks have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
  * The whole ``kalite.basetests`` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
  * Both `CONFIG_PACKAGE` and `local_settings` raised an exception, all code pertaining these settings has been removed and settings code is now much more readable :url-issue:`5375`
  * ``kalite.updates.management.commands.classes`` refactored so it doesn't show up as a command ``classes`` (nb: it wasn't a command!).
  * ``python-packages/fle_utils/build``, unused build utility from 2013.
  * The ``manage.py`` script has been removed from the source tree (use ``bin/kalite manage <command>`` instead.)
- * When running KA Lite straight from source, we used some very legacy convetions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
- * PyRun is no longer supported, code that pertained its lacking ``multiprocessing`` has been removed.
+ * When running KA Lite straight from source, we used some very legacy conventions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
+ * PyRun is no longer supported and has been removed (it was lacking ``multiprocessing``).
  * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
  * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
  * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
