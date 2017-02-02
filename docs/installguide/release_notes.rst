@@ -78,6 +78,7 @@ Bug fixes
  * No content pack files are placed in ``STATIC_ROOT``, ensuring that ``kalite manage collectstatic`` will not remove any files from content packs (subtitles!). :url-issue:`5386` :url-issue:`5073`
  * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
+ * **Dev** Auto-discovery of content-packs in well-known location ``/usr/share/kalite/preseed/contentpack-<version>.<lang>.zip``, example: ``/usr/share/kalite/preseed/contentpack-0.17.en.zip``. Happens during ``kalite.distributed.management.commands.setup``.
  * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
  * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
  * **Dev** Circle CI now caches node build output between each test build, reduces test time by 2 minutes.
