@@ -46,7 +46,6 @@ TEMPLATE_CONTEXT_PROCESSORS += [
 ]
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'fle_utils.django_utils.middleware.JsonAsHTML'
 ]
 
 #######################################
