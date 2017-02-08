@@ -1,12 +1,37 @@
+import datetime
 import logging
 
 from django.conf import settings
+from django.contrib.auth import logout
+from django.http import HttpResponse, HttpResponseRedirect
+
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-import datetime
-from django.contrib.auth import logout
-from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.six.moves import http_client
+
+
+class CSPMiddleware:
+    """
+    Implements the Content-Security-Policy response header, which
+    conforming user-agents can use to restrict the permitted sources
+    of various content.
+    See http://www.w3.org/TR/CSP/
+    """
+
+    def process_response(self, request, response):
+
+        # Check for debug view
+        status_code = response.status_code
+        if not settings.DEBUG or status_code in (403, 404, 500):
+            return response
+
+        header = 'Content-Security-Policy'
+        if getattr(settings, 'CSP_REPORT_ONLY', False):
+            header += '-Report-Only'
+
+        response[header] = "default-src 'self' 'unsafe-eval' 'unsafe-inline' data: *.learningequality.org; img-src data: *; script-src 'self' *.learningequality.org 'unsafe-eval' 'unsafe-inline'"
+        return response
 
 
 class LockdownCheck:
