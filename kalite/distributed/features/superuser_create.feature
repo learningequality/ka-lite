@@ -54,4 +54,4 @@ Feature: Create superuser from the in browser modal
         When I click the create button
         Then the modal will dismiss
         Given I am on the homepage
-        Then there should be no modal displayed 
+        Then there should be no modal displayed

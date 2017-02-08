@@ -89,6 +89,7 @@ assets:
 	node build.js
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage migrate
+	rm -rf kalite/database/templates/
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack empty en --foreground --template

@@ -317,7 +317,7 @@ function update_server_status() {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            base.updatesStart("retrievecontentpack", 1000, languagepack_callbacks);
+            base.updatesStart("retrievecontentpack", 5000, languagepack_callbacks);
         } else {
             messages.clear_messages();
             messages.show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));

@@ -46,18 +46,16 @@ function handleSuccessAPI(obj) {
     }
 }
 
-function handleFailedAPI(resp, error_prefix) {
+function handleFailedAPI(resp, url) {
     // Two ways for this function to be called:
     // 1. With an API response (resp) containing a JSON error.
-    // 2. With an explicit error_prefix
-
-    // TODO(jamalex): simplify this crud; "error_prefix" doesn't even seem to get used at all?
 
     // Parse the messages.
     var messages = {};
     switch (resp.status) {
         case 0:
             messages = {error: gettext("Connecting to the server.") + " " + gettext("Please wait...")};
+            console.log(url);
             break;
         
         case 401:
@@ -110,25 +108,20 @@ function doRequest(url, data, opts) {
         contentType: "application/json",
         dataType: "json"
     };
-    var error_prefix = "";
 
     for (var opt_key in opts) {
-        switch (opt_key) {
-            case "error_prefix":  // Set the error prefix on a failure.
-                error_prefix = opts[opt_key];
-                break;
-            default:  // Tweak the default options
-                request_options[opt_key] = opts[opt_key];
-                break;
-        }
+        request_options[opt_key] = opts[opt_key];
     }
+    
     // TODO-BLOCKER (rtibbles): Make setting of the success and fail callbacks more flexible.
     return $.ajax(request_options)
         .success(function(resp) {
             handleSuccessAPI(resp);
         })
         .fail(function(resp) {
-            handleFailedAPI(resp, error_prefix);
+            console.log("failed: " + url);
+            console.log(request_options);
+            handleFailedAPI(resp, url);
         });
 }
 
