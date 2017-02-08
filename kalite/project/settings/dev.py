@@ -69,6 +69,7 @@ DEBUG_TOOLBAR_PANELS = (
 
 DEBUG_TOOLBAR_CONFIG = {
     'ENABLE_STACKTRACES': True,
+    'JQUERY_URL': None,
 }
 
 CACHES["default"] = {
