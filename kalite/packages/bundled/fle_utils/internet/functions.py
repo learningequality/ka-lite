@@ -9,6 +9,8 @@ import re
 import requests
 
 
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from urlparse import parse_qs, urlsplit, urlunsplit
 from urllib import urlencode
 
@@ -16,18 +18,21 @@ from urllib import urlencode
 logger = logging.getLogger(__name__)
 
 
-def am_i_online(url):
+def am_i_online():
     """Test whether we are online or not.
     returns True or False.
     Eats all exceptions!   <- great :( /benjaoming
     """
     from kalite.version import user_agent
 
+    url = "%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info"))
+
     try:
-        response = requests.get(url, timeout=5, allow_redirects=True, headers={"user-agent": user_agent()})
+        response = requests.get(url, timeout=5, allow_redirects=False, headers={"user-agent": user_agent()})
 
         # Validate that response came from the requested url
         if response.status_code != 200:
+            
             logger.warning("Unexpected response detecting online status: {}".format(response))
             return False
 

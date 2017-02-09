@@ -209,7 +209,7 @@ def get_server_info(request):
             if settings.CENTRAL_SERVER:
                 device_info[field] =  True
             else:
-                device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
+                device_info[field] = am_i_online()
 
         elif field:
             # the field isn't one we know about, so add it to the list of invalid fields
