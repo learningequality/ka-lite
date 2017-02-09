@@ -72,6 +72,11 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
+        'fle_utils': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
         'cherrypy.console': {
             'handlers': ['console'],
             'level': LOGGING_LEVEL,
