@@ -6,6 +6,8 @@ Views for the KA Lite app are wide-ranging, and include:
 and more!
 """
 import sys
+import traceback
+
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
@@ -277,8 +279,8 @@ def crypto_login(request):
 
 
 def handler_403(request, *args, **kwargs):
-    context = RequestContext(request)
-    #message = None  # Need to retrieve, but can't figure it out yet.
+    # context = RequestContext(request)
+    # message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
         return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
@@ -294,7 +296,10 @@ def handler_404(request):
 def handler_500(request):
     errortype, value, tb = sys.exc_info()
     context = {
+        "request": request,
+        "errormsg": settings.AJAX_ERROR,
         "errortype": errortype.__name__,
         "value": unicode(value),
+        "traceback": traceback.format_exc(),
     }
     return HttpResponseServerError(render_to_string("distributed/500.html", context, context_instance=RequestContext(request)))
