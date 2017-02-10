@@ -1,4 +1,5 @@
-from django.conf import settings
+import requests
+
 from django.test.utils import override_settings
 
 from fle_utils.internet.functions import am_i_online
@@ -20,6 +21,11 @@ class RegistrationRedirectTestCase(CreateAdminMixin, KALiteClientTestCase):
         admin_data = {"username": "admin", "password": "admin"}
         self.create_admin(**admin_data)
         self.client.login(**admin_data)
+    
+    def test_online(self):
+        response = requests.get("http://google.com",)
+        google_is_online = response.status_code in (200, 301)
+        self.assertEqual(am_i_online(), google_is_online)
 
     @override_settings(CENTRAL_SERVER_URL="http://127.0.0.1:8997")  # We hope this is unreachable
     def test_not_redirected_when_offline(self):

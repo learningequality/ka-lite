@@ -70,6 +70,7 @@ Bug fixes
  * Redirect to front page if user logs in from the signup page :url-issue:`3926`
  * Progress bar missing when decimals in progress percentage :url-issue:`5321`
  * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
+ * Error pages now include Traceback information to include for technical support :url-issue:`5405`
  * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
  * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
  * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`

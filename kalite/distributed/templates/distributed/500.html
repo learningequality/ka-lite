@@ -6,7 +6,14 @@
 {% block content %}
     <h1>{% trans "Error" %}</h1>
 
-    <p><b>{% trans "Sorry, but there was an error while trying to load the page." %}</b></p>
+    {{ errormsg|safe }}
 
-    ({{ errortype }}: {{ value }})
+    <p>{% trans "If you are reporting the error, please make sure to include the following information:" %}</p>
+    
+    <p><textarea style="width: 500px; max-width: 80%; height: 100px; font-family: monospace;" onclick="$(this).height(400), $(this).width('100%'); this.select()">URL: {{ request.path }}
+querystring: {{ request.GET }}
+{{ errortype }}: {{ value }}
+
+{{ traceback }}</textarea></p>
+    
 {% endblock content %}
