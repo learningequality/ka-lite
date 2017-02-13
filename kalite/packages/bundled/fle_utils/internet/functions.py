@@ -26,7 +26,7 @@ def am_i_online():
     """
     from kalite.version import user_agent
 
-    timeout = 10  # seconds
+    timeout = 15  # seconds
     url = urljoin(settings.CENTRAL_SERVER_URL, reverse("get_server_info"))
 
     try:
