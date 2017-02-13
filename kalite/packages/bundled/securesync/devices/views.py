@@ -43,8 +43,6 @@ def initialize_registration():
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
 
-    raise Exception("Ben is testing")
-
     # Delete the registration state from the session to ensure it is refreshed next pageload
     del request.session["registered"]
 
