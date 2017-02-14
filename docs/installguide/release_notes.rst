@@ -78,6 +78,7 @@ Bug fixes
  * ``kalite manage contentpackchecker all --update`` wrongly retrieved all available content packs. Now only updates *installed* content packs.
  * No content pack files are placed in ``STATIC_ROOT``, ensuring that ``kalite manage collectstatic`` will not remove any files from content packs (subtitles!). :url-issue:`5386` :url-issue:`5073`
  * Online availability incorrectly detected, bypassing registration progress on Video and Language downloads :url-issue:`5401`
+ * The ``rsa`` library has been upgraded to ``3.4.2`` following device registration blockers on Mac and Windows. :url-issue:`5401`
  * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
  * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
  * **Dev** Auto-discovery of content-packs in well-known location ``/usr/share/kalite/preseed/contentpack-<version>.<lang>.zip``, example: ``/usr/share/kalite/preseed/contentpack-0.17.en.zip``. Happens during ``kalite.distributed.management.commands.setup``.
