@@ -20,8 +20,7 @@ CONTENT_DATABASE_TEMPLATE_PATH = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_
 
 CHANNEL = getattr(settings, "CHANNEL", "khan")
 
-CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)
-
 KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
-TOPIC_RECOMMENDATION_DEPTH = 3
+# How many topics to recommend
+TOPIC_RECOMMENDATION_SIZE = 3

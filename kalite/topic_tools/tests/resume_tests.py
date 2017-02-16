@@ -32,6 +32,8 @@ class TestResumeMethods(KALiteTestCase):
     def setUp(self):
         """Performed before every test"""
 
+        super(TestResumeMethods, self).setUp()
+
         # a brand new user
         self.facility = Facility(name=self.FACILITY)
         self.facility.save()

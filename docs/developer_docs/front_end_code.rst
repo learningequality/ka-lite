@@ -1,5 +1,5 @@
-Front End Code
---------------
+Front-End Code
+==============
 
 All of our front end code is written in Javascript, with much of it using `Backbone.js <http://backbonejs.org>`__ (and its dependencies `jQuery <https://jquery.com/>`_ and `Underscore.js <http://underscorejs.org>`_).
 

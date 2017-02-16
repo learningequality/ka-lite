@@ -66,6 +66,23 @@ function display_languages() {
     // show list of installed languages
     //
     $("table.installed-languages").empty();
+    
+    var english_installed = false;
+    installed.forEach(function(lang, index) {
+      if (lang['code'] == 'en') {
+        english_installed = true;
+        return;
+      }
+    });
+    
+    // No English
+    if (!english_installed) {
+        var empty_row = sprintf("<tr class=\"warning\"><td colspan=\"100\"><em>%(empty_msg)s</em></td></tr>", {
+            empty_msg: gettext("You have to download at least the English content pack.")
+        });
+        $("table.installed-languages").append(empty_row);
+    }
+    
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
@@ -120,13 +137,7 @@ function display_languages() {
                 }
             }
 
-            if ( lang_code != 'en') {
-                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
-            } else if (lang['subtitle_count'] > 0) {
-                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
-            } else {
-                lang_description += sprintf("<td class='delete-language-button'></td>"); // Ensure the number of <td>s is consistent
-            }
+            lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
 
             lang_description += "<td class='clear'></td></tr>";
 
@@ -306,7 +317,7 @@ function update_server_status() {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            base.updatesStart("retrievecontentpack", 1000, languagepack_callbacks);
+            base.updatesStart("retrievecontentpack", 5000, languagepack_callbacks);
         } else {
             messages.clear_messages();
             messages.show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));

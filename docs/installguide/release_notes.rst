@@ -1,7 +1,186 @@
 Release Notes
 =============
 
-.. warning::
+If you are upgrading KA Lite from a previous version, please always take time 
+to read the release notes.
+
+.. warning:: You should only upgrade one major version at a time. For instance,
+  upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
+  ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
+
+0.17.0
+------
+
+Content
+^^^^^^^
+
+Contents have been updated from upstream Khan Academy. We have solved issues
+regarding contents merged from both Youtube and KhanAcademy.org, meaning that
+previous inaccuracies in 0.16 content packs are now solved.
+
+ * Languages fixed/added in 0.17:
+    * Kannada, Malay, Polish, Swahili, Zulu
+ * Languages updated:
+    * Bulgarian, English, Bengali, Danish, German, Spanish (Castilian), French,
+      Hindi, Indonesian, Georgian, Portuguese (Brazil), Portuguese (Portugal),
+      Tamil, Xhosa
+ * Languages with remaining issues:
+    * Arabic, we are still receiving wrong data from upstream APIs that we cannot fix.
+ * General updates:
+    * English subtitles are now available by default for all videos in the English content pack.
+    * Many exercises are rearranged and updated, as with javascript libraries. This will solve an unknown number of javascript errors, for instance :url-issue:`5316`
+
+.. note::
+  After upgrading to version 0.17, you should visit the *Manage* tab to
+  upgrade your languages and videos. You can also use
+  ``kalite manage contentpackchecker all --update`` to automate the download and
+  installation of new content packs.
+  
+  You should **always** upgrade the English content pack because it contains
+  exercise data needed by the other content packs. However, most installers
+  bundle the English content pack, so after updating the software, you may find
+  that you only need to upgrade other installed languages.
+
+
+New features
+^^^^^^^^^^^^
+
+ * New management command ``clearuserdata``, makes it easy to prepare a
+   prototype device for subsequent cloning. :url-issue:`5341`
+ * Patch from Rachel means you can now deep link a page in a specific
+   language, using this URL shortcut:
+   ``/api/i18n/set_default_language/?lang=es&returnUrl=/learn/khan/math``
+   :url-issue:`5342` -
+   (Thanks: Jonathan Field)
+ * Updates for improved Raspbian Jessie support.
+
+
+Bug fixes
+^^^^^^^^^
+
+ * Forward admin user to Manage tab after device registration :url-issue:`4622`
+ * The bundled ``requests`` library is now version 2.11.1, fixing various download issues :url-issue:`5263`
+ * Reduced memory footprint and added PyPy support by not spawning a new interpreter :url-issue:`3399` :url-issue:`4315`
+ * Upgrades from 0.15 on a Windows system broke video download :url-issue:`5263`
+ * Release `.whl` format on PyPi, it installs faster, it's the future. Users will no longer be warned about Wheel incompatibilities when installing from Pip. :url-issue:`5299`
+ * Activating simplified login results in blank login modal :url-issue:`5255`
+ * ``favicon.ico`` missing in distributed set of files, little KA green leaf now appears in browser window decorations and shortcuts :url-issue:`5306`
+ * Use current year in footer text :url-issue:`5055`
+ * New setting ``HIDE_CONTENT_RATING`` for hiding content rating box :url-issue:`5104`
+ * Redirect to front page if user logs in from the signup page :url-issue:`3926`
+ * Progress bar missing when decimals in progress percentage :url-issue:`5321`
+ * Missing cache invalidation for JavaScript meant client-side breakage: Upgraded CherryPy HTTP server to 3.3.0 :url-issue:`5317`
+ * Error pages now include Traceback information to include for technical support :url-issue:`5405`
+ * Implement friendlier user-facing error messages during unexpected JS failures :url-issue:`5123`
+ * Source distribution and `ka-lite` + `ka-lite-raspberry-pi` debian packages no longer ship with English content.db, means they have reduced ~40% in file size :url-issue:`5318`
+ * Installation works with latest ``setuptools >= 30.0`` affecting almost any recent system using ``pip install``. :url-issue:`5352`
+ * Installation works with latest ``pip 9``. :url-issue:`5319`
+ * ``kalite manage contentpackchecker all --update`` wrongly retrieved all available content packs. Now only updates *installed* content packs.
+ * No content pack files are placed in ``STATIC_ROOT``, ensuring that ``kalite manage collectstatic`` will not remove any files from content packs (subtitles!). :url-issue:`5386` :url-issue:`5073`
+ * Online availability incorrectly detected, bypassing registration progress on Video and Language downloads :url-issue:`5401`
+ * The ``rsa`` library has been upgraded to ``3.4.2`` following device registration blockers on Mac and Windows. :url-issue:`5401`
+ * **Windows**: Logging works again: Writing to ``server.log`` was disabled on Windows :url-issue:`5057`
+ * **Dev** Loading subtitles now works in ``bin/kalite manage runserver --settings=kalite.project.settings.dev``
+ * **Dev** Auto-discovery of content-packs in well-known location ``/usr/share/kalite/preseed/contentpack-<version>.<lang>.zip``, example: ``/usr/share/kalite/preseed/contentpack-0.17.en.zip``. Happens during ``kalite.distributed.management.commands.setup``.
+ * **Dev** Test runner is now compatible with Selenium 3 and Firefox 50
+ * **Dev** Test runner based on empty database instead of 92 MB English content, means tests are >30% faster.
+ * **Dev** Circle CI now caches node build output between each test build, reduces test time by 2 minutes.
+ * **Dev** Circle CI updated from Ubuntu 12.04 to 14.04 + Python 2.7.11
+
+
+Known issues
+^^^^^^^^^^^^
+
+ * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
+ * **Development**: Selenium tests on Firefox 48\+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``.
+ * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+
+
+.. note::
+  Code and command cleanups listed below are harmless if you installed KA Lite
+  using an installer and only relevant in these cases:
+
+   * You run a specialized setup or deployment
+   * Your deployment is 1½+ years old
+   * You're a KA Lite developer
+
+
+Code cleanup
+^^^^^^^^^^^^
+
+ * (List of removed commands)
+ * Test coverage is now tracked by Codecov instead of mostly broken Coveralls.io :url-issue:`5301`
+ * Fixed unreliable BDD test :url-issue:`5270`
+ * Cleaned up deprecated settings ``CONTENT_DATA_PATH`` and ``CONTENT_DATA_URL`` :url-issue:`4813`
+ * ``kalitectl.py`` has been removed, instead we invoke ``kalite.__main__`` from ``bin/kalite``.
+ * All files distributed as "data files" in ``/usr/share/kalite`` (or similar location) have been removed. Everything is now distributed as "package data", meaning that several upgrade issues are fixed moving forwards.
+ * The parts of ``kalite.testing`` application related to benchmarks have been unmaintained and are outdated. Now the application's sole focus is utilities for CI.
+ * The whole ``kalite.basetests`` application has been removed. It was used to do nonsensical tests of the host system, not actual unit or functional testing.
+ * Both `CONFIG_PACKAGE` and `local_settings` raised an exception, all code pertaining these settings has been removed and settings code is now much more readable :url-issue:`5375`
+ * ``kalite.updates.management.commands.classes`` refactored so it doesn't show up as a command ``classes`` (nb: it wasn't a command!).
+ * ``python-packages/fle_utils/build``, unused build utility from 2013.
+ * The ``manage.py`` script has been removed from the source tree (use ``bin/kalite manage <command>`` instead.)
+ * When running KA Lite straight from source, we used some very legacy conventions for data locations. But you can achieve the same effect by specifying a non-default locations using the ``KALITE_HOME`` environment variable. Example: ``KALITE_HOME=/path/to/.kalite kalite start``.
+ * PyRun is no longer supported and has been removed (it was lacking ``multiprocessing``).
+ * Static files are only served by Django's HTTP server in ``DEBUG=True`` mode. It was already handled by Cherrypy in other cases, and WSGI deployments are now required to implement this behavior.
+ * We no longer release sdists (`tar.gz`) on PyPi, instead only `.whl`. :url-issue:`5299`
+ * Unfinished backup commands removed. It's extremely easy to backup and restore (read: **duplicate**) a KA Lite setup, see :ref:`backup`.
+ * Removed profiling via ``PROFILE=yes`` (broken since 0.16)
+
+
+Debian/Ubuntu installer
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ * Everything in the debconf regarding assessment items has been **removed**. This only has an effect if you had automated deployments. Instead of automating deployments and their content through debconf settings, use your own custom `.kalite` user data directory or invoke `kalite manage retrievecontentpack`. `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * `ka-lite-bundle` now comes bundled with the English content pack `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
+ * No Python files (`*.py`) are placed in `/usr/share/kalite`.
+ * Systemd support introduced, fixes specific bug on unupdated Raspbian Jesse `learningequality/installers#422 <https://github.com/learningequality/installers/pull/422>`__
+
+
+Mac installer
+^^^^^^^^^^^^^
+
+ * OSX 10.11 (El Capitan) + MacOS Sierra 10.12 are now supported.
+ * User friendly warning message when port 8008 is occupied
+ * Uses PEX instead of PyRun
+
+
+Windows installer
+^^^^^^^^^^^^^^^^^
+
+ * Static data is now removed during uninstallation
+
+Command cleanup
+^^^^^^^^^^^^^^^
+
+In 0.17, we cleaned up a lot of unused/broken/deprecated commands,
+:url-issue:`5211`.
+
+In case you are using any of them (we hope not), you will have to pay attention
+that the following management commands have been removed:
+
+ * ``kalite manage gitmigrate``
+ * ``kalite manage katest``
+ * ``kalite manage initdconfig``
+ * ``kalite manage nginxconfig``
+ * ``kalite manage apacheconfig``
+ * ``kalite manage todolist``
+ * ``kalite manage i18nize_templates``
+ * ``kalite manage benchmark``
+ * ``kalite manage createmodel``
+ * ``kalite manage modifymodel``
+ * ``kalite manage readmodel``
+ * ``kalite manage runcode``
+ * ``kalite manage unpack_asessment_zip``
+ * ``kalite manage create_dummy_language_pack``
+ * ``kalite manage generate_blacklist``
+ * ``kalite manage compileymltojson``
+ * ``kalite manage restorebackup``
+ * ``kalite manage kalitebackup``
+ * Remove ``--watch`` option from ``bin/kalite start`` because ``bin/kalite manage runserver`` does the job. :url-issue:`5314`
+
 
 0.16.9
 ------
@@ -192,15 +371,14 @@ Bug fixes
 General
 ^^^^^^^
 
-* KA Lite is officially supported on OSX 10.11 (El Capitan).
-* We've revamped the language packs into a new format, called content packs.
-  This results in significantly faster startup times across the board.
-.. WARNING::
-   You will have to redownload all your languages to fully support 0.16.
+ * KA Lite is officially supported on OSX 10.11 (El Capitan).
+ * We've revamped the language packs into a new format, called content packs.
+   This results in significantly faster startup times across the board.
+   .. WARNING::
+     You will have to redownload all your languages to fully support 0.16.
+ * We introduced a new beta inline help system. Check this out by going to the Facility management page and clicking "Show me how!"
+ * A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
-* We introduced a new beta inline help system. Check this out by going to the
-  Facility management page and clicking "Show me how!"
-* A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
 0.15.0
 ------
@@ -232,6 +410,7 @@ Then you can migrate your database and content from your old installation to you
 You *must* use the ``kalite`` command that comes with your new installation.
 The path you should specify is the base project directory -- it should contain the ``kalite`` directory, which should in turn contain the ``database`` directory.
 Follow the on-screen prompts to complete the migration. You should then no longer use the old installation, and should consider deleting it.
+
 
 0.13.0
 ------
@@ -265,3 +444,61 @@ Raspberry Pi
 If you're updating a current Raspberry Pi installation, make sure to put this in your ``local_settings.py`` to avoid slow performance:
 
     DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+    
+
+
+Purging \*pyc files
+^^^^^^^^^^^^^^^^^^^
+
+Previously, kalite would look for ``*pyc`` files every time it was launched,
+and that was quite a waste since its only useful when upgrading. In dev
+environments, we recommend that the developer keeps track of these issues
+on his/her own as with any other project.
+
+Tips:
+http://blog.daniel-watkins.co.uk/2013/02/removing-pyc-files-coda.html
+
+> Luckily, it's pretty easy to fix this in git, using hooks, specifically the
+> post-checkout hook. To do that, add the following to .git/hooks/post-checkout, and make the file executable:
+
+::
+
+    #!/bin/bash
+    find $(git rev-parse --show-cdup) -name "*.pyc" -delete
+
+For the normal user, reset assured that the upgrade notes contain more
+info.
+
+
+Which version can I upgrade from?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+0.12
+
+
+Changes in ``scripts/``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``scripts/`` directory now has everything OSX-specific in ``mac/``
+and Windows stuff in ``win/``.
+
+These scripts are intended to all deprecate sooner down the road as such
+platform-specific logic will be maintained in separate distribution projects.
+
+Scripts have been modified to continue to work but you are encouraged to
+make your system setup only invoke the `kalite` in the `bin/` directory.
+
+
+Starting and stopping kalite
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting and stopping kalite is now performed from the new command line interface
+`kalite`. Examples::
+
+    kalite start  # Starts the server
+    kalite stop  # Stops the server
+    kalite restart  # Restarts the server
+    kalite status  # Returns the current status of kalite, 0=stopped, 1=running
+    kalite manage  # A proxy for the manage.py command.
+    kalite manage shell  # Gives you a django shell
+

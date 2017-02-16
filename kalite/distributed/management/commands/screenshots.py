@@ -96,7 +96,8 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         call_command("setup", interactive=False, stdout=new_io, verbosity=verbosity)
         call_command("generaterealdata", scenario_1=True, interactive=False, stdout=new_io, router=router, verbosity=verbosity)  # For coachreports pages
         if username and email and password:
-            log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
+            if int(verbosity) > 0:
+                log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,))
             call_command("createsuperuser", username=username, email=email,
                          interactive=False, stdout=new_io, router=router, verbosity=verbosity)
             admin_user = User.objects.get(username=username)
@@ -118,9 +119,11 @@ def delete_sqlite_database(database=None, verbosity="1"):
             if not database:
                 database = settings.DATABASES[router]['NAME']
             if os.path.exists(database):
-                log.info('==> Removing database %s ...' % database) if int(verbosity) > 0 else None
+                if int(verbosity) > 0:
+                    log.info('==> Removing database %s ...' % database)
                 os.remove(database)
-                log.info('====> Successfully removed database.') if int(verbosity) > 0 else None
+                if int(verbosity) > 0:
+                    log.info('====> Successfully removed database.')
     except Exception as exc:
         log.error('====> EXCEPTION: %s' % exc)
 
@@ -246,7 +249,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         """
         Validates a json item if keys are valid or not, raises an exception if keys are found.
         """
-        values = [shot[key] for key in self.JSON_KEYS]
+        [shot[key] for key in self.JSON_KEYS]
 
     def make_filename(self, slug):
         filename = "%s/%s%s" % (self.output_path, slug, settings.SCREENSHOTS_EXTENSION)

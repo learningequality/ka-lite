@@ -6,7 +6,7 @@ import re
 import os
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from collections_local_copy import OrderedDict
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
@@ -31,7 +31,9 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.version import VERSION, VERSION_INFO
+from kalite.version import VERSION
+from kalite import PACKAGE_PATH
+from kalite.distributed.views import check_setup_status
 
 
 UNGROUPED = "Ungrouped"
@@ -74,6 +76,7 @@ def process_zone_form(request, zone_id):
 
 
 @require_authorized_admin
+@check_setup_status
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
@@ -123,6 +126,17 @@ def zone_management(request, zone_id="None"):
         facilities = Facility.objects.all()
     for facility in list(facilities.order_by("name")):
 
+        # Because of
+        # https://bugs.python.org/issue10513
+        activity = list(
+            user_activity.order_by("-last_activity_datetime", "-end_datetime")
+        )
+        if len(activity) > 0:
+            activity = activity[0]
+        else:
+            # Doesn't look robust at all
+            activity = exercise_activity.order_by("-completion_timestamp")[0:1]
+
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
         facility_data[facility.id] = {
@@ -131,7 +145,7 @@ def zone_management(request, zone_id="None"):
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
             "meta_data_in_need": check_meta_data(facility),
-            "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
+            "last_time_used": activity,
         }
 
     context.update({
@@ -231,10 +245,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
         context.update({
             "software_version": current_version,
-            "software_release_date": VERSION_INFO().get(
-                current_version, {}
-            ).get("release_date", "Unknown"),
-            "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
+            "install_dir": PACKAGE_PATH,
             "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
             "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024 ** 2),
         })

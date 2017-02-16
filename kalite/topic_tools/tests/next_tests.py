@@ -19,9 +19,9 @@ class TestNextMethods(KALiteTestCase):
 	NEW_STREAK_PROGRESS_LARGER = 10
 	NEW_POINTS_SMALLER = 0
 	NEW_STREAK_PROGRESS_SMALLER = 0
-	EXERCISE_ID = "number_line"
-	EXERCISE_ID2 = "radius_diameter_and_circumference"
-	EXERCISE_ID_STRUGGLE = "counting-out-1-20-objects"
+	EXERCISE_ID = None  # set in setUp()
+	EXERCISE_ID2 = None  # set in setUp()
+	EXERCISE_ID_STRUGGLE = None  # set in setUp()
 	USERNAME1 = "test_user_next1"
 	USERNAME2 = "test_user_next2"
 	PASSWORD = "dummies"
@@ -34,6 +34,12 @@ class TestNextMethods(KALiteTestCase):
 	def setUp(self):
 		'''Performed before every test'''
 	
+		super(TestNextMethods, self).setUp()
+	
+		self.EXERCISE_ID = self.content_exercises[0].id
+		self.EXERCISE_ID2 = self.content_exercises[1].id
+		self.EXERCISE_ID_STRUGGLE = self.content_exercises[2].id
+		
 		# create a facility and user that can be referred to in models across tests
 		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()
@@ -90,7 +96,7 @@ class TestNextMethods(KALiteTestCase):
 		'''get_group_recommendations()'''
 
 		user = FacilityUser.objects.filter(username=self.USERNAME1)[0]
-		expected = ["radius_diameter_and_circumference"]
+		expected = [self.EXERCISE_ID2]
 		actual = get_group_recommendations(user)
 
 		self.assertEqual(expected, actual, "Group recommendations incorrect.")
@@ -109,9 +115,9 @@ class TestNextMethods(KALiteTestCase):
 
 	def test_exercise_prereqs(self):
 		'''get_exercise_prereqs()'''
-		ex_id = 'equivalent_fractions'
+		ex_id = self.EXERCISE_ID2
 
-		expected = ['visualizing-equivalent-fractions']
+		expected = [self.EXERCISE_ID]
 		actual = get_exercise_prereqs([ex_id])
 		
 		self.assertEqual(expected, actual, "Exercise Prereqs incorrect.")

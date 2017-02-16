@@ -17,6 +17,8 @@ import shutil
 import sys
 import tempfile
 import subprocess
+import warnings
+
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
@@ -27,21 +29,25 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import kalite
-from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
+from kalite import ROOT_DATA_PATH
+from kalite.facility.models import Facility
+from kalite.version import VERSION, SHORTVERSION
+from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, reset_content_db
 
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name, ensure_dir
 from fle_utils.platforms import is_windows
-from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks,\
-    reset_content_db
-from kalite.contentload.management.commands.unpack_assessment_zip import should_upgrade_assessment_items
-from kalite.facility.models import Facility
-from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
-import warnings
 
-CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, langcode="en", suffix="")
+CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(
+    version=SHORTVERSION, langcode="en", suffix="")
+
+PRESEED_DIR = os.path.join(ROOT_DATA_PATH, "preseed")
+
+# Examples:
+# contentpack.en.zip
+# contentpack-0.16.en.zip
+PRESEED_CONTENT_PACK_MASK = re.compile(r"contentpack.*\.(?P<lang>[a-z]{2,}).zip")
 
 
 def raw_input_yn(prompt):
@@ -86,9 +92,6 @@ def clean_pyc(path):
             full_path = os.path.join(root, excess_pyc_file)
             os.remove(full_path)
 
-def english_content_pack_and_assessment_resources_are_current():
-    return not should_upgrade_assessment_items() and ("en" not in [lp["code"] for lp in outdated_langpacks()])
-
 
 def validate_username(username):
     return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
@@ -96,8 +99,10 @@ def validate_username(username):
 
 def get_clean_default_username():
     username = (getpass.getuser() or "").replace("-", "_")
-    username = re.sub(r"\W", r"", username)  # Make sure auto-username doesn't have illegal characters
-    return re.sub(r"^([^a-zA-Z])+", r"", username)  # Cut off non-alphabetic leading characters
+    # Make sure auto-username doesn't have illegal characters
+    username = re.sub(r"\W", r"", username)
+    # Cut off non-alphabetic leading characters
+    return re.sub(r"^([^a-zA-Z])+", r"", username)
 
 
 def get_username(username):
@@ -168,6 +173,59 @@ def get_assessment_items_filename():
     return filename
 
 
+def detect_content_packs(options):
+
+    if settings.RUNNING_IN_CI:  # skip if we're running on Travis
+        logging.warning("Running in CI; skipping content pack download.")
+        return
+
+    preseeded_content_packs = False
+    
+    if os.path.exists(PRESEED_DIR) and not 'VIRTUAL_ENV' in os.environ.keys():
+        for filename in os.listdir(PRESEED_DIR):
+            fname_match = PRESEED_CONTENT_PACK_MASK.search(filename)
+            if fname_match:
+                lang = fname_match.group(1)
+                call_command("retrievecontentpack", "local", lang, os.path.join(
+                    PRESEED_DIR, filename), foreground=True)
+                preseeded_content_packs = True
+
+    if preseeded_content_packs:
+        return
+
+    # skip if we're not running in interactive mode (and it wasn't forced)
+    if not options['interactive']:
+        logging.warning(
+            "Not running in interactive mode; skipping content pack download.")
+        return
+
+    print(
+        "\nIn order to access many of the available exercises, you need to load a content pack for the latest version.")
+    print(
+        "If you have an Internet connection, you can download the needed package. Warning: this may take a long time!")
+    print(
+        "If you have already downloaded the content pack, you can specify the location of the file in the next step.")
+    print("Otherwise, we will download it from {url}.".format(
+        url=CONTENTPACK_URL))
+
+    if raw_input_yn("Do you wish to download and install the content pack now?"):
+        ass_item_filename = CONTENTPACK_URL
+        retrieval_method = "download"
+    elif raw_input_yn("Do you have a local copy of the content pack already downloaded that you want to install?"):
+        ass_item_filename = get_assessment_items_filename()
+        retrieval_method = "local"
+    else:
+        ass_item_filename = None
+        retrieval_method = "local"
+
+    if not ass_item_filename:
+        logging.warning(
+            "No content pack given. You will need to download and install it later.")
+    else:
+        call_command("retrievecontentpack", retrieval_method,
+                     "en", ass_item_filename, foreground=True)
+
+
 class Command(BaseCommand):
     help = "Initialize or update the database."
 
@@ -214,11 +272,6 @@ class Command(BaseCommand):
                     dest='no-assessment-items',
                     default=False,
                     help='Skip all steps associating with content pack downloading or the content database'),
-        make_option('-g', '--git-migrate',
-                    action='store',
-                    dest='git_migrate_path',
-                    default=None,
-                    help='Runs the gitmigrate management command to import data and content from previous installations of KA Lite'),
     )
 
     def handle(self, *args, **options):
@@ -240,7 +293,8 @@ class Command(BaseCommand):
         print("                                     ")
 
         if sys.version_info < (2, 7):
-            raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+            raise CommandError(
+                "Support for Python version 2.6 and below had been discontinued, please upgrade.")
         elif sys.version_info >= (2, 8):
             raise CommandError(
                 "Your Python version is: %d.%d.%d -- which is not supported. Please use the Python 2.7 series or wait for Learning Equality to release Kolibri.\n" % sys.version_info[:3])
@@ -271,11 +325,6 @@ class Command(BaseCommand):
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
 
-        git_migrate_path = options["git_migrate_path"]
-
-        if git_migrate_path:
-            call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
-
         database_kind = settings.DATABASES["default"]["ENGINE"]
         if "sqlite" in database_kind:
             database_file = settings.DATABASES["default"]["NAME"]
@@ -286,7 +335,8 @@ class Command(BaseCommand):
 
         # An empty file is created automatically even when the database dosn't
         # exist. But if it's empty, it's safe to overwrite.
-        database_exists = database_exists and os.path.getsize(database_file) > 0
+        database_exists = database_exists and os.path.getsize(
+            database_file) > 0
 
         install_clean = not database_exists
 
@@ -340,7 +390,8 @@ class Command(BaseCommand):
                 getattr(settings, "INSTALL_ADMIN_USERNAME", None) or
                 get_clean_default_username()
             )
-            password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
+            password = options["password"] or getattr(
+                settings, "INSTALL_ADMIN_PASSWORD", None)
             email = options["email"]  # default is non-empty
             hostname = options["hostname"]
             description = options["description"]
@@ -353,20 +404,6 @@ class Command(BaseCommand):
         # Now do stuff
         ########################
 
-        # Clean *pyc files if we are in a git repo
-        if settings.IS_SOURCE:
-            clean_pyc(settings.SOURCE_DIR)
-        else:
-            # Because we install dependencies as data_files, we run into problems,
-            # namely that the pyc files are left dangling.
-            distributed_packages = [
-                os.path.join(kalite.ROOT_DATA_PATH, 'dist-packages'),
-                os.path.join(kalite.ROOT_DATA_PATH, 'python-packages'),
-            ]
-            # Try locating django
-            for dir_to_clean in distributed_packages:
-                clean_pyc(dir_to_clean)
-
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
@@ -377,12 +414,17 @@ class Command(BaseCommand):
                 shutil.move(database_file, dest_file)
 
         if settings.DB_TEMPLATE_DEFAULT and not database_exists and os.path.exists(settings.DB_TEMPLATE_DEFAULT):
-            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
-            shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
+            print("Copying database file from {0} to {1}".format(
+                settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
+            shutil.copy(
+                settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
-            print("Baking a fresh database from scratch or upgrading existing database.")
-            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
-            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+            print(
+                "Baking a fresh database from scratch or upgrading existing database.")
+            call_command(
+                "syncdb", interactive=False, verbosity=options.get("verbosity"))
+            call_command(
+                "migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
 
         # Copy all content item db templates
@@ -393,60 +435,16 @@ class Command(BaseCommand):
         # is required for tests, and does not apply to the central server.
         if options.get("no-assessment-items", False):
 
-            logging.warning("Skipping content pack downloading and configuration.")
+            logging.warning(
+                "Skipping content pack downloading and configuration.")
 
         else:
 
-            # Outdated location of assessment items - move assessment items from their
-            # old location (CONTENT_ROOT/khan where they were mixed with other content
-            # items)
-
-            # TODO(benjaoming) for 0.15, remove the "move assessment items"
-            # mechanism
-            writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
-
-            # Remove old assessment items
-            if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
-                logging.info("Deleting old assessment items")
-                shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
-
-            if options['force-assessment-item-dl']:  # user wants to force a new download; do it if we can, else error
-                if writable_assessment_items:
-                    call_command("retrievecontentpack", "download", "en")
-                else:
-                    raise RuntimeError("Got force-assessment-item-dl but directory not writable")
-            elif english_content_pack_and_assessment_resources_are_current():
-                logging.warning("English content pack is already up-to-date; skipping download and configuration.")
-            elif not writable_assessment_items:  # skip if we're not going to be able to unpack it anyway
-                logging.warning("Assessment item directory not writable; skipping content pack download.")
-            elif settings.RUNNING_IN_TRAVIS:  # skip if we're running on Travis
-                logging.warning("Running in Travis; skipping content pack download.")
-            elif not options['interactive']:  # skip if we're not running in interactive mode (and it wasn't forced)
-                logging.warning("Not running in interactive mode; skipping content pack download.")
-            else:  # if we get this far, then we need to ask the user whether/how they want to get the content pack
-                print(
-                    "\nIn order to access many of the available exercises, you need to load a content pack for the latest version.")
-                print(
-                    "If you have an Internet connection, you can download the needed package. Warning: this may take a long time!")
-                print(
-                    "If you have already downloaded the content pack, you can specify the location of the file in the next step.")
-                print("Otherwise, we will download it from {url}.".format(url=CONTENTPACK_URL))
-
-                if raw_input_yn("Do you wish to download and install the content pack now?"):
-                    ass_item_filename = CONTENTPACK_URL
-                    retrieval_method = "download"
-                elif raw_input_yn("Do you have a local copy of the content pack already downloaded that you want to install?"):
-                    ass_item_filename = get_assessment_items_filename()
-                    retrieval_method = "local"
-                else:
-                    ass_item_filename = None
-                    retrieval_method = "local"
-
-                if not ass_item_filename:
-                    logging.warning(
-                        "No content pack given. You will need to download and install it later.")
-                else:
-                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename, foreground=True)
+            # user wants to force a new download; do it if we can, else error
+            if options['force-assessment-item-dl']:
+                call_command("retrievecontentpack", "download", "en")
+            else:
+                detect_content_packs(options)
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -472,15 +470,7 @@ class Command(BaseCommand):
         logging.info("Copying static media...")
         ensure_dir(settings.STATIC_ROOT)
 
-        # The following file ignores have to be preserved from a
-        # collectstatic(clear=True), due to being bundled with content packs,
-        # and we thus have now way of getting them back.
-        collectstatic_ignores = [
-            "*.vtt", "*.srt",  # subtitle files come with language packs -- don't delete
-            "*/perseus/ke/exercises/*",  # exercises come with language packs, and we have no way to replicate
-        ]
-        call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
-                     clear=True)
+        call_command("collectstatic", interactive=False, verbosity=0, clear=True)
         call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env
@@ -506,11 +496,14 @@ class Command(BaseCommand):
                 pass
 
             # done; notify the user.
-            print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
-            print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            print(
+                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print(
+                "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
 
             if options['interactive']:
                 if raw_input_yn("Do you wish to start the server now?"):
                     print("Running {0} start".format(start_script_path))
-                    p = subprocess.Popen([start_script_path, "start"], env=os.environ)
+                    p = subprocess.Popen(
+                        [start_script_path, "start"], env=os.environ)
                     p.wait()

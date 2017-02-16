@@ -7,7 +7,7 @@ import os
 import re
 import math
 from annoying.functions import get_object_or_None
-from collections_local_copy import defaultdict
+from fle_utils.collections_local_copy import defaultdict
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
@@ -190,7 +190,10 @@ def video_scan(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    return JsonResponse(get_installed_language_packs(force=True).values())
+    installed_languages = get_installed_language_packs(force=True).copy()
+    if installed_languages['en']['language_pack_version'] == 0:
+        del installed_languages['en']
+    return JsonResponse(installed_languages.values())
 
 
 @require_admin

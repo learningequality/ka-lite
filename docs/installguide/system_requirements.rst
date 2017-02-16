@@ -1,3 +1,5 @@
+.. _system-requirements:
+
 System requirements
 ===================
 
@@ -41,11 +43,33 @@ Known issues:
  - Subtitles do not work for Epiphany (the browser in Raspberry Pi).
 
 
+.. _video-playback:
+
 Video playback
 --------------
 
 Videos are MP4 encoded. On Ubuntu/Debian systems, install the `Ubuntu restricted extras package <https://apps.ubuntu.com/cat/applications/ubuntu-restricted-extras/>`_.
 
+Videos are not playing?
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Presuming that you have videos on your ``.kalite/content`` folder from a
+previous version of KA Lite or from a torrent, make sure you have checked the
+following common problems:
+
+ * Have you pressed "Scan videos" on the ``Manage->Videos`` page?
+ * Did you download videos matching your KA Lite version? New version of KA Lite
+   may ship with different content packs, or you may have downloaded a new one
+   your self.
+ * Is your video content folder readable for the KA Lite user? The folder has to
+   have the correct permissions. If you copied it using an administrative
+   account, the user running KA Lite may not have access.
+ * Does your browser play videos? If you can locate the videos on your drive but
+   can't play them, it's an indicator that 
+
+Real issues:
+
+ * Are you seeing javascript errors?
 
 Hardware requirements
 ---------------------

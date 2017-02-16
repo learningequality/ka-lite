@@ -9,7 +9,7 @@ Notable urls include:
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.http import HttpResponseRedirect
+from django.http.response import HttpResponsePermanentRedirect, HttpResponseRedirect
 
 from . import api_urls
 import kalite.dynamic_assets.urls
@@ -27,32 +27,13 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
-    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
+    url(r'^favicon.ico/?$', lambda request: HttpResponsePermanentRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
 )
 
 
 urlpatterns += patterns('',
     url(r'^securesync/', include(kalite.facility.urls)),  # for backwards compat
     url(r'^securesync/', include(securesync.urls)),
-)
-
-
-# TODO: This should only be in DEBUG settings and the HTTP server should be
-# serving it otherwise. Cherrypy is currently serving it through modifications
-# in kalite/distributed/cherrypyserver.py
-urlpatterns += patterns('',
-    url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_DATA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_DATA_PATH,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
-    }),
 )
 
 # Teaching / admin patterns
@@ -101,6 +82,19 @@ urlpatterns += patterns(__package__ + '.views',
 if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+    )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+            'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
+        }),
+        url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+            'document_root': settings.CONTENT_ROOT,
+        }),
+        url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
     )
 
 handler403 = __package__ + '.views.handler_403'

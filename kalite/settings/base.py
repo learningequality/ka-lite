@@ -4,22 +4,10 @@ from kalite import version
 import logging
 import os
 import sys
-import warnings
 
-from kalite import ROOT_DATA_PATH
-from kalite.shared.exceptions import RemovedInKALite_v016_Error
+from kalite import ROOT_DATA_PATH, PACKAGE_PATH
 
 from django.utils.translation import ugettext_lazy
-
-try:
-    from kalite import local_settings
-    raise RemovedInKALite_v016_Error(
-        "The local_settings.py method for using custom settings has been removed."
-        "In order to use custom settings, please add them to the special 'settings.py'"
-        "file found in the '.kalite' subdirectory in your home directory."
-    )
-except ImportError:
-    local_settings = object()
 
 
 ##############################
@@ -27,11 +15,8 @@ except ImportError:
 ##############################
 
 # Used everywhere, so ... set it up top.
-DEBUG = getattr(local_settings, "DEBUG", False)
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-if DEBUG:
-    warnings.warn("Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 
 ##############################
@@ -40,10 +25,10 @@ if DEBUG:
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
-LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
+LOGGING_LEVEL = logging.INFO
 
 # We should use local module level logging.getLogger
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+LOG = logging.getLogger("kalite")
 
 LOGGING = {
     'version': 1,
@@ -67,7 +52,8 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+            'formatter': 'standard',
+            'stream': sys.stdout,
         },
     },
     'loggers': {
@@ -77,11 +63,16 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['null'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'kalite': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'fle_utils': {
             'handlers': ['console'],
             'level': LOGGING_LEVEL,
             'propagate': False,
@@ -109,36 +100,6 @@ LOGGING = {
     }
 }
 
-# Disable the logging output on Windows, as it's broken, and was causing problems.
-# See: https://github.com/learningequality/ka-lite/issues/5030
-# TODO(jamalex): if we can get logging working properly on Windows, this can be removed
-if os.name == "nt":
-    LOGGING["handlers"]["console"]["class"] = "django.utils.log.NullHandler"
-
-
-###################################################
-# RUNNING FROM STATIC SOURCE DIR?
-###################################################
-#
-# ka-lite can be run from a source directory, such
-# that all data files and user data are stored in
-# one static structure.
-default_source_path = os.path.split(
-    os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
-)[0]
-if not default_source_path:
-    default_source_path = '.'
-
-# Indicates that we are in a git repo
-IS_SOURCE = (
-    os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR')) and
-    (
-        'kalitectl.py' not in sys.argv[0] or
-        os.path.realpath(sys.argv[0]) == os.path.realpath(os.path.join(default_source_path, 'kalitectl.py'))
-    )
-)
-SOURCE_DIR = None
-
 DB_TEMPLATE_DIR = os.path.join(
     os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
     "database",
@@ -156,40 +117,13 @@ DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
 DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 
-if IS_SOURCE:
-    # We assume that the project source is 2 dirs up from the settings/base.py file
-    _data_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    SOURCE_DIR = _data_path
+_data_path = ROOT_DATA_PATH
 
-    if not _data_path:
-        _data_path = '.'
-
-    # This is getting deprecated as we will not explicitly operate with a static
-    # source structure, but have shared system-wide data and user data.
-    # It's not actually even a project root, because it's also the application's
-    # own package root.
-    default_project_root = os.path.join(
-        _data_path,
-        'kalite'
-    )
-
-    # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.path.realpath(
-        getattr(
-            local_settings,
-            "PROJECT_PATH",
-            default_project_root
-        )
-    )
-
-else:
-    _data_path = ROOT_DATA_PATH
-
-    # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.environ.get(
-        "KALITE_HOME",
-        os.path.join(os.path.expanduser("~"), ".kalite")
-    )
+# BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
+PROJECT_PATH = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
 
 
 ###################################################
@@ -206,11 +140,6 @@ else:
 #
 # It's NOT user-writable -- requires privileges, so any writing must be done at install time.
 
-_data_path_channels = os.path.join(_data_path, 'data')
-
-CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
-
-CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
 
 ###################################################
 # USER DATA
@@ -225,48 +154,30 @@ USER_DATA_ROOT = os.environ.get(
     os.path.join(os.path.expanduser("~"), ".kalite")
 )
 
-# Most of these data locations are messed up because of legacy
-if IS_SOURCE:
-    USER_DATA_ROOT = SOURCE_DIR
-    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR,))
-    LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
+# Ensure that path exists
+if not os.path.exists(USER_DATA_ROOT):
+    os.mkdir(USER_DATA_ROOT)
 
-    # This is the legacy location kalite/database/data.sqlite
-    DEFAULT_DATABASE_DIR = os.path.join(_data_path, "kalite", "database")
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, "data.sqlite")
+USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 
-    MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
-    STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
+LOCALE_PATHS = (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR)
+if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
+    os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
+DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+if not os.path.exists(DEFAULT_DATABASE_DIR):
+    os.mkdir(DEFAULT_DATABASE_DIR)
 
-# Storing data in a user directory
-else:
+DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
 
-    # Ensure that path exists
-    if not os.path.exists(USER_DATA_ROOT):
-        os.mkdir(USER_DATA_ROOT)
-
-    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-    KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
-    if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
-        os.mkdir(USER_WRITABLE_LOCALE_DIR)
-
-    DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
-    if not os.path.exists(DEFAULT_DATABASE_DIR):
-        os.mkdir(DEFAULT_DATABASE_DIR)
-
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
-
-    # Stuff that can be served by the HTTP server is located the same place
-    # for convenience and security
-    HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
-    if not os.path.exists(HTTPSRV_PATH):
-        os.mkdir(HTTPSRV_PATH)
-    MEDIA_ROOT = os.path.join(HTTPSRV_PATH, "media")
-    STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
+# Stuff that can be served by the HTTP server is located the same place
+# for convenience and security
+HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
+if not os.path.exists(HTTPSRV_PATH):
+    os.mkdir(HTTPSRV_PATH)
+MEDIA_ROOT = os.path.join(HTTPSRV_PATH, "media")
+STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 
 
 #######################################
@@ -281,17 +192,22 @@ else:
 # database with assessment items.
 
 # Content path-related settings
-CONTENT_ROOT = os.path.realpath(os.getenv('KALITE_CONTENT_ROOT', getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content'))))
+CONTENT_ROOT = os.path.realpath(
+    os.getenv(
+        'KALITE_CONTENT_ROOT',
+        os.path.join(USER_DATA_ROOT, 'content')
+    )
+)
+
+SRT_ROOT = os.path.join(STATIC_ROOT, "srt")
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
-CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
+if not os.path.exists(SRT_ROOT):
+    os.makedirs(SRT_ROOT)
 
-
-# Overwrite stuff from local_settings
-MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
-STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
-MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
-STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
+CONTENT_URL = "/content/"
+MEDIA_URL = "/media/"
+STATIC_URL = "/static/"
 
 
 # Context data included by ka lite's context processor
@@ -300,54 +216,49 @@ KALITE_CHANNEL_CONTEXT_DATA = {
     "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
     "tag_line": ugettext_lazy(u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
     "channel_license": u"CC-BY-NC-SA",
-    "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
+    "footer_text": ugettext_lazy(u"Videos © {year:d} Khan Academy (Creative Commons) // Exercises © {year:d} Khan Academy"),
     "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
     "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
 }
 
 
-DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
-
-DATABASES = getattr(local_settings, "DATABASES", {
+DATABASES = {
     "default": {
-        "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": DEFAULT_DATABASE_PATH,
         "OPTIONS": {
             "timeout": 60,
         },
     }
-})
+}
 
-INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
-ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
+INTERNAL_IPS = ("127.0.0.1",)
+ALLOWED_HOSTS = ['*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = getattr(local_settings, "TIME_ZONE", None)
+TIME_ZONE = None
 # USE_TZ         = True  # needed for timezone-aware datetimes
 # (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = getattr(local_settings, "LANGUAGE_CODE", "en")
+LANGUAGE_CODE = "en"
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = getattr(local_settings, "USE_I18N", True)
+USE_I18N = True
 
 # If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
-USE_L10N = getattr(local_settings, "USE_L10N", False)
+USE_L10N = False
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY_FILE = getattr(
-    local_settings,
-    "SECRET_KEY_FILE",
-    os.path.join(USER_DATA_ROOT, "secretkey.txt")
+SECRET_KEY_FILE = os.path.join(USER_DATA_ROOT, "secretkey.txt"
 )
 try:
     with open(SECRET_KEY_FILE) as f:
-        SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
+        SECRET_KEY = f.read()
 except IOError:
     sys.stderr.write("Generating a new secret key file {}...\n\n".format(SECRET_KEY_FILE))
 
@@ -360,11 +271,6 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-from os.path import expanduser
-
-BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
-DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -376,11 +282,9 @@ INSTALLED_APPS = [
     'django_js_reverse',
     'securesync',
     'south',
-    'fle_utils.build',
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
-    'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
@@ -390,21 +294,10 @@ INSTALLED_APPS = [
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
-    'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
     'kalite.control_panel',
-    'dbbackup',
 ]
-
-if IS_SOURCE:
-    INSTALLED_APPS += (
-        "kalite.testing",
-        'kalite.testing.loadtesting',
-        "kalite.basetests",
-    )
-
-INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -422,8 +315,8 @@ MIDDLEWARE_CLASSES = [
     'kalite.distributed.middleware.LockdownCheck',
     'kalite.distributed.middleware.LogRequests',
     'django.middleware.gzip.GZipMiddleware',
-    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
-] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
+    'kalite.distributed.middleware.SessionIdleTimeout'
+]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.i18n',
@@ -432,7 +325,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.request',
     'kalite.distributed.custom_context_processors.custom',
     'django.contrib.messages.context_processors.messages',
-] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
+]
 
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
@@ -445,21 +338,28 @@ if not os.path.exists(USER_STATIC_FILES):
 
 # libraries common to all apps
 STATICFILES_DIRS = (
-    os.path.join(_data_path, 'static-libraries'),
-    USER_STATIC_FILES
+    os.path.join(PACKAGE_PATH, 'static-libraries'),
+    USER_STATIC_FILES,
+    ('srt', SRT_ROOT)
 )
-built_docs_path = os.path.join(_data_path, "docs", "_build")
-DOCS_EXIST = os.path.exists(built_docs_path)
-if DOCS_EXIST:
-    STATICFILES_DIRS += (
-        built_docs_path,
-    )
 
 DEFAULT_ENCODING = 'utf-8'
 
 # Due to a newer version of slimit being installed, allowing this causes an error:
 # https://github.com/ierror/django-js-reverse/issues/29
 JS_REVERSE_JS_MINIFY = False
+
+
+# https://github.com/learningequality/ka-lite/issues/5123
+AJAX_ERROR = ugettext_lazy(
+    """<p>Sorry, this page is having an unexpected problem - the error """
+    """<strong>is not your fault</strong></p>"""
+    """<p>Don't let that stop you, try selecting another video or exercise """
+    """from ~30,000 videos and exercises to continue your learning...</p>"""
+)
+
+TASTYPIE_CANNED_ERROR = AJAX_ERROR
+
 
 ########################
 # Storage and caching
@@ -474,17 +374,15 @@ JS_REVERSE_JS_MINIFY = False
 _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+CACHE_TIME = _max_cache_time
 
 # Sessions use the default cache, and we want a local memory cache for that.
-CACHE_LOCATION = os.path.realpath(getattr(
-    local_settings,
-    "CACHE_LOCATION",
+CACHE_LOCATION = os.path.realpath(
     os.path.join(
         USER_DATA_ROOT,
         'cache',
     )
-))
+)
 
 CACHES = {
     "default": {
@@ -492,7 +390,7 @@ CACHES = {
         'LOCATION': CACHE_LOCATION,  # this is kind of OS-specific, so dangerous.
         'TIMEOUT': CACHE_TIME,  # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5 * 2000)  # 2000 entries=~10,000 files
+            'MAX_ENTRIES': 5 * 2000  # 2000 entries=~10,000 files
         },
     }
 }
@@ -502,8 +400,7 @@ CACHES = {
 KEY_PREFIX = version.VERSION
 
 # Separate session caching from file caching.
-SESSION_ENGINE = getattr(
-    local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
 SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
@@ -521,7 +418,7 @@ API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
 # TODO(jamalex): re-enable this to something sensible, once #2800 is resolved
-SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
+SESSION_IDLE_TIMEOUT = 0
 
 
 # TODO(benjaoming): Use reverse_lazy for this sort of stuff
@@ -529,10 +426,13 @@ LOGIN_URL = "/?login=true"
 LOGOUT_URL = "/securesync/api/user/logout/"
 
 # 18 threads seems a sweet spot
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
+CHERRYPY_THREAD_COUNT = 18
 
 # PRAGMAs to pass to SQLite when we first open the content DBs for reading. Used mostly for optimizations.
 CONTENT_DB_SQLITE_PRAGMAS = []
+
+# Hides content rating
+HIDE_CONTENT_RATING = False
 
 ########################
 # After all settings, but before config packages,
@@ -553,5 +453,13 @@ from kalite.main.settings import *
 from kalite.legacy.i18n_settings import *
 from kalite.legacy.updates_settings import *
 
-from kalite.testing.settings import *
+
+KALITE_TEST_RUNNER = "kalite.testing.testrunner.KALiteTestRunner"
 TEST_RUNNER = KALITE_TEST_RUNNER
+
+RUNNING_IN_CI = bool(os.environ.get("CI"))
+
+TESTS_TO_SKIP = ["medium", "long"]
+assert not (set(TESTS_TO_SKIP) - set(["short", "medium", "long"])), "TESTS_TO_SKIP must contain only 'short', 'medium', and 'long'"
+
+AUTO_LOAD_TEST = False

@@ -26,19 +26,10 @@ sys.path = [
     KALITE_INSTALL_PATH,
 ] + sys.path
 
-# Add python-packages and dist-packages to the path
-from kalite import ROOT_DATA_PATH
-
-if os.path.exists(os.path.join(ROOT_DATA_PATH, 'python-packages')):
-    sys.path = [
-        os.path.join(ROOT_DATA_PATH, "python-packages"),
-        os.path.join(ROOT_DATA_PATH, "dist-packages"),
-    ] + sys.path
-else:
-    sys.path = [
-        os.path.join(KALITE_INSTALL_PATH, "python-packages"),
-        os.path.join(KALITE_INSTALL_PATH, "dist-packages"),
-    ] + sys.path
+sys.path = [
+    os.path.join(KALITE_INSTALL_PATH, "packages", "bundled"),
+    os.path.join(KALITE_INSTALL_PATH, "packages", "dist"),
+] + sys.path
 
 os.environ.setdefault(
     "KALITE_HOME",

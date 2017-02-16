@@ -11,3 +11,5 @@ if 'KALITE_DIR' in os.environ:
     ROOT_DATA_PATH = os.environ['KALITE_DIR']
 else:
     ROOT_DATA_PATH = os.path.join(sys.prefix, 'share', 'kalite')
+
+PACKAGE_PATH = os.path.dirname(__file__)

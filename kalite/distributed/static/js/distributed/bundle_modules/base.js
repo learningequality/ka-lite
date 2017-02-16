@@ -18,6 +18,14 @@ global.$ = $;
 global._ = _;
 global.sessionModel = new SessionModel();
 
+$(document).ajaxError(
+  function(e, xhr, options, error) {
+    if (xhr.status == 500) {
+      $("#ajax_user_error").show();
+    }
+  }
+);
+
 var url = require("url");
 
 // An object we can use for checking the state of our models and views.

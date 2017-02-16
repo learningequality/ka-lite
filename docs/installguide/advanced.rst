@@ -64,10 +64,10 @@ and if you are connected to the internet, this will also give you automatic upda
 On Ubuntu, do this::
 
     sudo apt-get install software-properties-common python-software-properties
-    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite'
+    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite.list'
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
     sudo apt-get update
-    sudo apt-get install ka-lite
+    sudo apt-get install ka-lite  # ...or 'ka-lite-raspberry-pi'
 
 
 .. _gtk-installation:
@@ -92,54 +92,6 @@ A guide recommending how to install KA Lite for development is available in
 Specific system setups
 ______________________
 
-.. _raspberry-pi-wifi:
-
-Raspberry Pi Wi-Fi
-~~~~~~~~~~~~~~~~~~
-
-.. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
-
-    * Raspberry Pi WiPi adaptor
-    * Edimax EW-7811Un
-
-In our tests, we found that the WiPi adaptor supported a higher number tablet connections.
-
-
-.. note:: The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
-
-    * Make sure to shutdown and remove the power from the Raspberry Pi.
-    * Afterwards, insert the wireless USB adaptor.
-    * Lastly, switch the Raspberry Pi on.
-
-#. Install the .deb package, see :ref:`raspberry-pi-install`.
-#. Get the network configuration scripts.
-    * ``cd /opt``
-    * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``
-#. Install and configure the access point::
-  
-    cd /opt/ka-lite-pi-scripts
-    sudo ./configure.sh
-
-   .. note::
-         If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
-
-#. Install the USB adaptor software.
-    * If using the WiPi, run this command::
-            cd /opt/ka-lite-pi-scripts
-            sudo ./use_wipi.sh
-
-    * If using the Edimax EW-7811Un, run this command:
-        * ``cd /opt/ka-lite-pi-scripts``
-        * ``sudo ./use_edimax.sh``
-#. Complete the access point configuration
-    * ``sudo python ./configure_network_interfaces.py``
-    * ``sudo insserv hostapd``
-#. Finally
-    * ``sudo reboot``
-    * A wireless network named "kalite" should be available.
-    * Connect to this network
-    * If the KA Lite server is started, browse to 1.1.1.1
-
 
 Nginx / Apache setup
 ~~~~~~~~~~~~~~~~~~~~
@@ -163,6 +115,7 @@ installation: ::
 
         Alias /static /var/www/.kalite/httpsrv/static
         Alias /media /var/www/.kalite/httpsrv/media
+        Alias /content /var/www/.kalite/content
 
         WSGIScriptAlias / /usr/lib/python2.7/dist-packages/kalite/project/wsgi.py
 

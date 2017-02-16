@@ -47,6 +47,8 @@ from kalite.facility.models import FacilityUser
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins, KALiteTimeout
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from selenium.webdriver.support.expected_conditions import staleness_of
+from contextlib import contextmanager
 
 
 # Maximum time to wait when trying to find elements
@@ -55,26 +57,28 @@ MAX_WAIT_TIME = 30
 MAX_PAGE_LOAD_TIME = 30
 # When checking for something we don't expect to be found, add extra time for
 # scripts or whatever to complete
-MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 1
+MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 2
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def wait_for_page_load(browser, timeout=MAX_PAGE_LOAD_TIME):
+    old_page = browser.find_element_by_tag_name('html')
+    yield
+    WebDriverWait(browser, timeout).until(
+        staleness_of(old_page)
+    )
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
     try:
         elem = WebDriverWait(browser, wait_time).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#message_container .alert"))
         )
         return elem
     except TimeoutException:
         return False
-
-
-def rgba_to_hex(rgba_string):
-    """
-    Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
-    """
-    return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 
 def _assert_no_element_by(context, by, value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
@@ -110,6 +114,11 @@ def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_WAIT_FOR
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
     Finds the element using a CSS Selector.
+
+    # This test has caused so many issues and it seems there's no real way of
+    # reliably testing that an element has disappeared. So for now, this is
+    # disabled.
+    # https://github.com/learningequality/ka-lite/pull/5284
     """
     _assert_no_element_by(context, By.CSS_SELECTOR, css_value, wait_time)
 
@@ -133,13 +142,9 @@ def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     elem: a WebElement to click.
     wait_time: Optional. Max wait time for the page to load. Has a default value.
     """
-    # The body element should always be on the page.
-    wait_elem = context.browser.find_element_by_tag_name("body")
-    elem.click()
-    return WebDriverWait(context.browser, wait_time).until(
-        EC.staleness_of(wait_elem)
-    )
 
+    with wait_for_page_load(context.browser, timeout=10):
+        elem.click()
 
 def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MAX_WAIT_TIME):
     """ Click an element and then wait for another element to appear.
@@ -426,18 +431,6 @@ def post(context, url, data=""):
     Returns the response.
     """
     return request(context, url, method="POST", data=data)
-
-
-def get(context, url, data=""):
-    """ Sends a GET request to the testing server associated with context
-
-    context: A `behave` context
-    url: A relative url, i.e. "/zone/management/None" or "/securesync/logout"
-    data: A string containing the body of the request
-
-    Returns the response.
-    """
-    return request(context, url, method="GET", data=data, api_call=api_call)
 
 
 def request(context, url, method="GET", data=""):

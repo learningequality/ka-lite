@@ -1,0 +1,106 @@
+{% extends base_template %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block register_active %}active{% endblock register_active %}
+
+{% block title %}{% trans "Register a Device" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        #one-click-register {
+            margin-top:15px;
+        }
+        
+        #online-register {
+            margin-top:15px;
+        }
+
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        window.auto_registration_url = "{{ auto_registration_url }}";
+    </script>
+    <script src="{% static 'js/distributed/bundles/bundle_register_public_key_client.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    {% if not unregistered %}
+        <h2>{% trans "Device registration" %}</h2>
+    {% endif %}
+    {% if error_msg %}
+        {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
+        <p>{% blocktrans %}Sorry, there was an error during registration.{% endblocktrans %}</p>
+        <p>{% trans "The error message was:" %} <b>{{ error_msg }}</b></p>
+    {% endif %}
+
+    {% if newly_registered %}
+    <p>{% trans "Congratulations, this device has now been registered." %}</p>
+    {% endif %}
+
+    {% if already_registered %}
+    <p>{% trans "This device has already been registered." %}</p>
+    {% endif %}
+
+    {% if no_internet %}
+    <p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
+    {% endif %}
+
+    {% if not unregistered %}
+    <p>
+      <a class="btn btn-success" role="button" id="online-register" href="{% url 'zone_redirect' %}">
+        {% trans "Continue to management" %}
+      </a>
+    </p>
+    {% endif %}
+
+
+    {% if unregistered %}
+    <div class="row">
+        <h2 class="col-md-12">{% trans "What is device registration?" %}</h2>
+        <p class="col-md-10" id="reg-dev-installation-info">
+            {% trans "Once you register your installation with us, your data can be synced to our online repository when KA Lite has access to the Internet. This is a good thing! Here's why:" %}
+        </p>
+        <ul class="col-md-9 col-md-push-1 col-xs-push-1">
+            <li><em>{% trans "Your data will be backed up online" %}</em></li>
+            <li><em>{% trans "You can login online and review your usage data" %}</em></li>
+            <li><em>{% trans "Our team can use this data to objectively assess the impact our work is having around the world!" %}</em></li>
+        </ul>
+    </div>
+
+    <div class="row" id="register-online-row">
+        <h2 class="col-md-12">{% trans "Ready to register? You have two options:" %}</h2>
+
+            <div class="col-md-5" id="reg-dev-register-div">
+                <h4 class="reg-dev-title-info">{% trans "One-click registration (no online access to data)" %}</h4>
+                <p>
+                    <strong>{% trans "The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data." %}</strong>
+                </p>
+                <p>
+                    {% trans "This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use." %}
+                </p>
+                <a class="btn btn-success" role="button" id="one-click-register" href="javascript:void(0)">
+                    {% trans "One-click registration now!" %}
+                </a>
+            </div>
+
+            <div class="col-md-6">
+                <h4 class="reg-dev-title-info">{% trans "Register with online access to data!" %}</h4>
+                <p>
+                    <strong>{% trans "The perfect option for adminstrators of larger projects!" %}</strong>
+                </p>
+                <p>
+                    {% trans "This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account." %}
+                </p>
+                <a class="btn btn-success" role="button" id="online-register" href="{{ classic_registration_url }}">
+                    {% trans "Register with an online account now!" %}
+                </a>
+            </div>
+
+    </div>
+
+
+    {% endif %}
+{% endblock content %}

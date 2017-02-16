@@ -71,7 +71,8 @@
           CENTRAL_SERVER_HOST         : "{{ central_server_host }}",
           SECURESYNC_PROTOCOL         : "{{ securesync_protocol }}",
           CURRENT_LANGUAGE            : "{{ current_language }}",
-          CHANNEL                     : "{{ channel }}"
+          CHANNEL                     : "{{ channel }}",
+          HIDE_CONTENT_RATING         : {% if HIDE_CONTENT_RATING %}true{% else %}false{% endif %}
         });
         </script>
 
@@ -119,6 +120,9 @@
 
             {# Body #}
             <div id="content-container" class="container" role="main">
+                <div id="ajax_user_error" style="display: none" class="alert alert-danger">
+                  {{ universal_js_user_error|safe }}
+                </div>
                 {% block outer_content %}
                     {% block precontent %}
                         {% include "distributed/partials/_messages.html" %}
@@ -132,7 +136,7 @@
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
 
-        {% if settings.DEBUG %}
+        {% if settings.DEBUG and settings.USE_TOTA11Y %}
         <script type="text/javascript" src="{% static 'js/tota11y.min.js' %}"></script>
         {% endif %}
 

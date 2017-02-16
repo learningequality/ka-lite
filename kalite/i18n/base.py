@@ -4,9 +4,9 @@ import re
 import shutil
 import urllib
 import zipfile
-from collections_local_copy import OrderedDict
 from distutils.version import LooseVersion
 from fle_utils.internet.webcache import invalidate_web_cache
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.http import HttpRequest
 from django.utils import translation
@@ -34,10 +34,6 @@ logging = settings.LOG
 
 class LanguageNotFoundError(Exception):
     pass
-
-
-def get_localized_exercise_dirpath(lang_code):
-    return os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke", "exercises", lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -74,7 +70,7 @@ def get_langcode_map(lang_name=None, force=False):
 
 
 def get_subtitle_url(youtube_id, code):
-    return settings.STATIC_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
+    return settings.CONTENT_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
 
 
 def get_subtitle_file_path(lang_code=None, youtube_id=None):
@@ -86,7 +82,7 @@ def get_subtitle_file_path(lang_code=None, youtube_id=None):
 
     Note also that it must use the django-version language code.
     """
-    srt_path = os.path.join(settings.STATIC_ROOT, "srt")
+    srt_path = os.path.join(settings.CONTENT_ROOT, "srt")
     if lang_code:
         srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
     if youtube_id:
@@ -188,6 +184,10 @@ INSTALLED_LANGUAGES_CACHE = None
 CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
 def get_installed_language_packs(force=False):
     global INSTALLED_LANGUAGES_CACHE
+    # Never use the cache when the English content pack isn't installed, this
+    # ensures that the message disappears when we finally have a cache.
+    if INSTALLED_LANGUAGES_CACHE and INSTALLED_LANGUAGES_CACHE['en']['language_pack_version'] == 0:
+        force = True
     if not INSTALLED_LANGUAGES_CACHE or force:
         INSTALLED_LANGUAGES_CACHE = _get_installed_language_packs()
     return INSTALLED_LANGUAGES_CACHE
@@ -197,11 +197,11 @@ def _get_installed_language_packs():
     On-disk method to show currently installed languages and meta data.
     """
 
-    # There's always English...
+    # There's always English, but without contents...
     installed_language_packs = [{
         'code': 'en',
         'software_version': SHORTVERSION,
-        'language_pack_version': 0,
+        'language_pack_version': 0,  # Set to '0', overwritten by ACTUAL content pack
         'percent_translated': 100,
         'subtitle_count': 0,
         'name': 'English',
@@ -340,7 +340,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code)]
+    langpack_resource_paths = [get_subtitle_file_path(lang_code), get_locale_path(lang_code)]
 
     for langpack_resource_path in langpack_resource_paths:
         try:

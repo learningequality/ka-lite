@@ -5,21 +5,22 @@ Three main functions:
     - get_next_recommendations(user)
     - get_explore_recommendations(user)
 '''
+import collections
 import datetime
 import itertools
+import logging
 import random
-import collections
-import json
 
 from django.db.models import Count
-
+from kalite.facility.models import FacilityUser
+from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.topic_tools.content_models import get_content_item, get_topic_nodes_with_children, get_topic_contents, get_content_items
 
 from . import settings
 
-from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-from kalite.facility.models import FacilityUser
+logger = logging.getLogger(__name__)
+
 
 CACHE_VARS = []
 
@@ -80,7 +81,7 @@ def get_next_recommendations(user, request):
 
     #logic for recommendations based off of the topic tree structure
     if current_subtopic:
-        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:settings.TOPIC_RECOMMENDATION_DEPTH]
+        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:settings.TOPIC_RECOMMENDATION_SIZE]
         topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
     else:
         topic_tree_based_data = []
@@ -193,9 +194,9 @@ def get_explore_recommendations(user, request):
 
     #simply getting a list of subtopics accessed by user
     recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises if ex in exercise_parents_table]))
-
-    #choose sample number, up to three
-    sampleNum = min(len(recent_subtopics), settings.TOPIC_RECOMMENDATION_DEPTH)
+    
+    # Number of sub topic recommendations
+    sampleNum = min(len(recent_subtopics), settings.TOPIC_RECOMMENDATION_SIZE)
     
     random_subtopics = random.sample(recent_subtopics, sampleNum)
     added = []                                                      #keep track of what has been added (below)
@@ -203,8 +204,10 @@ def get_explore_recommendations(user, request):
     
     for subtopic_id in random_subtopics:
 
+        # benjaoming: This seems to be done partly because subtopic_id is
+        # included in the set of recommended subtopics.
         related_subtopics = data[subtopic_id]['related_subtopics'][2:7] #get recommendations based on this, can tweak numbers!
-
+                
         recommended_topic = next(topic for topic in related_subtopics if topic not in added and topic not in recent_subtopics)
 
         if recommended_topic:
@@ -235,7 +238,10 @@ def get_exercise_parents_lookup_table():
     for topic in tree:
         for subtopic_id in topic['children']:
             exercises = get_topic_contents(topic_id=subtopic_id, kinds=["Exercise"])
-
+            
+            if exercises is None:
+                raise RuntimeError("Caught exception, tried to find topic contents for {}".format(subtopic_id))
+            
             for ex in exercises:
                 if ex['id'] not in exercise_parents_lookup_table:
                     exercise_parents_lookup_table[ ex['id'] ] = {
@@ -253,7 +259,7 @@ def get_exercises_from_topics(topicId_list):
         if topic:
             exercises = get_topic_contents(topic_id=topic, kinds=["Exercise"])[:5] #can change this line to allow for more to be returned
             for e in exercises:
-                exs += [e['id']] #only add the id to the list
+                exs.append(e['id'])  # only add the id to the list
 
     return exs
 
@@ -457,13 +463,35 @@ def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
 def get_subsequent_neighbors(nearest_neighbors, data, curr):
     """BFS algorithm. Returns a list of the other neighbors (dist > 1) for the given subtopic.
 
-
     Args:
     nearest_neighbors -- list of neighbors at dist 1 from subtopic.
     data -- the dictionary of subtopics and their neighbors at distance 1
     curr -- the current subtopic
     
+    Example:
+    curr = u'subsubtopic4_4'
+    data = {
+        u'subsubtopic4_4': {'related_subtopics': [u'subsubtopic4_4 0', u'subsubtopic4_3 1', ' ']},
+        u'subsubtopic2': {'related_subtopics': [u'subsubtopic2 0', u'subsubtopic1 1', u'subsubtopic0_0 4']},
+        u'subsubtopic1': {'related_subtopics': [u'subsubtopic1 0', u'subsubtopic0 1', u'subsubtopic2 1']},
+        u'subsubtopic0': {'related_subtopics': [u'subsubtopic0 0', u'subsubtopic2 4', u'subsubtopic1 1']},
+        u'subsubtopic4_0': {'related_subtopics': [u'subsubtopic4_0 0', u'subsubtopic3_4 4', u'subsubtopic4_1 1']},
+        u'subsubtopic4_1': {'related_subtopics': [u'subsubtopic4_1 0', u'subsubtopic4_0 1', u'subsubtopic4_2 1']},
+        u'subsubtopic4_2': {'related_subtopics': [u'subsubtopic4_2 0', u'subsubtopic4_1 1', u'subsubtopic4_3 1']},
+        u'subsubtopic4_3': {'related_subtopics': [u'subsubtopic4_3 0', u'subsubtopic4_2 1', u'subsubtopic4_4 1']},
+        u'subsubtopic3_4': {'related_subtopics': [u'subsubtopic3_4 0', u'subsubtopic3_3 1', u'subsubtopic4_0 4']},
+        u'subsubtopic3_3': {'related_subtopics': [u'subsubtopic3_3 0', u'subsubtopic3_2 1', u'subsubtopic3_4 1']},
+        u'subsubtopic3_2': {'related_subtopics': [u'subsubtopic3_2 0', u'subsubtopic3_1 1', u'subsubtopic3_3 1']},
+        u'subsubtopic3_1': {'related_subtopics': [u'subsubtopic3_1 0', u'subsubtopic3_0 1', u'subsubtopic3_2 1']},
+        u'subsubtopic3_0': {'related_subtopics': [u'subsubtopic3_0 0', u'subsubtopic2_4 4', u'subsubtopic3_1 1']}, u'subsubtopic2_4': {'related_subtopics': [u'subsubtopic2_4 0', u'subsubtopic2_3 1', u'subsubtopic3_0 4']}, u'subsubtopic2_2': {'related_subtopics': [u'subsubtopic2_2 0', u'subsubtopic2_1 1', u'subsubtopic2_3 1']}, u'subsubtopic2_3': {'related_subtopics': [u'subsubtopic2_3 0', u'subsubtopic2_2 1', u'subsubtopic2_4 1']}, u'subsubtopic2_0': {'related_subtopics': [u'subsubtopic2_0 0', u'subsubtopic1_4 4', u'subsubtopic2_1 1']}, u'subsubtopic2_1': {'related_subtopics': [u'subsubtopic2_1 0', u'subsubtopic2_0 1', u'subsubtopic2_2 1']}, u'subsubtopic1_1': {'related_subtopics': [u'subsubtopic1_1 0', u'subsubtopic1_0 1', u'subsubtopic1_2 1']}, u'subsubtopic1_0': {'related_subtopics': [u'subsubtopic1_0 0', u'subsubtopic0_4 4', u'subsubtopic1_1 1']}, u'subsubtopic1_3': {'related_subtopics': [u'subsubtopic1_3 0', u'subsubtopic1_2 1', u'subsubtopic1_4 1']}, u'subsubtopic1_2': {'related_subtopics': [u'subsubtopic1_2 0', u'subsubtopic1_1 1', u'subsubtopic1_3 1']}, u'subsubtopic1_4': {'related_subtopics': [u'subsubtopic1_4 0', u'subsubtopic1_3 1', u'subsubtopic2_0 4']}, u'subsubtopic0_0': {'related_subtopics': [u'subsubtopic0_0 0', u'subsubtopic4_4 4', u'subsubtopic0_1 1']}, u'subsubtopic0_1': {'related_subtopics': [u'subsubtopic0_1 0', u'subsubtopic0_0 1', u'subsubtopic0_2 1']}, u'subsubtopic0_2': {'related_subtopics': [u'subsubtopic0_2 0', u'subsubtopic0_1 1', u'subsubtopic0_3 1']}, u'subsubtopic0_3': {'related_subtopics': [u'subsubtopic0_3 0', u'subsubtopic0_2 1', u'subsubtopic0_4 1']}, u'subsubtopic0_4': {'related_subtopics': [u'subsubtopic0_4 0', u'subsubtopic0_3 1', u'subsubtopic1_0 4']}}
+    nearest_neighbors = [u'subsubtopic4_4 0', u'subsubtopic4_3 1', ' ']
+    
+    Loops infinitely at:
+    [u'subsubtopic0 1', u'subsubtopic2 4']
+    [u'subsubtopic0 1', u'subsubtopic2 4']   subsubtopic1
     """
+    
+    # import web_pdb; web_pdb.set_trace()
 
     left_neigh = nearest_neighbors[1].split(' ')  # subtopic id and distance string of left neighbor
     right_neigh = nearest_neighbors[2].split(' ') # same but for right
@@ -471,33 +499,40 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
     left = left_neigh[0]    #subtopic id of left
     right = right_neigh[0]  #subtopic id of right
 
-    left_dist = -1          #dummy value
-    right_dist = -1
-
     at_four_left = False    #boolean flag to denote that all other nodes to the left are at dist 4
     at_four_right = False   #same as above but for right nodes
 
     #checks, only applies to when left or right is ' ' (no neighbor)
-    if  len(left_neigh) > 1:
-        left_dist = left_neigh[1]           #distance of left neighbor
-    else:
+    if len(left_neigh) <= 1:
         left = ' '
 
-    if len(right_neigh) > 1:
-        right_dist = right_neigh[1]         #distance of right neighbor
-    else:
+    if not len(right_neigh) <= 1:
         right = ' '
 
     other_neighbors = []
 
     # Loop while there are still neighbors
+    cycle_detection_left = []
+    cycle_detection_right = []
+    
     while left != ' ' or right != ' ':
 
+        # benjaoming: This function is so horrid that I can only think of adding
+        # this and be done with it.
+        if left in cycle_detection_left:
+            break
+        if right in cycle_detection_right:
+            break
+        cycle_detection_left.append(left)
+        cycle_detection_right.append(right)
+
+        # benjaoming: what on earth is this?
         if left == '':
             left= ' '
 
         # If there is a left neighbor, append its left neighbor
         if left != ' ':
+            
             if data[left]['related_subtopics'][1] != ' ':
 
                 #series of checks for each case
@@ -520,8 +555,12 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
                     except IndexError:
                         new_dist = 1
 
-                other_neighbors.append(data[left]['related_subtopics'][1].split(' ')[0] + ' ' + str(new_dist))
-            left = data[left]['related_subtopics'][1].split(' ')[0]
+                    other_neighbors.append(data[left]['related_subtopics'][1].split(' ')[0] + ' ' + str(new_dist))
+            
+                # Update left neighbors
+                left = data[left]['related_subtopics'][1].split(' ')[0]
+            else:
+                left = " "
         
         if right == '':
             right = ' '
@@ -539,8 +578,10 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
                 else:
                     #if immediate right node is 4
                     if data[ curr ]['related_subtopics'][2].split(' ')[1] == '4':           
+                        at_four_right = True
                         new_dist = 4
                     elif data[right]['related_subtopics'][2].split(' ')[1] == '4': #if the next right neighbor is at dist 4
+                        at_four_right = True
                         new_dist = 4
                     else: #this means that the next right node is at dist 1
                         new_dist = 1
@@ -549,6 +590,11 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
                     at_four_right = True
 
                 other_neighbors.append(data[right]['related_subtopics'][2].split(' ')[0] + ' ' + str(new_dist))
-            right = data[right]['related_subtopics'][2].split(' ')[0]
+            
+                # Update right neighbors
+                right = data[right]['related_subtopics'][2].split(' ')[0]
 
+            else:
+                right = " "
+        
     return other_neighbors
