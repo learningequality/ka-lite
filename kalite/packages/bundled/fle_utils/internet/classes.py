@@ -40,7 +40,7 @@ class JsonResponse(HttpResponse):
             content = model_to_dict(content)
         if not isinstance(content, basestring):
             content = simplejson.dumps(content, ensure_ascii=False, default=_dthandler)
-        super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
+        super(JsonResponse, self).__init__(content, content_type='application/json; charset=utf-8', *args, **kwargs)
 
 
 class JsonResponseMessage(JsonResponse):

@@ -89,6 +89,7 @@ assets:
 	node build.js
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage migrate
+	rm -rf kalite/database/templates/
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack empty en --foreground --template
@@ -99,6 +100,9 @@ release: dist man
 	twine upload -s --sign-with gpg2 dist/*
 
 sdist: clean docs assets
+	# Building assets currently creates pyc files in the source dirs,
+	# so we should delete those...
+	make clean-pyc
 	python setup.py sdist --formats=$(format) --static
 
 dist: clean docs assets

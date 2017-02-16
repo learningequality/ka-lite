@@ -1,47 +1,59 @@
 """
 For functions mucking with internet access
 """
-import ifcfg
+import logging
 import os
 import platform
 import re
 import requests
-import socket
-
-from urlparse import parse_qs, urlsplit, urlunsplit
 from urllib import urlencode
+from urlparse import parse_qs, urlsplit, urlunsplit, urljoin
+
+from django.conf import settings
+import ifcfg
+
+from django.core.urlresolvers import reverse
+from requests.exceptions import ConnectionError, ReadTimeout
 
 
-def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
+logger = logging.getLogger(__name__)
+
+
+def am_i_online():
     """Test whether we are online or not.
     returns True or False.
-    Eats all exceptions!
+    Eats all exceptions!   <- great :( /benjaoming
     """
-    assert not (search_string and expected_val is not None), "Search string and expected value cannot both be set"
-
     from kalite.version import user_agent
 
+    timeout = 15  # seconds
+    url = urljoin(settings.CENTRAL_SERVER_URL, reverse("get_server_info"))
+
     try:
-        if not search_string and expected_val is None:
-            response = requests.head(url, headers={"user-agent": user_agent()})
-        else:
-            response = requests.get(url, timeout=timeout, allow_redirects=allow_redirects, headers={"user-agent": user_agent()})
+        # Based on experience, 5 seconds is too little
+        response = requests.get(url, timeout=timeout, allow_redirects=False, headers={"user-agent": user_agent()})
 
         # Validate that response came from the requested url
         if response.status_code != 200:
+            
+            logger.warning("Unexpected response detecting online status: {}".format(response))
             return False
-        elif not allow_redirects and response.url != url:
-            return False
-
-        # Check the output, if expected values are specified
-        if expected_val is not None:
-            return expected_val == response.text
-        elif search_string:
-            return search_string in response.text
 
         return True
 
+    except ReadTimeout:
+        logger.info(
+            ("Assuming offline status, timeout={} seconds, timed out while "
+             "fetching {}").format(timeout, url)
+        )
+        return False
+    except ConnectionError:
+        logger.info(
+            "Assuming offline status, connection error while fetching {}".format(url)
+        )
+        return False
     except Exception as e:
+        logger.warning("Unhandled exception when detecting if online: {}".format(e))
         return False
 
 

@@ -136,7 +136,7 @@
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
 
-        {% if settings.DEBUG %}
+        {% if settings.DEBUG and settings.USE_TOTA11Y %}
         <script type="text/javascript" src="{% static 'js/tota11y.min.js' %}"></script>
         {% endif %}
 

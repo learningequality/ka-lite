@@ -14,7 +14,7 @@ def require_registration(resource_name):
     """
     def real_decorator_wrapper(handler):
         def real_decorator_wrapper_fn(request, *args, **kwargs):
-            if Device.get_own_device().is_registered() or not am_i_online(settings.CENTRAL_SERVER_URL):
+            if Device.get_own_device().is_registered() or not am_i_online():
                 return handler(request, *args, **kwargs)
             else:
                 messages.warning(
