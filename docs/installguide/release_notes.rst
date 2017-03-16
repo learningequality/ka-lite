@@ -8,6 +8,12 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+0.18.0 (unreleased)
+-------------------
+
+This version is available as the current ``develop`` branch on Github.
+
+
 0.17.0
 ------
 
