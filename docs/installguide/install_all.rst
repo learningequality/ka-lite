@@ -1,7 +1,7 @@
 Windows
 =======
 
-#. Download the KA Lite :url-windows-installer:`Windows installer <>`.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-16>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Upgrade
@@ -28,14 +28,21 @@ For more advanced use of KA Lite, such as changing the default port, see :ref:`r
 or use the command-line ``kalite`` program, which in typical installations can be found at the path
 ``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
-.. warning::
-    If you need to download and install contentpacks locally for languages other
-    than English, make sure you are doing it
-    **as the same user that installed KA Lite** in the first place. If you
-    perform the contentpack installation as a different user, some content will
-    not load properly. For downloading and installing content packs for offline
-    methods and automatic deployments, see :ref:`content_pack_retrieve_offline`.
+When you start the KA Lite program, you will find a leaf icon in your task tray.
+Right click on this icon to start/stop the server, open the application in a browser, or set other options:
 
+.. image:: windows_task_tray.png
+    :class: screenshot
+
+By default, you can access KA Lite on the installation computer from the address http://127.0.0.1:8008.
+To access KA Lite from other machines, you will need to connect to the same network as the installation computer and
+access port 8008 using the its IP address.
+For example, if the installation computer has the IP address 192.168.0.104 on your network then you can access it from
+other machines on the same network at the address http://192.168.0.104:8008.
+
+For more advanced use of KA Lite, such as changing the default port, see :ref:`running-ka-lite-with-your-own-settings`
+or use the command-line ``kalite`` program, which in typical installations can be found at the path
+``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
 Mac OS X
 ========
@@ -43,7 +50,7 @@ Mac OS X
 Installation
 ____________
 
-#. Download the KA Lite :url-osx-installer:`OSX installer <>`.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
 #. Follow the prompts in the installer dialog to install KA Lite.
@@ -57,7 +64,7 @@ _______
 
 To upgrade an existing KA Lite installation.
 
-#. Download the KA Lite :url-osx-installer:`OSX installer <>`.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
 #. Make sure that you stop the server and quit the KA Lite Monitor.
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
@@ -75,7 +82,7 @@ Linux
 Main method: Ubuntu/Debian .deb
 _______________________________
 
-Download the :url-deb-installer:`latest .deb <>` installer, and run this command::
+Download the `latest .deb <https://learningequality.org/r/deb-bundle-installer-0-16>`_ installer, and run this command::
 
     sudo dpkg -i FILENAME.deb
 
@@ -94,7 +101,61 @@ The file may be named as if it was intended for Ubuntu but works just as well fo
 Debian, Raspberry Pi, Linux Mint etc.
 
 You will be prompted to enter some configuration information.
-You should read the on-screen instructions carefully, but some explanation is included here:
+You should read the on-screen instructions carefully.
+
+Raspberry Pi
+============
+
+Raspberry Pi has many versions and the latest one is Pi 3. This note is based on ka-lite installation on a Pi 3.
+It should work for older version of Raspberry Pi as well. In order to have complete ka-lite installation one 
+would need a 64GB MicroSD Card (Earlier version may need a SD Card) as the reduced size video are currently 34GB in size.
+
+First step is to get Raspbian OS installed on Raspberry Pi. There are guides available on their website. Easy way
+is to format the MicroSD Card as FAT32 and then download ``NOOBS`` (https://www.raspberrypi.org/downloads/noobs/)
+Once downloaded extract and copy it on the MicroSD Card. Pi 3 has a inbuilt WiFi, hence put the Micro SD card and once 
+booted it will ask to connnect to your WiFi. If WiFi isn't available make sure the ethernet port is connected and internet is
+accessible. This is required to download the Raspbian OS.
+
+After Raspbian is installed and booted, please upgrade the OS before installing the dependencies::
+
+   # Upgrade Raspbian OS 
+   sudo apt-get install upgrade    
+
+For a Raspberry Pi running a Debian system, you can install the special Debian
+package ``ka-lite-raspberry-pi`` (`Download .deb <https://learningequality.org/r/deb-pi-installer-0-16>`_).
+
+It can be installed by downloading the latest .deb on the Pi and installing it::
+
+    # Install dependencies
+    sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
+    # Fetch the latest .deb
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-16 --no-check-certificate --content-disposition 
+    # Install the .deb
+    sudo dpkg -i ka-lite-raspberry-pi*.deb
+
+You can also add the PPA, see :ref:`ppa-installation`, and then
+run ``sudo apt-get install ka-lite-raspberry-pi``. 
+
+For a more thorough guide, see :ref:`raspberry-pi-tutorial`.
+
+
+Other options
+_____________
+
+KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
+through PyPi. See :ref:`pip-installation`.
+
+Upgrade
+_______
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
+
+Configuration after installation or update
+__________________________________________
+
+Some explanation is included here:
 
 1. Choose weather you want to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
 If you choose not to, you must manually start KA lite every time.
@@ -121,50 +182,29 @@ process. Generally the default value is ok.
 
 .. _raspberry-pi-install:
 
-Raspberry Pi
-____________
-
-For a Raspberry Pi running a Debian system, you can install the special Debian
-package ``ka-lite-raspberry-pi`` (:url-deb-pi-installer:`Download as .deb file <>`).
-
-To download and install it from command line:
-
-.. parsed-literal::
-
-    # Install dependencies
-    sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
-    
-    # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-|version_major|-|version_minor| --no-check-certificate --content-disposition 
-    
-    # Install the .deb
-    sudo dpkg -i ka-lite-raspberry-pi*.deb
-
-You can also add the PPA, see :ref:`ppa-installation`, and then
-run ``sudo apt-get install ka-lite-raspberry-pi``. 
-
-For a more thorough guide, see :ref:`raspberry-pi-tutorial`.
-
-
-Other options
-_____________
-
-KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
-through PyPi. See :ref:`pip-installation`.
-
-Upgrade
-_______
-
-To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
-Your existing data will be preserved by default.
-See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
-
-Configuration after installation or update
-__________________________________________
 
 Every time you install or update KA Lite, you must run ``kalite manage setup`` command again to setup the database and download assessment items (video descriptions,
 exercises etc.).
 
+During the setup it will ask to download assessment.zip that has all exercises. This file is around 500MB and it will take time
+depending on the internet connection
+
+Use following command to start/stop KA-LITE:: 
+
+     # Starting KA-LITE
+     sudo service kalite start
+     # Stopping KA-LITE 
+     sudo service kalite stop
+
+If videos are downloaded in bulk then it needs to be copied to the folder /home/pi/.kalite/content.After copying the files Use the Scan content folder for Videos. The tree will turn green for all the videos that are available in the content folder. Time taken for the scan to complete depends on the number of videos in the content folder, for a complete 34 GB of downloaded videos it can take more than 2 hours on Raspberry Pi 3. It may take longer for earlier version on Raspberry Pi.
+
+.. image:: After_Video_Scan.png
+  :class: screenshot
+
+Please make sure that all these files once copied,have permissions to view by everyone. If the permission is not given to everyone videos will not play. 
+ 
+.. image:: File_Permission.png
+  :class: screenshot 
 
 Uninstalling
 ============
