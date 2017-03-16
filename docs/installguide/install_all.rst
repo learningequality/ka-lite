@@ -1,7 +1,7 @@
 Windows
 =======
 
-#. Download the KA Lite :url-windows-installer:`Windows installer <>`.
+#. Download the KA Lite :url-windows-installer:`Windows installer <>` v. |release|.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Upgrade
@@ -43,7 +43,7 @@ Mac OS X
 Installation
 ____________
 
-#. Download the KA Lite :url-osx-installer:`OSX installer <>`.
+#. Download the KA Lite :url-osx-installer:`OSX installer <>` v. |release|.
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
 #. Follow the prompts in the installer dialog to install KA Lite.
@@ -57,7 +57,7 @@ _______
 
 To upgrade an existing KA Lite installation.
 
-#. Download the KA Lite :url-osx-installer:`OSX installer <>`.
+#. Download the KA Lite :url-osx-installer:`OSX installer <>` v. |release|.
 #. Make sure that you stop the server and quit the KA Lite Monitor.
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
@@ -75,7 +75,7 @@ Linux
 Main method: Ubuntu/Debian .deb
 _______________________________
 
-Download the :url-deb-installer:`latest .deb <>` installer, and run this command::
+Download the :url-deb-installer:`latest .deb <>` installer v. |release|, and run this command::
 
     sudo dpkg -i FILENAME.deb
 
@@ -125,7 +125,7 @@ Raspberry Pi
 ____________
 
 For a Raspberry Pi running a Debian system, you can install the special Debian
-package ``ka-lite-raspberry-pi`` (:url-deb-pi-installer:`Download as .deb file <>`).
+package ``ka-lite-raspberry-pi`` (:url-deb-pi-installer:`Download as .deb file <>` v. |release|).
 
 To download and install it from command line:
 
