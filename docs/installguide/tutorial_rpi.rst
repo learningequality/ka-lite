@@ -4,8 +4,8 @@ Raspberry Pi 3 Tutorial
 =======================
 
 Raspberry Pi has many versions and the latest one is Pi 3, which this guide is
-based on. It should work for older version of Raspberry Pi as well. In order to
-have complete ka-lite installation one would need a 64GB MicroSD Card
+based on. It also works for other editions of The Pi - RPi1, 2, Nano, Zero etc.
+In order to have complete ka-lite installation one would need a 64GB MicroSD Card
 (earlier version may need a SD Card) as the reduced size video are currently
 34GB in size (see :ref:`system-requirements`).
 
