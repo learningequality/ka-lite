@@ -119,12 +119,6 @@ DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 _data_path = ROOT_DATA_PATH
 
-# BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-PROJECT_PATH = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
-
 
 ###################################################
 # CHANNEL and CONTENT DATA

@@ -50,7 +50,6 @@ class KALiteCodeTest(unittest.TestCase):
                 global_vars = copy.copy(globals())
                 global_vars.update({
                     "__file__": settings_filepath,  # must let the app's settings file be set to that file!
-                    'PROJECT_PATH': settings.PROJECT_PATH,
                     'ROOT_DATA_PATH': getattr(settings, 'ROOT_DATA_PATH', os.path.join(settings.PROJECT_PATH, 'data')),
                 })
                 app_settings = {'__package__': app}  # explicit setting of the __package__, to allow absolute package ref'ing

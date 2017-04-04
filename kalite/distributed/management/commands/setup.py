@@ -29,7 +29,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from kalite import ROOT_DATA_PATH
+import kalite
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
 from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, reset_content_db
@@ -42,7 +42,7 @@ from securesync.models import Device
 CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(
     version=SHORTVERSION, langcode="en", suffix="")
 
-PRESEED_DIR = os.path.join(ROOT_DATA_PATH, "preseed")
+PRESEED_DIR = os.path.join(kalite.ROOT_DATA_PATH, "preseed")
 
 # Examples:
 # contentpack.en.zip
@@ -477,15 +477,10 @@ class Command(BaseCommand):
         if not settings.CENTRAL_SERVER:
 
             kalite_executable = 'kalite'
-            if not spawn.find_executable('kalite'):
-                if os.name == 'posix':
-                    start_script_path = os.path.realpath(
-                        os.path.join(settings.PROJECT_PATH, "..", "bin", kalite_executable))
-                else:
-                    start_script_path = os.path.realpath(
-                        os.path.join(settings.PROJECT_PATH, "..", "bin", "windows", "kalite.bat"))
-            else:
+            if spawn.find_executable(kalite_executable):
                 start_script_path = kalite_executable
+            else:
+                start_script_path = None
 
             # Run annotate_content_items, on the distributed server.
             print("Annotating availability of all content, checking for content in this directory: (%s)" %
@@ -501,7 +496,7 @@ class Command(BaseCommand):
             print(
                 "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
 
-            if options['interactive']:
+            if options['interactive'] and start_script_path:
                 if raw_input_yn("Do you wish to start the server now?"):
                     print("Running {0} start".format(start_script_path))
                     p = subprocess.Popen(
