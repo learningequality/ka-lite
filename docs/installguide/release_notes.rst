@@ -32,7 +32,7 @@ Code cleanup
 ^^^^^^^^^^^^
 
  * Remove ``PROJECT_PATH`` from ``kalite.settings.base`` (it wasn't a configurable setting). :url-issue:`4104`
-
+ * Make tests run on Selenium 3.3+ and geckodriver 0.15 (Firefox) :url-issue:`5429`
 
 0.17.0
 ------
