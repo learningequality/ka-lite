@@ -18,8 +18,11 @@ check our `Forums`_!
 
 .. _Forums: https://community.learningequality.org/
 
+Main sections
+-------------
+
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     Installation Guide <installguide/install_main>
     User Manual <usermanual/userman_main>
@@ -42,20 +45,6 @@ mechanism for Khan Academy content is key to fulfilling this mission.
 Khan Academy content (videos and exercises) from a local server, with
 points and progress-tracking, without needing internet connectivity.
 
-Primary use cases include:
---------------------------
-
--  For servers/\ **computer labs located in remote schools**, which
-   could be slowly syncing with a central server over a cell/satellite
-   network or via USB keys.
--  In **correctional facilities** and other environments where providing
-   educational materials is of value, but users cannot be given general
-   internet access.
--  **Mobile school "vans"**, which transport a server and multiple
-   laptops/tablets between a number of schools (or orphanages, community
-   centers, etc) in remote communities on a rotating basis, and syncing
-   up with a central database (to download new content and upload
-   analytics) when in an area with internet connectivity.
 
 Get involved!
 -------------
@@ -65,33 +54,11 @@ Get involved!
 -  Read more about the project's motivation at `Introducing KA Lite, an offline version of Khan
    Academy <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
 
-Roadmap
--------
-
-Later in 2017, Learning Equality will be launching the successor of KA Lite. It's
-called `Kolibri <http://github.com/learningequality/kolibri>`__ and will have
-very similar features to KA Lite, but will also be a platform for many other
-educational resources besides Khan Academy's.
-
-Because of the popularity of KA Lite, we are continuing
-to support deployments by providing fixes to problems that
-directly affect current usage. These include issues related to new
-browsers, operating systems etc. We are also still optimizing regarding
-performance issues.
-
-If you are creating a new deployment at this very moment, feel assured that
-KA Lite is still alive and will be maintained for the rest of 2017, after which
-point we will be recommending that you migrate to Kolibri.
-
-In the meantime, if you need new features in KA Lite, we welcome you to join
-the community and contribute. In other words, we (Learning Equality) encourages
-you (community members), to feel empowered and take responsibility for the
-future of KA Lite.
-
 
 Connect
 ^^^^^^^
 
+- Community forums: `community.learningequality.org <https://community.learningequality.org/>`__
 - IRC: **#kalite** on Freenode
 - Twitter: `@ka_lite <http://twitter.com/ka_lite>`__
 - Mailing list: `dev@learningequality.org on Google Groups <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
