@@ -675,8 +675,6 @@ _________________
 Online Synchronization
 ______________________
 
-* ``USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)``
-  When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
 * ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency (number, amount of time)>``
   ``(default = (1, "months")``
   This determines the granularity of how we summarize and store user log data.  One database row is kept for each student, on each KA Lite installation, for the defined time period.  Acceptable values are:
