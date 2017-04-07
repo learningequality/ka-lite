@@ -76,6 +76,7 @@ future of KA Lite.
 Connect
 ^^^^^^^
 
+- Community forums: `community.learningequality.org <https://community.learningequality.org/>`__
 - IRC: **#kalite** on Freenode
 - Twitter: `@ka_lite <http://twitter.com/ka_lite>`__
 - Mailing list: `dev@learningequality.org on Google Groups <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
