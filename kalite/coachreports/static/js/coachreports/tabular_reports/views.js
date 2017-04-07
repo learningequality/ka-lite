@@ -370,12 +370,15 @@ var TabularReportView = BaseView.extend({
     },
 
     set_data_model: function (){
+        // Bad architecture:
+        // Retrieve a single instance of this.model to be accessed by tabular_reports.views
+        var main_coachreport_model = $("html").data("main_coachreport_model");
         var self = this;
         this.data_model = new Models.CoachReportModel({
             facility: this.model.get("facility"),
             group: this.model.get("group"),
-            start_date: date_string(this.model.get("start_date")),
-            end_date: date_string(this.model.get("end_date")),
+            start_date: date_string(main_coachreport_model.get("start_date")),
+            end_date: date_string(main_coachreport_model.get("end_date")),
             topic_ids: this.model.get("topic_ids")
         });
         if (this.model.get("facility")) {
@@ -386,7 +389,7 @@ var TabularReportView = BaseView.extend({
                     self.learners.each(function(model){
                         model.set("logs", _.object(
                             _.map(_.filter(self.data_model.get("logs"), function(log) {
-                                return log.user === model.get("pk");
+                                return log.user === model.get("pk") && new Date(log.latest_activity_timestamp) >= main_coachreport_model.get("start_date") && new Date(log.latest_activity_timestamp) <= main_coachreport_model.get("end_date");
                             }), function(item) {
                                 return [item.exercise_id || item.video_id || item.content_id, item];
                             })));

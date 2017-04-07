@@ -58,7 +58,7 @@ def get_learners_from_GET(request):
     return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
 
 def return_log_type_details(log_type, topic_ids=None):
-    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
+    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter", "latest_activity_timestamp"]
     if log_type == "exercise":
         LogModel = ExerciseLog
         fields.extend(["exercise_id", "attempts", "struggling", "streak_progress", "attempts_before_completion"])
