@@ -18,6 +18,7 @@ Bug fixes
  * Touch devices: Scroll events drop through to underlying page rather than scrolling long sidebar lists :url-issue:`5407` :url-issue:`5410`
  * Respect selected date range on tabular coach report :url-issue:`5022`
  * Correct summary of total exercise attempts on coach reports :url-issue:`5020`
+ * Do not load video into memory to check its size, just use disk stats :url-issue:`2909`
 
 Known issues
 ^^^^^^^^^^^^
