@@ -353,13 +353,14 @@ def get_pid():
         # Probably a mis-configured KA Lite
         raise NotRunning(STATUS_SERVER_CONFIGURATION_ERROR)
 
+    served_pid = -1
     try:
-        pid = int(response.read())
+        served_pid = int(response.read())
     except ValueError:
         # Not a valid INT was returned, so probably not KA Lite
         raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
-    if pid == pid:
+    if pid == served_pid:
         return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
