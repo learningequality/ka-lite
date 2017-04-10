@@ -368,6 +368,21 @@ def get_pid():
     raise NotRunning(STATUS_UNKNOW)  # Could not determine
 
 
+def print_server_address(port):
+    # Print output to user about where to find the server
+    addresses = get_ip_addresses(include_loopback=False)
+    print("To access KA Lite from another connected computer, try the following address(es):")
+    for addr in addresses:
+        print("\thttp://%s:%s/\n" % (addr, port))
+    print("To access KA Lite from this machine, try the following address:")
+    print("\thttp://127.0.0.1:%s/" % port)
+
+    for addr in get_urls_proxy(output_pipe=sys.stdout):
+        print("\t{}".format(addr))
+
+    print("")
+
+
 class ManageThread(Thread):
 
     def __init__(self, command, *args, **kwargs):
@@ -430,8 +445,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     else:
         sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
 
-    sys.stderr.write("\nStand by while the server loads its data...\n\n")
-
     if os.path.exists(STARTUP_LOCK):
         try:
             pid, __ = read_pid_file(STARTUP_LOCK)
@@ -481,7 +494,8 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         kwargs = {}
         # Truncate the file
         open(SERVER_LOG, "w").truncate()
-        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        print("Going to daemon mode, logging to {0}\n".format(SERVER_LOG))
+        print_server_address(port)
         kwargs['out_log'] = SERVER_LOG
         kwargs['err_log'] = SERVER_LOG
         become_daemon(**kwargs)
@@ -491,18 +505,8 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
 
     manage('initialize_kalite')
 
-    # Print output to user about where to find the server
-    addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
-    for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
-    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
-
-    for addr in get_urls_proxy(output_pipe=sys.stdout):
-        sys.stdout.write("\t{}\n".format(addr))
-
-    sys.stdout.write("\n")
+    if not daemonize:
+        print_server_address(port)
 
     # Start the job scheduler (not Celery yet...)
     cron_thread = None
