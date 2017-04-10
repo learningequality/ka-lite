@@ -426,7 +426,7 @@ def manage(command, args=None, as_thread=False):
         return thread
 
 
-def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None, auto_initialize=True):
     """
     Start the kalite server as a daemon
 
@@ -503,7 +503,8 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
 
-    manage('initialize_kalite')
+    if auto_initialize:
+        manage('initialize_kalite')
 
     if not daemonize:
         print_server_address(port)
