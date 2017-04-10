@@ -293,7 +293,7 @@ def get_pid():
     TODO: This function has for historical reasons maintained to try to get
     the PID of a KA Lite server without a PID file running on the same port.
     The behavior is to make an HTTP request for the PID on a certain port.
-    This behavior is stupid, because a KA lite process may just be part of a
+    This behavior is stupid, because a KA Lite process may just be part of a
     process pool, so it won't be able to tell the correct PID for sure,
     anyways.
     The behavior is also quite redundant given that `kalite start` should always
@@ -436,7 +436,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param daemonize: Default True, will run in foreground if False
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
-    # TODO: Do we want to fail if running as root?
 
     port = int(port or DEFAULT_LISTEN_PORT)
 
@@ -581,7 +580,7 @@ def stop(args=[], sys_exit=True):
                 killed_with_force = True
             except ValueError:
                 sys.stderr.write("Could not find PID in .pid file\n")
-            except OSError:  # TODO: More specific exception handling
+            except OSError:
                 sys.stderr.write("Could not read .pid file\n")
             if not killed_with_force:
                 if sys_exit:
