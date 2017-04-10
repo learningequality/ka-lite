@@ -1,3 +1,9 @@
+Removed closing of pipes in daemon mode because of Windows log file issues:
+
+https://github.com/learningequality/ka-lite/pull/5364/files
+
+
+
 ## BEGIN(djallado): Changes in makemessages.py and trans_real.py to generate handlebars templates in djangojs.pot file.
 diff --git a/python-packages/django/core/management/commands/makemessages.py b/python-packages/django/core/management/commands/makemessages.py
 index 2fd5bda..526026b 100644
