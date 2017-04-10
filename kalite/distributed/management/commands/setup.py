@@ -17,7 +17,6 @@ import shutil
 import sys
 import tempfile
 import subprocess
-import warnings
 
 from distutils import spawn
 from annoying.functions import get_object_or_None
@@ -72,25 +71,6 @@ def raw_input_password():
             continue
         break
     return password
-
-
-def clean_pyc(path):
-    """Delete all *pyc files recursively in a path"""
-    if not os.access(path, os.W_OK):
-        warnings.warn(
-            "{0} is not writable so cannot delete stale *pyc files".format(path))
-        return
-    print("Cleaning *pyc files (if writable) from: {0}".format(path))
-    for root, __dirs, files in os.walk(path):
-        pyc_files = filter(
-            lambda filename: filename.endswith(".pyc"), files)
-        py_files = set(
-            filter(lambda filename: filename.endswith(".py"), files))
-        excess_pyc_files = filter(
-            lambda pyc_filename: pyc_filename[:-1] not in py_files, pyc_files)
-        for excess_pyc_file in excess_pyc_files:
-            full_path = os.path.join(root, excess_pyc_file)
-            os.remove(full_path)
 
 
 def validate_username(username):
