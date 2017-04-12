@@ -1,0 +1,25 @@
+[paths]
+source = 
+    kalite/
+[run]
+source =
+    kalite/
+omit =
+    kalite/*/features/steps/*
+    kalite/testing/*
+    kalite/*/tests/*
+    kalite/*/migrations/*
+    kalite/packages/*
+    kalite/__main__.py
+parallel = True
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+

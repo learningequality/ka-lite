@@ -24,7 +24,7 @@ test:
     - sleep 6s  # Necessary for server to be ready
     - kalite status
     - kalite stop --traceback -v2
-    - case $CIRCLE_NODE_INDEX in 0) coverage run --parallel-mode --source=kalite --omit="kalite/*/features/steps/*,kalite/testing/*,*/tests/*,*/migrations/*,kalite/packages/*" bin/kalite manage test --bdd-only ;; 1) coverage run --parallel-mode --source=kalite --omit="kalite/*/features/steps/,kalite/testing/*,kalite/packages/*,*/tests/*,*/migrations/*" bin/kalite manage test --no-bdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) coverage run bin/kalite manage test --bdd-only ;; 1) coverage run bin/kalite manage test --no-bdd;; esac:
         parallel: true
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
