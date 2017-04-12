@@ -52,7 +52,7 @@ class Command(BaseCommand):
             action='store',
             dest='output_dir',
             default=None,
-            help='Specify the output directory relative to the project base directory.'),
+            help='Specify the output directory relative to current working directory.'),
         make_option('--no-del',
             action='store_true',
             dest='no_del',
@@ -184,8 +184,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         # make sure output path exists and is empty
         if kwargs['output_dir']:
-            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
-                                        kwargs['output_dir'])
+            self.output_path = os.path.join(
+                os.path.realpath(os.getcwd()),
+                kwargs['output_dir']
+            )
         else:
             self.output_path = settings.SCREENSHOTS_OUTPUT_PATH
         ensure_dir(self.output_path)

@@ -19,6 +19,20 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 
+###################################################
+# USER DATA
+###################################################
+
+USER_DATA_ROOT = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
+
+# Ensure that path exists
+if not os.path.exists(USER_DATA_ROOT):
+    os.mkdir(USER_DATA_ROOT)
+
+
 ##############################
 # Basic setup of logging
 ##############################
@@ -29,6 +43,8 @@ LOGGING_LEVEL = logging.INFO
 
 # We should use local module level logging.getLogger
 LOG = logging.getLogger("kalite")
+
+SERVER_LOG = os.path.join(USER_DATA_ROOT, "server.log")
 
 LOGGING = {
     'version': 1,
@@ -43,6 +59,9 @@ LOGGING = {
         'standard': {
             'format': '[%(levelname)s] [%(asctime)s] %(name)s: %(message)s'
         },
+        'no_format': {
+            'format': '%(message)s'
+        },
     },
     'handlers': {
         'null': {
@@ -53,6 +72,12 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
+            'stream': sys.stdout,
+        },
+        'console_no_format': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'no_format',
             'stream': sys.stdout,
         },
     },
@@ -69,6 +94,11 @@ LOGGING = {
         },
         'kalite': {
             'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'kalite.distributed.management.commands': {
+            'handlers': ['console_no_format'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
@@ -119,12 +149,6 @@ DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 _data_path = ROOT_DATA_PATH
 
-# BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-PROJECT_PATH = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
-
 
 ###################################################
 # CHANNEL and CONTENT DATA
@@ -142,21 +166,12 @@ PROJECT_PATH = os.environ.get(
 
 
 ###################################################
-# USER DATA
+# USER DATA SUB-DIRECTORIES
 ###################################################
 #
 # This is related to data that can be modified by
 # the user running kalite and should be in a user-data
 # storage place.
-
-USER_DATA_ROOT = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
-
-# Ensure that path exists
-if not os.path.exists(USER_DATA_ROOT):
-    os.mkdir(USER_DATA_ROOT)
 
 USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')

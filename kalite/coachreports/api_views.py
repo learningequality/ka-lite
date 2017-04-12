@@ -58,7 +58,7 @@ def get_learners_from_GET(request):
     return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
 
 def return_log_type_details(log_type, topic_ids=None):
-    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
+    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter", "latest_activity_timestamp"]
     if log_type == "exercise":
         LogModel = ExerciseLog
         fields.extend(["exercise_id", "attempts", "struggling", "streak_progress", "attempts_before_completion"])
@@ -164,7 +164,10 @@ def aggregate_learner_logs(request):
 
     topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
-    log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
+    # Previously, we defaulted to all types of logs, but views on coach reports
+    # seem to assume only exercises
+    # log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
+    log_types = request.GET.getlist("log_type", ["exercise"])
 
     output_logs = []
 
@@ -198,6 +201,7 @@ def aggregate_learner_logs(request):
 
         number_content += len(set(log_objects.values_list(id_field, flat=True)))
 
+        output_dict["total_complete"] += log_objects.filter(complete=True).count()
         if log_type == "video":
             output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"] or 0
@@ -205,15 +209,20 @@ def aggregate_learner_logs(request):
             output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("time_spent"))["time_spent__sum"] or 0
         elif log_type == "exercise":
-            output_dict["total_struggling"] = log_objects.filter(struggling=True).count()
+            output_dict["total_struggling"] += log_objects.filter(struggling=True).count()
             output_dict["total_in_progress"] += log_objects.filter(complete=False, struggling=False).count()
-            output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
-                timestamp__gte=start_date,
-                timestamp__lte=end_date, **obj_ids).count()
+            
+            # Summarize struggling, in progress, and completed
+            output_dict["exercise_attempts"] += output_dict["total_struggling"] + output_dict["total_complete"] + output_dict["total_in_progress"]
+            # The below doesn't filter correctly, suspecting either bad
+            # AttemptLog generated in generaterealdata or because timestamp
+            # isn't correctly updated
+            # output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
+            #     timestamp__gte=start_date,
+            #     timestamp__lte=end_date, **obj_ids).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
-        output_dict["total_complete"] += log_objects.filter(complete=True).count()
 
         object_buffer = LogModel.objects.filter(
             user__in=learners,

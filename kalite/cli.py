@@ -293,7 +293,7 @@ def get_pid():
     TODO: This function has for historical reasons maintained to try to get
     the PID of a KA Lite server without a PID file running on the same port.
     The behavior is to make an HTTP request for the PID on a certain port.
-    This behavior is stupid, because a KA lite process may just be part of a
+    This behavior is stupid, because a KA Lite process may just be part of a
     process pool, so it won't be able to tell the correct PID for sure,
     anyways.
     The behavior is also quite redundant given that `kalite start` should always
@@ -353,19 +353,35 @@ def get_pid():
         # Probably a mis-configured KA Lite
         raise NotRunning(STATUS_SERVER_CONFIGURATION_ERROR)
 
+    served_pid = -1
     try:
-        pid = int(response.read())
+        served_pid = int(response.read())
     except ValueError:
         # Not a valid INT was returned, so probably not KA Lite
         raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
-    if pid == pid:
+    if pid == served_pid:
         return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
         raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
     raise NotRunning(STATUS_UNKNOW)  # Could not determine
+
+
+def print_server_address(port):
+    # Print output to user about where to find the server
+    addresses = get_ip_addresses(include_loopback=False)
+    print("To access KA Lite from another connected computer, try the following address(es):")
+    for addr in addresses:
+        print("\thttp://%s:%s/\n" % (addr, port))
+    print("To access KA Lite from this machine, try the following address:")
+    print("\thttp://127.0.0.1:%s/" % port)
+
+    for addr in get_urls_proxy(output_pipe=sys.stdout):
+        print("\t{}".format(addr))
+
+    print("")
 
 
 class ManageThread(Thread):
@@ -411,7 +427,7 @@ def manage(command, args=None, as_thread=False):
         return thread
 
 
-def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None, auto_initialize=True):
     """
     Start the kalite server as a daemon
 
@@ -421,7 +437,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param daemonize: Default True, will run in foreground if False
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
-    # TODO: Do we want to fail if running as root?
 
     port = int(port or DEFAULT_LISTEN_PORT)
 
@@ -429,8 +444,6 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         sys.stderr.write("Running 'kalite start' in foreground...\n")
     else:
         sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
-
-    sys.stderr.write("\nStand by while the server loads its data...\n\n")
 
     if os.path.exists(STARTUP_LOCK):
         try:
@@ -481,7 +494,8 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         kwargs = {}
         # Truncate the file
         open(SERVER_LOG, "w").truncate()
-        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        print("Going to daemon mode, logging to {0}\n".format(SERVER_LOG))
+        print_server_address(port)
         kwargs['out_log'] = SERVER_LOG
         kwargs['err_log'] = SERVER_LOG
         become_daemon(**kwargs)
@@ -489,20 +503,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
 
-    manage('initialize_kalite')
+    if auto_initialize:
+        manage('initialize_kalite')
 
-    # Print output to user about where to find the server
-    addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
-    for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
-    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
-
-    for addr in get_urls_proxy(output_pipe=sys.stdout):
-        sys.stdout.write("\t{}\n".format(addr))
-
-    sys.stdout.write("\n")
+    if not daemonize:
+        print_server_address(port)
 
     # Start the job scheduler (not Celery yet...)
     cron_thread = None
@@ -576,7 +581,7 @@ def stop(args=[], sys_exit=True):
                 killed_with_force = True
             except ValueError:
                 sys.stderr.write("Could not find PID in .pid file\n")
-            except OSError:  # TODO: More specific exception handling
+            except OSError:
                 sys.stderr.write("Could not read .pid file\n")
             if not killed_with_force:
                 if sys_exit:
