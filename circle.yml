@@ -29,13 +29,4 @@ test:
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:
-    - coverage combine
     - bash <(curl -s https://codecov.io/bash)
-
-notify:
-  webhooks:
-    - url: https://coveralls.io/webhook?repo_token=YWMKkAVqIigWxX8XerfykVab17vEKmdXO
-
-general:
-  artifacts:
-    - 'coverage'

@@ -11,7 +11,6 @@ omit =
     kalite/*/migrations/*
     kalite/packages/*
     kalite/__main__.py
-parallel = True
 [report]
 exclude_lines =
     pragma: no cover
