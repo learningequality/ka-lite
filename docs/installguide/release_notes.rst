@@ -19,6 +19,8 @@ Bug fixes
  * Respect selected date range on tabular coach report :url-issue:`5022`
  * Correct summary of total exercise attempts on coach reports :url-issue:`5020`
  * Do not load video into memory to check its size, just use disk stats :url-issue:`2909`
+ * Print server address after ``kalite start`` :url-issue:`5441`
+ * Log everything from automatic initialization in ``kalite start`` and ``kalite manage setup`` :url-issue:`5408`
 
 Known issues
 ^^^^^^^^^^^^

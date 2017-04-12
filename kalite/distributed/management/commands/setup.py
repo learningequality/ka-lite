@@ -17,7 +17,6 @@ import shutil
 import sys
 import tempfile
 import subprocess
-import warnings
 
 from distutils import spawn
 from annoying.functions import get_object_or_None
@@ -50,13 +49,16 @@ PRESEED_DIR = os.path.join(kalite.ROOT_DATA_PATH, "preseed")
 PRESEED_CONTENT_PACK_MASK = re.compile(r"contentpack.*\.(?P<lang>[a-z]{2,}).zip")
 
 
+logger = logging.getLogger(__name__)
+
+
 def raw_input_yn(prompt):
     ans = ""
     while True:
         ans = raw_input("%s (yes or no) " % prompt.strip()).lower()
         if ans in ["yes", "no"]:
             break
-        logging.warning("Please answer yes or no.\n")
+        logger.warning("Please answer yes or no.\n")
     return ans == "yes"
 
 
@@ -64,33 +66,14 @@ def raw_input_password():
     while True:
         password = getpass.getpass("Password: ")
         if not password:
-            logging.error("\tError: password must not be blank.\n")
+            logger.error("\tError: password must not be blank.\n")
             continue
 
         elif password != getpass.getpass("Password (again): "):
-            logging.error("\tError: passwords did not match.\n")
+            logger.error("\tError: passwords did not match.\n")
             continue
         break
     return password
-
-
-def clean_pyc(path):
-    """Delete all *pyc files recursively in a path"""
-    if not os.access(path, os.W_OK):
-        warnings.warn(
-            "{0} is not writable so cannot delete stale *pyc files".format(path))
-        return
-    print("Cleaning *pyc files (if writable) from: {0}".format(path))
-    for root, __dirs, files in os.walk(path):
-        pyc_files = filter(
-            lambda filename: filename.endswith(".pyc"), files)
-        py_files = set(
-            filter(lambda filename: filename.endswith(".py"), files))
-        excess_pyc_files = filter(
-            lambda pyc_filename: pyc_filename[:-1] not in py_files, pyc_files)
-        for excess_pyc_file in excess_pyc_files:
-            full_path = os.path.join(root, excess_pyc_file)
-            os.remove(full_path)
 
 
 def validate_username(username):
@@ -111,7 +94,7 @@ def get_username(username):
         username = raw_input("Username (leave blank to use '%s'): " %
                              get_clean_default_username()) or get_clean_default_username()
         if not validate_username(username):
-            logging.error(
+            logger.error(
                 "\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
 
     return username
@@ -128,7 +111,7 @@ def get_hostname_and_description(hostname=None, description=None):
             "" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
         hostname = raw_input(prompt) or default_hostname
         if not hostname:
-            logging.error("\tError: hostname must not be empty.\n")
+            logger.error("\tError: hostname must not be empty.\n")
         else:
             break
 
@@ -166,7 +149,7 @@ def get_assessment_items_filename():
     if not filename:
         filename = recommended_filename
     while not validate_filename(filename):
-        logging.error(
+        logger.error(
             "Error: couldn't open the specified file: \"%s\"\n" % filename)
         filename = raw_input(prompt)
 
@@ -176,7 +159,7 @@ def get_assessment_items_filename():
 def detect_content_packs(options):
 
     if settings.RUNNING_IN_CI:  # skip if we're running on Travis
-        logging.warning("Running in CI; skipping content pack download.")
+        logger.warning("Running in CI; skipping content pack download.")
         return
 
     preseeded_content_packs = False
@@ -195,18 +178,25 @@ def detect_content_packs(options):
 
     # skip if we're not running in interactive mode (and it wasn't forced)
     if not options['interactive']:
-        logging.warning(
+        logger.warning(
             "Not running in interactive mode; skipping content pack download.")
         return
 
-    print(
-        "\nIn order to access many of the available exercises, you need to load a content pack for the latest version.")
-    print(
-        "If you have an Internet connection, you can download the needed package. Warning: this may take a long time!")
-    print(
-        "If you have already downloaded the content pack, you can specify the location of the file in the next step.")
-    print("Otherwise, we will download it from {url}.".format(
-        url=CONTENTPACK_URL))
+    logger.info(
+        "\nIn order to access many of the available exercises, you need to "
+        "load a content pack for the latest version."
+        "\n"
+        "If you have an Internet connection, you can download the needed "
+        "file. Warning: this may take a long time!"
+    )
+    logger.info(
+        "\n"
+        "If you have already downloaded the content pack, you can specify the "
+        "location of the file in the next step."
+    )
+    logger.info(
+        "Otherwise, we will download it from {url}.".format(url=CONTENTPACK_URL)
+    )
 
     if raw_input_yn("Do you wish to download and install the content pack now?"):
         ass_item_filename = CONTENTPACK_URL
@@ -219,7 +209,7 @@ def detect_content_packs(options):
         retrieval_method = "local"
 
     if not ass_item_filename:
-        logging.warning(
+        logger.warning(
             "No content pack given. You will need to download and install it later.")
     else:
         call_command("retrievecontentpack", retrieval_method,
@@ -279,18 +269,22 @@ class Command(BaseCommand):
             options["hostname"] = options["hostname"] or get_host_name()
 
         # blank allows ansible scripts to dump errors cleanly.
-        print("                                     ")
-        print("   _   __  ___    _     _ _          ")
-        print("  | | / / / _ \  | |   (_) |         ")
-        print("  | |/ / / /_\ \ | |    _| |_ ___    ")
-        print("  |    \ |  _  | | |   | | __/ _ \   ")
-        print("  | |\  \| | | | | |___| | ||  __/   ")
-        print("  \_| \_/\_| |_/ \_____/_|\__\___|   ")
-        print("                                     ")
-        print("https://learningequality.org/ka-lite/")
-        print("                                     ")
-        print("         version %s" % VERSION)
-        print("                                     ")
+        logger.info(
+            "                                     \n"
+            "   _   __  ___    _     _ _          \n"
+            "  | | / / / _ \  | |   (_) |         \n"
+            "  | |/ / / /_\ \ | |    _| |_ ___    \n"
+            "  |    \ |  _  | | |   | | __/ _ \   \n"
+            "  | |\  \| | | | | |___| | ||  __/   \n"
+            "  \_| \_/\_| |_/ \_____/_|\__\___|   \n"
+            "                                     \n"
+            "https://learningequality.org/ka-lite/\n"
+            "                                     \n"
+            "         version {version:s}\n"
+            "                                     ".format(
+                version=VERSION
+            )
+        )
 
         if sys.version_info < (2, 7):
             raise CommandError(
@@ -299,28 +293,26 @@ class Command(BaseCommand):
             raise CommandError(
                 "Your Python version is: %d.%d.%d -- which is not supported. Please use the Python 2.7 series or wait for Learning Equality to release Kolibri.\n" % sys.version_info[:3])
         elif sys.version_info < (2, 7, 6):
-            logging.warning(
+            logger.warning(
                 "It's recommended that you install Python version 2.7.6. Your version is: %d.%d.%d\n" % sys.version_info[:3])
 
         if options["interactive"]:
-            print(
-                "--------------------------------------------------------------------------------")
-            print(
-                "This script will configure the database and prepare it for use.")
-            print(
-                "--------------------------------------------------------------------------------")
+            logger.info(
+                "--------------------------------------------------------------------------------\n"
+                "This script will configure the database and prepare it for use.\n"
+                "--------------------------------------------------------------------------------\n"
+            )
             raw_input("Press [enter] to continue...")
 
         # Assuming uid '0' is always root
         if not is_windows() and hasattr(os, "getuid") and os.getuid() == 0:
-            print(
-                "-------------------------------------------------------------------")
-            print("WARNING: You are installing KA-Lite as root user!")
-            print(
-                "\tInstalling as root may cause some permission problems while running")
-            print("\tas a normal user in the future.")
-            print(
-                "-------------------------------------------------------------------")
+            logger.info(
+                "-------------------------------------------------------------------\n"
+                "WARNING: You are installing KA-Lite as root user!\n"
+                "    Installing as root may cause some permission problems while running\n"
+                "    as a normal user in the future.\n"
+                "-------------------------------------------------------------------\n"
+            )
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
@@ -347,23 +339,25 @@ class Command(BaseCommand):
                 # We found an existing database file.  By default,
                 #   we will upgrade it; users really need to work hard
                 #   to delete the file (but it's possible, which is nice).
-                print(
-                    "-------------------------------------------------------------------")
-                print("WARNING: Database file already exists!")
-                print(
-                    "-------------------------------------------------------------------")
+                logger.info(
+                    "-------------------------------------------------------------------\n"
+                    "WARNING: Database file already exists!\n"
+                    "-------------------------------------------------------------------"
+                )
                 if not options["interactive"] \
                    or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
                    or not raw_input_yn("Remove database file '%s' now? " % database_file) \
                    or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                     install_clean = False
-                    print("Upgrading database to KA Lite version %s" % VERSION)
+                    logger.info("Upgrading database to KA Lite version %s" % VERSION)
                 else:
                     install_clean = True
-                    print("OK.  We will run a clean install; ")
+                    logger.info("OK.  We will run a clean install; ")
                     # After all, don't delete--just move.
-                    print(
-                        "the database file will be moved to a deletable location.")
+                    logger.info(
+                        "the database file will be moved to a deletable "
+                        "location."
+                    )
 
         if not install_clean and not database_file:
             # Make sure that, for non-sqlite installs, the database exists.
@@ -373,12 +367,11 @@ class Command(BaseCommand):
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
             if not options["username"] or not options["password"]:
-                print(
-                    "Please choose a username and password for the admin account on this device.")
-                print(
-                    "\tYou must remember this login information, as you will need")
-                print(
-                    "\tto enter it to administer this installation of KA Lite.")
+                logger.info(
+                    "Please choose a username and password for the admin account on this device.\n"
+                    "    You must remember this login information, as you will need\n"
+                    "    to enter it to administer this installation of KA Lite."
+                )
             (username, password) = get_username_password(
                 options["username"], options["password"])
             email = options["email"]
@@ -409,18 +402,28 @@ class Command(BaseCommand):
             if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
                 # This is an overwrite install; destroy the old db
                 dest_file = tempfile.mkstemp()[1]
-                print(
-                    "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
+                logger.info(
+                    "(Re)moving database file to temp location, starting "
+                    "clean install. Recovery location: {recovery:s}".format(
+                        recovery=dest_file
+                    )
+                )
                 shutil.move(database_file, dest_file)
 
         if settings.DB_TEMPLATE_DEFAULT and not database_exists and os.path.exists(settings.DB_TEMPLATE_DEFAULT):
-            print("Copying database file from {0} to {1}".format(
-                settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
+            logger.info(
+                "Copying database file from {0} to {1}".format(
+                    settings.DB_TEMPLATE_DEFAULT,
+                    settings.DEFAULT_DATABASE_PATH
+                )
+            )
             shutil.copy(
                 settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
-            print(
-                "Baking a fresh database from scratch or upgrading existing database.")
+            logger.info(
+                "Baking a fresh database from scratch or upgrading existing "
+                "database."
+            )
             call_command(
                 "syncdb", interactive=False, verbosity=options.get("verbosity"))
             call_command(
@@ -435,7 +438,7 @@ class Command(BaseCommand):
         # is required for tests, and does not apply to the central server.
         if options.get("no-assessment-items", False):
 
-            logging.warning(
+            logger.warning(
                 "Skipping content pack downloading and configuration.")
 
         else:
@@ -467,7 +470,7 @@ class Command(BaseCommand):
             admin.save()
 
         # Now deploy the static files
-        logging.info("Copying static media...")
+        logger.info("Copying static media...")
         ensure_dir(settings.STATIC_ROOT)
 
         call_command("collectstatic", interactive=False, verbosity=0, clear=True)
@@ -483,22 +486,34 @@ class Command(BaseCommand):
                 start_script_path = None
 
             # Run annotate_content_items, on the distributed server.
-            print("Annotating availability of all content, checking for content in this directory: (%s)" %
-                  settings.CONTENT_ROOT)
+            logger.info(
+                "Annotating availability of all content, checking for content "
+                "in this directory: {content_root:s}".format(
+                    content_root=settings.CONTENT_ROOT
+                )
+            )
             try:
                 call_command("annotate_content_items")
             except OperationalError:
                 pass
 
             # done; notify the user.
-            print(
-                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
-            print(
-                "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            logger.info(
+                "\nCONGRATULATIONS! You've finished setting up the KA Lite "
+                "server software."
+            )
+            logger.info(
+                "You can now start KA Lite with the following command:"
+                "\n\n"
+                "    {kalite_cmd} start"
+                "\n\n".format(
+                    kalite_cmd=start_script_path
+                )
+            )
 
             if options['interactive'] and start_script_path:
                 if raw_input_yn("Do you wish to start the server now?"):
-                    print("Running {0} start".format(start_script_path))
+                    logger.info("Running {0} start".format(start_script_path))
                     p = subprocess.Popen(
                         [start_script_path, "start"], env=os.environ)
                     p.wait()
