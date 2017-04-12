@@ -16,6 +16,13 @@ CHERRYPY_PORT = HTTP_PORT
 # benjaoming: We need to somehow get rid of this as it's discouraged
 # http://stackoverflow.com/questions/3828723/why-we-need-sys-setdefaultencodingutf-8-in-a-py-script
 # http://ziade.org/2008/01/08/syssetdefaultencoding-is-evil/
+
+# benjaoming: If we manage to establish that our usage of JSON files has
+# dropped enough, we can get rid of this and stop worrying about memory
+# issues.
+
+# See:
+# https://github.com/learningequality/ka-lite/issues/3434
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:

@@ -318,12 +318,16 @@ var SidebarView = BaseView.extend({
             var sidebarPanelPosition = this.sidebar.position();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
+            // prevent underneath window from scrolling when scroll on sidebar.
+            $('body').css('overflow','hidden');
         } else {
             // In an edge case, this.width may be undefined -- if so, then just make sure a sufficiently high
             // numerical value is set to hide the sidebar
             this.sidebar.css({left: -(this.width || $(window).width())});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
+            // enable window scrolling when sidebar is hidden.
+            $('body').css('overflow','auto');
         }
     }, 100),
 

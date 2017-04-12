@@ -42,14 +42,14 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
         if (
                 not os.path.isfile(filepath) or
                 "content-length" not in response.headers or
-                not len(open(filepath, "rb").read()) == int(response.headers['content-length'])):
+                not os.path.getsize(filepath) == int(response.headers['content-length'])):
             raise URLNotFound("Video was not found, tried: {}".format(url))
 
         response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
         if (
                 not os.path.isfile(thumb_filepath) or
                 "content-length" not in response.headers or
-                not len(open(thumb_filepath, "rb").read()) == int(response.headers['content-length'])):
+                not os.path.getsize(thumb_filepath) == int(response.headers['content-length'])):
             raise URLNotFound("Thumbnail was not found, tried: {}".format(thumb_url))
 
     except DownloadCancelled:

@@ -38,6 +38,10 @@ var TimeSetView = BaseView.extend({
             "start_date": default_start_date,
             "end_date": server_date_now
         });
+        
+        // Bad architecture:
+        // Store a single instance of this.model to be accessed by tabular_reports.views
+        $("html").data("main_coachreport_model", this.model);
         this.render();
     },
 

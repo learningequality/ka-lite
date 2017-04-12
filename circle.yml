@@ -17,7 +17,8 @@ test:
     - sudo mv geckodriver /home/ubuntu/bin
     - export PATH="$PATH:/home/ubuntu/bin"
   override:
-    - make assets
+    - make assets:
+        parallel: true
     - make docs
     - kalite start --traceback -v2
     - sleep 6s  # Necessary for server to be ready
@@ -25,7 +26,6 @@ test:
     - kalite stop --traceback -v2
     - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*,kalite/packages/*" bin/kalite manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,kalite/packages/*,*/tests/*,*/migrations/*" bin/kalite manage test --no-bdd;; esac:
         parallel: true
-    # TODO: replace below with "make lint" when we're pep8
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:

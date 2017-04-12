@@ -87,7 +87,7 @@ def get_options():
     option_info = {"--behave_browser": True}
 
     for fixed, keywords in options:
-        # Look for the long version of this option
+        # Look for the long      of this option
         long_option = None
         for option in fixed:
             if option.startswith("--"):
@@ -170,7 +170,12 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # Output Firefox version, needed to understand Selenium compatibility
         # issues
         browser = webdriver.Firefox()
-        logging.info("Successfully setup Firefox {0}".format(browser.capabilities['version']))
+        browser_version = getattr(
+            browser.capabilities,
+            'browserVersion',  # Selenium 3+
+            browser.capabilities.get('version', None)  # Selenium 2
+        )
+        logging.info("Successfully setup Firefox {0}".format(browser_version))
         browser.quit()
 
         if not database_exists() or os.path.getsize(database_path()) < 1024 * 1024:
