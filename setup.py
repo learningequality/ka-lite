@@ -401,6 +401,20 @@ if os.listdir(STATIC_DIST_PACKAGES):
         gen_data_files('dist-packages')
     )
 
+import fcntl
+
+def make_blocking(fd):
+    flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+    if flags & os.O_NONBLOCK:
+        sys.stderr.write("Setting to blocking...\n")
+        fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+    else:
+        sys.stderr.write("Already blocking...\n")
+    sys.stderr.flush()
+
+make_blocking(sys.stdout.fileno())
+make_blocking(sys.stderr.fileno())
+
 setup(
     name=DIST_NAME,
     version=kalite.VERSION,
