@@ -46,6 +46,43 @@ class ContentItemApiViewTestCase(KALiteClientTestCase):
         self.assertDictEqual(actual, self.expected)
 
 
+
+class ContentItemApiViewTestCase(KALiteClientTestCase):
+    def test_sanity(self):
+        resp = self.client.get(reverse('content_item', kwargs={
+            'channel': 'khan',
+            'content_id': 'subtraction_1',
+        }))
+        expected = json.loads('{"available": true, "kind": "Exercise", "description": "Subtract small numbers. All answers are four or less.", "parent": {}, "title": "Subtraction within five", "extra_fields": "{\\\"curated_related_videos\\\":[\\\"x2fefc435\\\"],\\\"display_name\\\":\\\"Subtraction within five\\\",\\\"prerequisites\\\":[\\\"addition_1\\\"],\\\"uses_assessment_items\\\":false,\\\"file_name\\\":\\\"subtraction_1.html\\\",\\\"all_assessment_items\\\":[],\\\"name\\\":\\\"subtraction_1\\\"}", "youtube_id": null, "messages": [], "slug": "subtraction_1", "files_complete": 0, "total_files": 0, "pk": 31, "path": "khan/math/arithmetic/addition-subtraction/basic_addition/subtraction_1/", "size_on_disk": 0, "sort_order": 0.0, "id": "subtraction_1", "remote_size": 0}')  # noqa
+        self.assertDictEqual(json.loads(resp.content), expected)
+
+    def test_template_key_not_in_extra_fields(self):
+        """
+        A regression test -- hard to test the JS, but at least we can assert which keys we expect to find and which
+        we do not.
+        """
+        resp = self.client.get(reverse('content_item', kwargs={
+            'channel': 'khan',
+            'content_id': 'subtraction_1',
+        }))
+        resp_dict = json.loads(resp.content)
+        extra_fields = json.loads(resp_dict['extra_fields'])
+        self.assertNotIn('template', extra_fields)
+
+    def test_file_name_key_in_extra_fields(self):
+        """
+        A regression test -- hard to test the JS, but at least we can assert which keys we expect to find and which
+        we do not.
+        """
+        resp = self.client.get(reverse('content_item', kwargs={
+            'channel': 'khan',
+            'content_id': 'subtraction_1',
+        }))
+        resp_dict = json.loads(resp.content)
+        extra_fields = json.loads(resp_dict['extra_fields'])
+        self.assertIn('file_name', extra_fields)
+
+
 class TestSaveExerciseLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 37

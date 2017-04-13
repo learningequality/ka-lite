@@ -107,6 +107,19 @@ class FacilityUserResource(ModelResource):
                     'success': True,
                     'redirect': reverse("zone_redirect")
                     })
+        
+        #check if user logging in as Django user
+        DjangoUser = User.objects.filter(username=username).exists()
+        
+        #check if wrong password was entered for Django user
+        if  DjangoUser :
+            error_message = _("Password was incorrect. Please try again.")
+            return self.create_response(request, {
+                'messages': {'error': error_message},
+                'error_highlight': "password"
+                }, HttpUnauthorized )
+
+        users = FacilityUser.objects.filter(username=username, facility=facility)
 
         # Find all matching users
         users = FacilityUser.objects.filter(username=username, facility=facility)
