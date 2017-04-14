@@ -29,4 +29,5 @@ test:
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:
-    - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash):
+        parallel: true
