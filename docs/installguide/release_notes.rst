@@ -38,6 +38,13 @@ Code cleanup
  * Remove ``PROJECT_PATH`` from ``kalite.settings.base`` (it wasn't a configurable setting). :url-issue:`4104`
  * Make tests run on Selenium 3.3+ and geckodriver 0.15 (Firefox) :url-issue:`5429`
 
+
+Installers
+^^^^^^^^^^
+
+ * Nginx configuration in ``ka-lite-raspberry-pi`` served wrong static item path :url-issue:`5430` (also fixed in latest 0.17.0 build, 0.17.0-0ubuntu3)
+
+
 0.17.0
 ------
 
