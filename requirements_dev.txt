@@ -6,6 +6,7 @@ django-extensions==1.5.9  # Found in installed apps in kalite.project.settings.d
 sqlparse<0.2
 pep8
 sphinx
+sphinx_rtd_theme
 #cli2man
 polib # used for our own makemessages
 xlrd # used for management command convert_xls_to_items
