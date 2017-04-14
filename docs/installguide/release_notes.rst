@@ -22,6 +22,8 @@ Bug fixes
  * Print server address after ``kalite start`` :url-issue:`5441`
  * Log everything from automatic initialization in ``kalite start`` and ``kalite manage setup`` :url-issue:`5408`
  * Remove unused Django package installed in ``kalite/packages/dist`` :url-issue:`5419`
+ * Add line breaks in buttons so text isn't cut :url-issue:`5004`
+
 
 Known issues
 ^^^^^^^^^^^^

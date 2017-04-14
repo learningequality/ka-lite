@@ -334,7 +334,7 @@ def get_pid():
 
     listen_port = port or DEFAULT_LISTEN_PORT
 
-    # Timeout is 1 second, we don't want the status command to be slow
+    # Timeout is 3 seconds, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
     try:
         conn.request("GET", PING_URL)
