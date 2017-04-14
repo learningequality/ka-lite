@@ -21,6 +21,7 @@ Bug fixes
  * Do not load video into memory to check its size, just use disk stats :url-issue:`2909`
  * Print server address after ``kalite start`` :url-issue:`5441`
  * Log everything from automatic initialization in ``kalite start`` and ``kalite manage setup`` :url-issue:`5408`
+ * Remove unused Django package installed in ``kalite/packages/dist`` :url-issue:`5419`
 
 Known issues
 ^^^^^^^^^^^^
