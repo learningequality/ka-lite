@@ -37,6 +37,7 @@ Code cleanup
 
  * Remove ``PROJECT_PATH`` from ``kalite.settings.base`` (it wasn't a configurable setting). :url-issue:`4104`
  * Make tests run on Selenium 3.3+ and geckodriver 0.15 (Firefox) :url-issue:`5429`
+ * Fixed an issue in code coverage, added tests for CLI, coverage is now at >61% :url-issue:`5445`
 
 
 Installers
