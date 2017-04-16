@@ -33,7 +33,7 @@ class SessionIdleTimeout:
                         response = HttpResponse(status=401)
                     else:
                         # Redirect to the login page if session has timed-out.
-                        redirect_to = reverse('login')
+                        redirect_to = request.path + "?login"
                         response = HttpResponseRedirect(redirect_to)
                     return response
                 else:

@@ -59,22 +59,94 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: STATUS_URL,
+    url: USER_URL + "status/",
 
     initialize: function() {
 
         _.bindAll(this);
 
+        this.load_status();
+    },
+
+    load_status: function() {
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
         this.loaded = this.fetch();
 
         this.loaded.then(this.after_loading);
-
     },
 
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.
         return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+    },
+
+    login: function(username, password, facility, callback) {
+        /**
+        * login method for StatusModel
+        *
+        * @method login
+        * @param {String} username Username to login with
+        * @param {String} password Password with with to login
+        * @param {String} facility The id of the facility object to which the facility user belongs
+        * @param {Function} callback A callback function
+        * Add a callback to allow functions calling this method to
+        * the login - failure, success, and particular errors that can be noted on the UI (such as incorrect username)
+        */
+
+        var self = this;
+
+        data = {
+            username: username || "",
+            password: password || "",
+            facility: facility || ""
+        };
+
+        $.ajax({
+            url: USER_URL + "login/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(data),
+            // Use partial to pass the callback argument to the success and fail functions.
+            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
+            fail: _.partial(self.handle_login_logout_error, _, callback)
+        });
+    },
+
+    logout: function(callback) {
+        var self = this;
+
+        $.ajax({
+            url: USER_URL + "logout/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'GET',
+            // Use partial to pass the callback argument to the success and fail functions.
+            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
+            fail: _.partial(self.handle_login_logout_error, _, callback)
+        });
+    },
+
+    handle_login_logout_success: function(data, status, response, callback) {
+        if (data.redirect) {
+            window.location = data.redirect;
+        } else {
+            // TODO (rtibbles) Reinstate the code below once
+            // the front end app responds better to statusModel changes
+            window.location.reload();
+            // self.load_status();
+            // if (callback) {
+            //     callback(response);
+            // }
+        }
+    },
+
+    handle_login_logout_error: function(response, callback) {
+        if (callback) {
+            callback(response);
+        } else {
+            handleFailedAPI(response);
+        }
     },
 
     after_loading: function() {
@@ -111,61 +183,6 @@ var StatusModel = Backbone.Model.extend({
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
 window.statusModel = new StatusModel();
 
-
-/**
- * View that wraps the point display in the top-right corner of the screen, updating itself when points change.
- */
-var TotalPointView = Backbone.View.extend({
-
-    initialize: function() {
-        _.bindAll(this);
-        this.model.bind("change:points", this.render);
-        this.render();
-    },
-
-    render: function() {
-
-        var points = this.model.get("points");
-        var message = null;
-
-        // only display the points if they are greater than zero, and the user is logged in
-        if (!this.model.get("is_logged_in")) {
-            return;
-        }
-
-        message = sprintf(gettext("Points: %(points)d "), { points : points });
-        if (ds.store.show_store_link_once_points_earned) {
-            message += " | <a href='/store/'>Store!</a>";
-        }
-
-        this.$el.html(message);
-        this.$el.show();
-    }
-
-});
-
-var UsernameView = Backbone.View.extend({
-
-    initialize: function() {
-        this.listenTo(this.model, "change:username", this.render);
-        this.render();
-    },
-
-    render: function() {
-
-        var username_span = this.model.get("username");
-
-        // only display the points if they are greater than zero, and the user is logged in
-        if (!this.model.get("is_logged_in")) {
-            return;
-        }
-
-        this.$el.html(username_span);
-        this.$el.show();
-    }
-
-});
-
 function sanitize_string(input_string) {
     return $('<div/>').text(input_string).html();
 }
@@ -173,12 +190,7 @@ function sanitize_string(input_string) {
 // Related to showing elements on screen
 $(function(){
 
-    // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var usernameView = new UsernameView({model: statusModel, el: "#username"});
-    var totalPointView = new TotalPointView({model: statusModel, el: "#points"});
-
-    // For mobile (Bootstrap xs) view
-    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#points-xs"});
+    window.userView = new UserView({model: statusModel, el: "#user-name"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {

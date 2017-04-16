@@ -50,7 +50,7 @@ window.SidebarView = BaseView.extend({
 
     events: {
         "click .sidebar-tab": "toggle_sidebar",
-        "click .fade": "check_external_click",
+        "click .sidebar-fade": "check_external_click",
         "click .sidebar-back": "sidebar_back_one_level"
     },
 
@@ -202,13 +202,11 @@ window.SidebarView = BaseView.extend({
             this.sidebar.css({left: 0});
             this.resize_sidebar();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
-            this.$(".fade").show();
-        }
-
-        else {
+            this.$(".sidebar-fade").show();
+        } else {
             this.sidebar.css({left: - this.width});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
-            this.$(".fade").hide();
+            this.$(".sidebar-fade").hide();
         }
 
         this.set_sidebar_back();
