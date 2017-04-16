@@ -1,5 +1,4 @@
 import StringIO
-import json
 import requests
 import os
 import urlparse

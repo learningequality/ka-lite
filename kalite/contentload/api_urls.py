@@ -1,6 +1,6 @@
 """
 """
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns(__package__ + '.api_views',

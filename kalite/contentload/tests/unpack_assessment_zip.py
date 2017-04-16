@@ -9,7 +9,7 @@ from mock import patch, MagicMock, mock_open
 from django.conf import settings
 from django.core.management import call_command
 
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
 

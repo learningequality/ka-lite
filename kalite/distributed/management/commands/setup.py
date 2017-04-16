@@ -30,12 +30,10 @@ from django.core.management.base import BaseCommand, CommandError
 import kalite
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
 from kalite.facility.models import Facility
-from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
-from securesync.models import Zone, Device
+from securesync.models import Device
 
 
 def raw_input_yn(prompt):
@@ -314,25 +312,6 @@ class Command(BaseCommand):
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
         if not Facility.objects.count():
             Facility.initialize_default_facility()
-
-        # Install data
-        # if install_clean:
-        #     # Create device, load on any zone data
-        #     call_command("generatekeys", verbosity=options.get("verbosity"))
-        #     call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
-        #     Facility.initialize_default_facility()
-
-        #else:
-            # Device exists; load data if required.
-            #
-            # Hackish, as this duplicates code from initdevice.
-            #
-            #if os.path.exists(InitCommand.data_json_file):
-            #    # This is a pathway to install zone-based data on a software upgrade.
-            #    print("Loading zone data from '%s'\n" % InitCommand.data_json_file)
-            #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
-
-        #    confirm_or_generate_zone()
 
         # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser

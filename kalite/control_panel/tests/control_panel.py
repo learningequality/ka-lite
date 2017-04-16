@@ -6,9 +6,13 @@ from django.test.utils import override_settings
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin
 
-from selenium.webdriver.common.by import By
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
+
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait

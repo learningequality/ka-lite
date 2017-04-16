@@ -1,19 +1,13 @@
 """
 """
 import os
-import random
-import re
 
 from django.conf import settings
 from django.core.management import call_command
-from django.core.management.base import CommandError
 from django.utils import unittest
 
 from ..models import VideoFile
-from fle_utils.django_utils import call_command_with_output
-from kalite import caching, topic_tools
 from kalite.main.tests.base import MainTestCase  # TODO: remove this dependency
-from kalite.testing.client import KALiteClient
 
 
 @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")

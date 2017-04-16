@@ -1,4 +1,4 @@
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 from kalite.caching import initialize_content_caches
 
 

@@ -11,7 +11,7 @@ import hashlib
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management.base import NoArgsCommand, CommandError
+from django.core.management.base import NoArgsCommand
 from django.utils.text import slugify
 
 from kalite import topic_tools

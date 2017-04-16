@@ -3,7 +3,7 @@ import os
 from django.db import models
 from django.conf import settings
 
-from fle_utils.django_utils import ExtendedModel
+from fle_utils.django_utils.classes import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache

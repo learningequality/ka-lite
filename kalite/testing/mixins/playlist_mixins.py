@@ -1,4 +1,4 @@
-from kalite.main.models import VideoLog, ExerciseLog
+from kalite.main.models import ExerciseLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
 
 

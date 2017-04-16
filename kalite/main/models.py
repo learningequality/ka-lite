@@ -5,13 +5,11 @@ All models associated with user learning / usage, including:
 """
 import random
 import uuid
-from annoying.functions import get_object_or_None
 from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
 from django.conf import settings; logging = settings.LOG
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -19,12 +17,12 @@ from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-from fle_utils.django_utils import ExtendedModel
+from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
-from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
+from securesync.models import DeferredCountSyncedModel, Device
 
 
 class VideoLog(DeferredCountSyncedModel):

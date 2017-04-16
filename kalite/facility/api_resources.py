@@ -1,4 +1,3 @@
-from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 
 from .api_authorizations import TeacherOrAdminCanReadWrite

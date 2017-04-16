@@ -1,11 +1,8 @@
 import json
 
 from django.core.urlresolvers import reverse
-from tastypie.exceptions import Unauthorized
 
-from kalite.testing import KALiteClient, KALiteTestCase
-from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins
-
+from kalite.testing.base import KALiteTestCase
 
 class TestGetTopicTree(KALiteTestCase):
 

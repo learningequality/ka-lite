@@ -18,11 +18,9 @@ import os
 import re
 import json
 import copy
-from functools import partial
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import softload_json, json_ascii_decoder

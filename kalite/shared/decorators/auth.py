@@ -1,19 +1,12 @@
 """
 """
 from annoying.functions import get_object_or_None
-from functools import partial
 
 from django.conf import settings
-from django.contrib import messages
-from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from fle_utils.internet import JsonResponse, JsonpResponse
 from kalite.facility.decorators import facility_from_request
 from kalite.facility.models import FacilityUser
 from securesync.models import Device, Zone

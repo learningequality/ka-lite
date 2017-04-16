@@ -4,7 +4,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 class TestShowAjaxMessages(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):

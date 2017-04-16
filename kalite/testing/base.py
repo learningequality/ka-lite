@@ -11,7 +11,7 @@ from django.test import TestCase, LiveServerTestCase
 
 from .browser import setup_browser
 from .client import KALiteClient
-from .mixins import CreateDeviceMixin
+from .mixins.securesync_mixins import CreateDeviceMixin
 
 
 class KALiteTestCase(CreateDeviceMixin, TestCase):

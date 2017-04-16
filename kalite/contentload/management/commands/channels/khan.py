@@ -1,6 +1,5 @@
 import base
 import os
-import re
 import json
 import requests
 import threading

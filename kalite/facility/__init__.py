@@ -1,5 +1,3 @@
-from django.utils.translation import ugettext as _
-
 from .models import Facility, FacilityGroup, FacilityUser
 
 def get_accessible_objects_from_logged_in_user(request, facility):

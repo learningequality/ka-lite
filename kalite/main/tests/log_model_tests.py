@@ -3,7 +3,7 @@ from django.utils import unittest
 from ..models import VideoLog, ExerciseLog
 from kalite import i18n
 from kalite.facility.models import Facility, FacilityUser
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class TestExerciseLogs(KALiteTestCase):

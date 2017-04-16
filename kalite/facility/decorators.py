@@ -6,22 +6,17 @@ these models use the machinery of engine and devices, they are simply data.
 import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from functools import partial
 
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.safestring import mark_safe
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from .middleware import refresh_session_facility_info
 from .models import Facility
 from fle_utils.config.models import Settings
-from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
 
 

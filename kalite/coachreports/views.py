@@ -1,4 +1,3 @@
-import re
 from annoying.decorators import render_to
 from ast import literal_eval
 from collections_local_copy import OrderedDict
@@ -24,7 +23,7 @@ from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.i18n import lcode_to_django_lang
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
-from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.shared.decorators.auth import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog

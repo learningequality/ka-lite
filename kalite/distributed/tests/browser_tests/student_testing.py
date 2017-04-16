@@ -15,7 +15,8 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.student_testing.models import TestLog
 from kalite.student_testing.settings import STUDENT_TESTING_DATA_PATH
 from kalite.student_testing.utils import set_exam_mode_on

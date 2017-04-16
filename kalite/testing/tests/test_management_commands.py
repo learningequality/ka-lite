@@ -4,9 +4,9 @@ import importlib
 from django.core.management.base import CommandError
 from django.utils import unittest
 
-from fle_utils.django_utils import call_command_with_output
+from fle_utils.django_utils.command import call_command_with_output
 from kalite.facility.models import Facility
-from kalite.testing.mixins import CreateDeviceMixin
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class ModelCreationCommandTests(CreateDeviceMixin, unittest.TestCase):

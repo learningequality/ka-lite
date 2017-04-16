@@ -2,12 +2,10 @@ from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 
 from django.conf.urls import url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
 
 from .models import StoreItem, StoreTransactionLog
 
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
 

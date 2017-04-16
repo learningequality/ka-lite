@@ -1,11 +1,9 @@
 """
 """
-from datetime import datetime
 
 from ..models import ContentLog
-from kalite import i18n
 from kalite.facility.models import Facility, FacilityUser
-from kalite.testing import KALiteClient, KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class TestSaveContentLog(KALiteTestCase):

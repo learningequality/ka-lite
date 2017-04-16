@@ -11,7 +11,7 @@ from securesync.models import DeferredCountSyncedModel
 from kalite.facility.models import FacilityUser
 
 from .settings import STUDENT_TESTING_DATA_PATH
-from .utils import get_exam_mode_on, set_exam_mode_on
+from .utils import get_exam_mode_on
 
 # class Test(ExtendedModel):
 #   # ids is a JSON serialized list of ids that make up the test.

@@ -1,2 +1,6 @@
-from fle_utils.importing import import_all_child_modules
-import_all_child_modules()
+from api_tests import *
+from availability_tests import *
+from base import *
+from class_tests import *
+from command_tests import *
+from unicode_tests import *

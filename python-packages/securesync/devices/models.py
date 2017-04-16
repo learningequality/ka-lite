@@ -18,7 +18,8 @@ from .. import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
 from .. import crypto
 from ..engine.models import SyncedModel, SyncedModelManager
 from fle_utils.general import get_host_name
-from fle_utils.django_utils import validate_via_booleans, ExtendedModel
+from fle_utils.django_utils.debugging import validate_via_booleans
+from fle_utils.django_utils.classes import ExtendedModel
 
 
 class RegisteredDevicePublicKey(ExtendedModel):

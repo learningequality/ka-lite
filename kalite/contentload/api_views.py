@@ -19,26 +19,19 @@ Here's how it works:
 * The distributed server gets that data, loads it, saves it, and then redirects the user--to their account page.
 * The account page shows again, this time including the imported KA data
 """
-import datetime
 import json
-import oauth
-import os
-import requests
-import sys
-import time
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
-from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
+from fle_utils.internet.classes import JsonResponseMessageError, JsonResponseMessageSuccess
+from fle_utils.internet.functions import set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.shared.decorators import require_login
+from kalite.shared.decorators.auth import require_login
 from kalite.topic_tools import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)

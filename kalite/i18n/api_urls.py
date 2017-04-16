@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns(__package__ + '.api_views',

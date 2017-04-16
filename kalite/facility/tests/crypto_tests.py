@@ -1,11 +1,9 @@
 """
 """
-import re
-
 from django.conf import settings
 from django.utils import unittest
 
-from ..models import Facility, FacilityUser, FacilityGroup
+from ..models import FacilityUser
 
 
 class TestPasswordSetting(unittest.TestCase):

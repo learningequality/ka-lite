@@ -1,6 +1,6 @@
 from django.db import models
 
-from fle_utils.django_utils import ExtendedModel
+from fle_utils.django_utils.classes import ExtendedModel
 
 
 class FeedListing(ExtendedModel):

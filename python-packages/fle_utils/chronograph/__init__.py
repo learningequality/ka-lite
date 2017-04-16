@@ -4,7 +4,7 @@ Django app for scheduled jobs, python-style!
 from datetime import datetime
 
 from .models import Job
-from fle_utils.django_utils import call_command_async
+from fle_utils.django_utils.command import call_command_async
 
 
 def force_job(command, name="", frequency="YEARLY", stop=False, **kwargs):

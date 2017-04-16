@@ -2,16 +2,14 @@
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import json
 import os
 import re
 import requests
 import shutil
-from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog

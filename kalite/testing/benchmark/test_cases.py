@@ -45,13 +45,10 @@ from django.conf import settings; logging = settings.LOG
 from django.core import management
 from django.db import transaction
 from selenium.webdriver.support import expected_conditions, ui
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from . import base
-from ..browser import BrowserTestCase
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
 from kalite.topic_tools import get_node_cache

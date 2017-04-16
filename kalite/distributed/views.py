@@ -20,9 +20,11 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from fle_utils.internet import JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
+from fle_utils.internet.classes import JsonResponseMessageError
+from fle_utils.internet.functions import get_ip_addresses, set_query_params
+from fle_utils.internet.webcache import backend_cache_page
 from kalite import topic_tools
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 

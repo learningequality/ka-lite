@@ -3,11 +3,11 @@ These use a web-browser, along with selenium, to simulate user actions.
 """
 import time
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.topic_tools import get_node_cache
 from kalite.student_testing.utils import set_current_unit_settings_value
 

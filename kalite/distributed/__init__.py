@@ -14,7 +14,6 @@ The following apps are imported and used by the distributed app:
 * updates - for dynamic updating of content, resources, and the server software.
 """
 import mimetypes
-import os
 import sys
 
 from django.conf import settings

@@ -12,7 +12,7 @@ from django.utils import unittest
 from .base import SecuresyncTestCase
 from .. import crypto
 from ..models import Device
-from fle_utils.django_utils import call_command_with_output
+from fle_utils.django_utils.command import call_command_with_output
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from securesync import crypto
 from securesync.models import Device, Zone, DeviceZone
