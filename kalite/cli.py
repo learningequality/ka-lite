@@ -123,7 +123,7 @@ os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
 # Where to store user data
 KALITE_HOME = os.environ["KALITE_HOME"]
-SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
+DAEMON_LOG = os.path.join(KALITE_HOME, "server.log")
 
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
@@ -493,11 +493,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         from django.utils.daemonize import become_daemon
         kwargs = {}
         # Truncate the file
-        open(SERVER_LOG, "w").truncate()
-        print("Going to daemon mode, logging to {0}\n".format(SERVER_LOG))
+        open(DAEMON_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}\n".format(DAEMON_LOG))
         print_server_address(port)
-        kwargs['out_log'] = SERVER_LOG
-        kwargs['err_log'] = SERVER_LOG
+        kwargs['out_log'] = DAEMON_LOG
+        kwargs['err_log'] = DAEMON_LOG
         become_daemon(**kwargs)
         # Write the new PID
         with open(PID_FILE, 'w') as f:
@@ -665,7 +665,7 @@ status.codes = {
     STATUS_STOPPED: 'Stopped',
     STATUS_STARTING_UP: 'Starting up',
     STATUS_NOT_RESPONDING: 'Not responding',
-    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(SERVER_LOG),
+    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(DAEMON_LOG),
     STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
     STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
     STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',

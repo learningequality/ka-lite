@@ -25,6 +25,12 @@ Bug fixes
  * Add line breaks in buttons so text isn't cut :url-issue:`5004`
 
 
+New features
+^^^^^^^^^^^^
+
+ * Log rotation: Logs for 30 days are now stored in ``~/.kalite/logs`` :url-issue:`4890`
+
+
 Known issues
 ^^^^^^^^^^^^
 
