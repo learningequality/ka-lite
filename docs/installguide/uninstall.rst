@@ -26,7 +26,7 @@ Option 2:
 1. Open Terminal.
 2. Type ``bash /Applications/KA-Lite/KA-Lite_Uninstall.tool`` in your Terminal and press Enter.
 3. It will confirm if you want to keep or delete your KA Lite data folder.
-4. To confirm the uninstallation it will ask for you password, type your password and press enter.
+4. Another dialog will appear asking your ``Password``, type your password then click on ``Ok`` button.
 
 
 Linux: Debian/Ubuntu
