@@ -13,7 +13,7 @@ _______
 
 Option 1:
 
-1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+1. Launch ``KA-Lite`` from your ``Applications`` folder.
 2. Click on the app icon at the menu bar.
 3. Click on ``Preferences`` in the menu option.
 4. Click the ``Uninstall KA Lite`` from the ``Preferences`` tab.
