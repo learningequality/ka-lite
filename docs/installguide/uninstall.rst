@@ -45,7 +45,6 @@ __________________
 You can remove KA Lite (when installed from pip or source distribution) with
 ``pip uninstall ka-lite`` or ``pip uninstall ka-lite-static`` (static version).
 
-333
 Removing user data
 __________________
 
