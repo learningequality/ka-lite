@@ -19,7 +19,6 @@ Uninstallation from user interface
 3. Click on ``Preferences`` in the menu option.
 4. Click the ``Uninstall KA Lite`` from the ``Preferences`` tab.
 5. A confirmation dialogue will appear, followed by a dialogue asking for your local administrator password. After confirming these steps, KA Lite will be uninstalled.
-6. Another dialog will appear asking your ``Password``, type your password then click on ``Ok`` button.
 
 Uninstallation from command line
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
