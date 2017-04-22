@@ -11,14 +11,22 @@ _______
 Mac OSX
 _______
 
-1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+Uninstallation from user interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Launch ``KA-Lite`` from your ``Applications`` folder.
 2. Click on the app icon at the menu bar.
 3. Click on ``Preferences`` in the menu option.
-4. Click the ``Reset App`` from the ``Advanced`` tab.
-5. You will be prompted that "This will reset app. Are you sure?", just click on ``OK`` button.
-6. Another dialog will appear asking your ``Password``, type your password then click on ``Ok`` button.
-7. Quit the ``KA-Lite Monitor`` app (do not click the ``Apply`` button!).
-8. Move the ``KA-Lite Monitor`` app to ``Trash``.
+4. Click the ``Uninstall KA Lite`` from the ``Preferences`` tab.
+5. A confirmation dialogue will appear, followed by a dialogue asking for your local administrator password. After confirming these steps, KA Lite will be uninstalled.
+
+Uninstallation from command line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Open Terminal.
+2. Type ``bash /Applications/KA-Lite/KA-Lite_Uninstall.tool`` in your Terminal and press Enter.
+3. You will be prompted to choose to keep or delete your data folder.
+4. Another dialog will appear asking your ``Password``, type your password then click on ``Ok`` button.
 
 
 Linux: Debian/Ubuntu
@@ -36,7 +44,6 @@ __________________
 
 You can remove KA Lite (when installed from pip or source distribution) with
 ``pip uninstall ka-lite`` or ``pip uninstall ka-lite-static`` (static version).
-
 
 Removing user data
 __________________
