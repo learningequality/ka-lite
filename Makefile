@@ -104,10 +104,16 @@ sdist: clean docs assets
 	# so we should delete those...
 	make clean-pyc
 	python setup.py sdist --formats=$(format) --static
+	python setup.py sdist --formats=$(format)
 
 dist: clean docs assets
+	# Building assets currently creates pyc files in the source dirs,
+	# so we should delete those...
+	make clean-pyc
+	python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
-	python setup.py bdist_wheel --static  # --no-clean
+	python setup.py sdist --formats=$(format) --static
+	python setup.py bdist_wheel --static  --no-clean
 	ls -l dist
 
 install: clean
