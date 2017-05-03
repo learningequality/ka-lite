@@ -9,8 +9,8 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
-0.17.1r1
---------
+0.17.1
+------
 
 Bug fixes
 ^^^^^^^^^
@@ -31,6 +31,15 @@ New features
  * Log rotation: Logs for 30 days are now stored in ``~/.kalite/logs`` :url-issue:`4890`
 
 
+Installers
+^^^^^^^^^^
+
+ * **Raspberry Pi** Nginx configuration in ``ka-lite-raspberry-pi`` served wrong static item path :url-issue:`5430` (also fixed in latest 0.17.0 build, 0.17.0-0ubuntu3)
+ * **Mac/OSX** solved 100% CPU usage issue `ka-lite-installers#447 <https://github.com/learningequality/ka-lite-installers/pull/447>`_
+ * **Mac/OSX** correctly display KA Lite's version number `ka-lite-installers#448 <https://github.com/learningequality/ka-lite-installers/pull/448>`_
+ * **Debian/Ubuntu/Raspberry Pi** (all packages) correctly adds system.d startup service - solves KA Lite not starting at boot `ka-lite-installers#440 <https://github.com/learningequality/ka-lite-installers/pull/440>`_
+
+
 Known issues
 ^^^^^^^^^^^^
 
@@ -47,12 +56,6 @@ Code cleanup
  * Remove ``PROJECT_PATH`` from ``kalite.settings.base`` (it wasn't a configurable setting). :url-issue:`4104`
  * Make tests run on Selenium 3.3+ and geckodriver 0.15 (Firefox) :url-issue:`5429`
  * Fixed an issue in code coverage, added tests for CLI, coverage is now at >61% :url-issue:`5445`
-
-
-Installers
-^^^^^^^^^^
-
- * Nginx configuration in ``ka-lite-raspberry-pi`` served wrong static item path :url-issue:`5430` (also fixed in latest 0.17.0 build, 0.17.0-0ubuntu3)
 
 
 0.17.0
