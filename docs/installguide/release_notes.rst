@@ -48,6 +48,7 @@ Known issues
  * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
  * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
  * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+ * A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
 
 
 Code cleanup
