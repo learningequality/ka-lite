@@ -19,6 +19,20 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 
+###################################################
+# USER DATA
+###################################################
+
+USER_DATA_ROOT = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
+
+# Ensure that path exists
+if not os.path.exists(USER_DATA_ROOT):
+    os.mkdir(USER_DATA_ROOT)
+
+
 ##############################
 # Basic setup of logging
 ##############################
@@ -29,6 +43,18 @@ LOGGING_LEVEL = logging.INFO
 
 # We should use local module level logging.getLogger
 LOG = logging.getLogger("kalite")
+
+DAEMON_LOG = os.path.join(USER_DATA_ROOT, "server.log")
+
+LOG_ROOT = os.environ.get(
+    "KALITE_LOG_ROOT",
+    os.path.join(USER_DATA_ROOT, "logs")
+)
+
+# Ensure that path exists
+if not os.path.exists(LOG_ROOT):
+    os.mkdir(LOG_ROOT)
+
 
 LOGGING = {
     'version': 1,
@@ -43,6 +69,9 @@ LOGGING = {
         'standard': {
             'format': '[%(levelname)s] [%(asctime)s] %(name)s: %(message)s'
         },
+        'no_format': {
+            'format': '%(message)s'
+        },
     },
     'handlers': {
         'null': {
@@ -54,6 +83,20 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
             'stream': sys.stdout,
+        },
+        'console_no_format': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'no_format',
+            'stream': sys.stdout,
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(LOG_ROOT, 'django.log'),
+            'formatter': 'standard',
+            'when': 'midnight',
+            'backupCount': '30',
         },
     },
     'loggers': {
@@ -68,32 +111,37 @@ LOGGING = {
             'propagate': False,
         },
         'kalite': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'kalite.distributed.management.commands': {
+            'handlers': ['console_no_format', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'fle_utils': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.console': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.access': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.error': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         '': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
@@ -119,12 +167,6 @@ DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 _data_path = ROOT_DATA_PATH
 
-# BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-PROJECT_PATH = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
-
 
 ###################################################
 # CHANNEL and CONTENT DATA
@@ -142,21 +184,12 @@ PROJECT_PATH = os.environ.get(
 
 
 ###################################################
-# USER DATA
+# USER DATA SUB-DIRECTORIES
 ###################################################
 #
 # This is related to data that can be modified by
 # the user running kalite and should be in a user-data
 # storage place.
-
-USER_DATA_ROOT = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
-
-# Ensure that path exists
-if not os.path.exists(USER_DATA_ROOT):
-    os.mkdir(USER_DATA_ROOT)
 
 USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
 KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')

@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'KA Lite'
-copyright = u'%d, Learning Equality' % datetime.now().year
+copyright = u'%d, Learning Equality, licensed under a Creative Commons Attribution-ShareAlike 4.0 International License' % datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

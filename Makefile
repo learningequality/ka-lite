@@ -26,10 +26,10 @@ clean-build:
 	rm -fr dist/
 	rm -rf .kalite_dist_tmp
 	rm -fr .eggs/
-	rm -fr dist-packages/
-	rm -fr dist-packages-temp/
+	rm -fr .pip-temp/
 	rm -fr kalite/database/templates
 	rm -fr kalite/static-libraries/docs
+	find kalite/packages/dist/* -maxdepth 0 -type d -exec rm -fr {} +
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -104,12 +104,16 @@ sdist: clean docs assets
 	# so we should delete those...
 	make clean-pyc
 	python setup.py sdist --formats=$(format) --static
+	python setup.py sdist --formats=$(format)
 
 dist: clean docs assets
-	# python setup.py sdist --formats=$(format)
+	# Building assets currently creates pyc files in the source dirs,
+	# so we should delete those...
+	make clean-pyc
+	python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
-	# python setup.py sdist --formats=$(format) --static
-	python setup.py bdist_wheel --static  # --no-clean
+	python setup.py sdist --formats=$(format) --static
+	python setup.py bdist_wheel --static  --no-clean
 	ls -l dist
 
 install: clean

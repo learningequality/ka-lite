@@ -21,7 +21,7 @@ Installing through pip or with setup.py
 For command line users with access to pip, you can install KA Lite from an
 online source like this::
 
-    $> pip install ka-lite
+    pip install ka-lite
 
 
 Static version
@@ -30,7 +30,7 @@ Static version
 If you need to run KA Lite with static dependencies bundled and isolated from
 the rest of your environment, you can run::
 
-    $> pip install ka-lite-static
+    pip install ka-lite-static
 
 
 Portable tarballs / zip files with setup.py
@@ -43,11 +43,11 @@ To unpack the package for installation, run:
 
 .. parsed-literal::
 
-   $> tar -xf ka-lite-static-|release|.tar.gz
+   tar -xf ka-lite-static-|release|.tar.gz
 
 Once it's unpacked, install it by entering the extracted directory and running::
 
-    $> sudo python setup.py install
+    sudo python setup.py install
 
 Beware that the PyPi sources do not contain assessment items, so you need to
 :url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB)..
@@ -61,7 +61,8 @@ _________________________________________________
 We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
 and if you are connected to the internet, this will also give you automatic updates.
 
-On Ubuntu, do this::
+To add the PPA as a repository on an apt-based system, you need to ensure that a few libraries are present, and then add our repository and the public key that packages are signed with::
+
 
     sudo apt-get install software-properties-common python-software-properties
     sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite.list'
@@ -152,7 +153,7 @@ it may be located somewhere else.
 
 Example of setting up kalite for the www-data user: ::
 
-    $> sudo su -s /bin/bash www-data
-    $> kalite manage setup
-    $> exit
+    sudo su -s /bin/bash www-data
+    kalite manage setup
+    exit
 

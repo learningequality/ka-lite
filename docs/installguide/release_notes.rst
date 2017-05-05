@@ -8,6 +8,57 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+
+0.17.1
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Touch devices: Scroll events drop through to underlying page rather than scrolling long sidebar lists :url-issue:`5407` :url-issue:`5410`
+ * Respect selected date range on tabular coach report :url-issue:`5022`
+ * Correct summary of total exercise attempts on coach reports :url-issue:`5020`
+ * Do not load video into memory to check its size, just use disk stats :url-issue:`2909`
+ * Print server address after ``kalite start`` :url-issue:`5441`
+ * Log everything from automatic initialization in ``kalite start`` and ``kalite manage setup`` :url-issue:`5408`
+ * Remove unused Django package installed in ``kalite/packages/dist`` :url-issue:`5419`
+ * Add line breaks in buttons so text isn't cut :url-issue:`5004`
+
+
+New features
+^^^^^^^^^^^^
+
+ * Log rotation: Logs for 30 days are now stored in ``~/.kalite/logs`` :url-issue:`4890`
+
+
+Installers
+^^^^^^^^^^
+
+ * **Raspberry Pi** Nginx configuration in ``ka-lite-raspberry-pi`` served wrong static item path :url-issue:`5430` (also fixed in latest 0.17.0 build, 0.17.0-0ubuntu3)
+ * **Mac/OSX** solved 100% CPU usage issue `ka-lite-installers#447 <https://github.com/learningequality/ka-lite-installers/pull/447>`_
+ * **Mac/OSX** correctly display KA Lite's version number `ka-lite-installers#448 <https://github.com/learningequality/ka-lite-installers/pull/448>`_
+ * **Debian/Ubuntu/Raspberry Pi** (all packages) correctly adds system.d startup service - solves KA Lite not starting at boot `ka-lite-installers#440 <https://github.com/learningequality/ka-lite-installers/pull/440>`_
+
+
+Known issues
+^^^^^^^^^^^^
+
+ * **Chrome 55-56** has issues scrolling the menus on touch devices. Upgrading to Chrome 57 fixes this. :url-issue:`5407`
+ * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
+ * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+ * A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
+
+
+Code cleanup
+^^^^^^^^^^^^
+
+ * Remove ``PROJECT_PATH`` from ``kalite.settings.base`` (it wasn't a configurable setting). :url-issue:`4104`
+ * Make tests run on Selenium 3.3+ and geckodriver 0.15 (Firefox) :url-issue:`5429`
+ * Fixed an issue in code coverage, added tests for CLI, coverage is now at >61% :url-issue:`5445`
+
+
 0.17.0
 ------
 
@@ -94,7 +145,7 @@ Known issues
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
  * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
  * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
- * **Development**: Selenium tests on Firefox 48\+ needs the new `geckodriver <https://github.com/mozilla/geckodriver>`__ and the new Selenium 3 beta ``pip install selenium --pre --upgrade``.
+ * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
  * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
 
 
@@ -137,6 +188,7 @@ Debian/Ubuntu installer
  * `ka-lite-bundle` now comes bundled with the English content pack `learningequality/installers#422 <https://github.com/learningequality/installers/pull/425>`__
  * No Python files (`*.py`) are placed in `/usr/share/kalite`.
  * Systemd support introduced, fixes specific bug on unupdated Raspbian Jesse `learningequality/installers#422 <https://github.com/learningequality/installers/pull/422>`__
+ * Systemd support fixed and released in 0.17.0-0ubuntu2 build `learningequality/installers#440 <https://github.com/learningequality/installers/pull/422>`__
 
 
 Mac installer

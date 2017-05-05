@@ -10,3 +10,4 @@ Hello! If you know what OS you're installing on then click ahead.
     Advanced Installation <advanced>
     Raspberry Pi Tutorial <tutorial_rpi>
     System Requirements <system_requirements>
+    Uninstalling <uninstall>

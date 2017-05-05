@@ -1,6 +1,18 @@
 Frequently Asked Questions
 ==========================
 
+Something isn't working - does KA Lite have log files?
+------------------------------------------------------
+
+It's very important to get more technical information if KA Lite is not working
+or crashing.
+
+Have a look at ``~/.kalite/logs`` (on Windows, locate something like
+``C:\Documents and Settings\<username>\.kalite``), where you will find the log
+files which KA Lite writes to while it's running. If KA Lite has crashed, have
+look at the latest log file. You can also refer to ``~/.kalite/server.log``
+which may in some cases contain more information regarding a crash.
+
 How do I install KA Lite?
 -------------------------
 
