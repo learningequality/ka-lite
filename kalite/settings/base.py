@@ -44,7 +44,17 @@ LOGGING_LEVEL = logging.INFO
 # We should use local module level logging.getLogger
 LOG = logging.getLogger("kalite")
 
-SERVER_LOG = os.path.join(USER_DATA_ROOT, "server.log")
+DAEMON_LOG = os.path.join(USER_DATA_ROOT, "server.log")
+
+LOG_ROOT = os.environ.get(
+    "KALITE_LOG_ROOT",
+    os.path.join(USER_DATA_ROOT, "logs")
+)
+
+# Ensure that path exists
+if not os.path.exists(LOG_ROOT):
+    os.mkdir(LOG_ROOT)
+
 
 LOGGING = {
     'version': 1,
@@ -80,6 +90,14 @@ LOGGING = {
             'formatter': 'no_format',
             'stream': sys.stdout,
         },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(LOG_ROOT, 'django.log'),
+            'formatter': 'standard',
+            'when': 'midnight',
+            'backupCount': '30',
+        },
     },
     'loggers': {
         'django': {
@@ -93,37 +111,37 @@ LOGGING = {
             'propagate': False,
         },
         'kalite': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'kalite.distributed.management.commands': {
-            'handlers': ['console_no_format'],
+            'handlers': ['console_no_format', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'fle_utils': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.console': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.access': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         'cherrypy.error': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
         '': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
@@ -145,9 +163,6 @@ DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
 # IF IT EXISTS AND DATABASES["DEFAULT"]["NAME"] FILE DOES NOT, THEN THE LATTER WILL BE COPIED FROM THE FORMER
 # IN THE SETUP MGMT COMMAND.
 DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
-
-
-_data_path = ROOT_DATA_PATH
 
 
 ###################################################

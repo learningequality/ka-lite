@@ -28,7 +28,7 @@ class CLITestCase(TestCase):
 
     def test_start(self):
         def cherry_py_stop_thread():
-            time.sleep(10)
+            time.sleep(15)
             engine.exit()
 
         # Because threads use the database with transactions, we can't run
@@ -43,4 +43,3 @@ class CLITestCase(TestCase):
             skip_job_scheduler=True,
             port=8009,
         )
-        time.sleep(2)
