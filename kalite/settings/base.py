@@ -165,9 +165,6 @@ DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
 DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 
 
-_data_path = ROOT_DATA_PATH
-
-
 ###################################################
 # CHANNEL and CONTENT DATA
 ###################################################

@@ -45,7 +45,7 @@ Known issues
 
  * **Chrome 55-56** has issues scrolling the menus on touch devices. Upgrading to Chrome 57 fixes this. :url-issue:`5407`
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
- * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around <https://github.com/learningequality/installers/issues/106#issuecomment-237729680>`__)
  * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
  * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
  * A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
@@ -143,16 +143,15 @@ Known issues
 ^^^^^^^^^^^^
 
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
- * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around <https://github.com/learningequality/installers/issues/106#issuecomment-237729680>`__)
  * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
  * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
- * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+ * **Firefox 47** has misaligned subtitles in the video player. This is fixed by
+   upgrading Firefox.
 
-
-.. note::
-  Code and command cleanups listed below are harmless if you installed KA Lite
-  using an installer and only relevant in these cases:
-
+.. note:: Code and command cleanups listed below are harmless if you installed KA Lite
+   using an installer and only relevant in these cases:
+   
    * You run a specialized setup or deployment
    * Your deployment is 1½+ years old
    * You're a KA Lite developer
@@ -426,8 +425,7 @@ General
  * KA Lite is officially supported on OSX 10.11 (El Capitan).
  * We've revamped the language packs into a new format, called content packs.
    This results in significantly faster startup times across the board.
-   .. WARNING::
-     You will have to redownload all your languages to fully support 0.16.
+   .. WARNING:: You will have to redownload all your languages to fully support 0.16.
  * We introduced a new beta inline help system. Check this out by going to the Facility management page and clicking "Show me how!"
  * A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 

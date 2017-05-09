@@ -75,18 +75,6 @@ Auto-generated usage instructions from ``kalite -h``::
 """.format(usage="\n".join(map(lambda x: "    " + x, USAGE.split("\n"))))
 
 
-# KALITE_DIR set, so probably called from bin/kalite
-if 'KALITE_DIR' in os.environ:
-    sys.path = [
-        os.path.join(os.environ['KALITE_DIR'], 'kalite'),  # TODO: What's this for?
-    ] + sys.path
-# KALITE_DIR not set, so called from some other source
-else:    
-    filedir = os.path.dirname(__file__)
-    sys.path = [
-        os.path.join(filedir, 'kalite'),  # TODO: What's this for?
-    ] + sys.path
-
 if sys.version_info >= (3,):
     sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
     sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
