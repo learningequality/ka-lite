@@ -701,5 +701,8 @@ using a terminal script.
  * ``KALITE_LISTEN_PORT`` Instead of using the command line parameter
    ``kalite --port=1234``, you can also set this environment variable.
    Default: ``8008``
- * ``KALITE_DIR`` **REMOVED**
+ * ``KALITE_DIR = </path/to/shared/data>`` Where KA Lite finds shared program
+   data (a environment sometimes configured by installers). Default: ``(unset)``.
+   If not set, it will be evaluated to ``<sys.prefix>/share/kalite``, for
+   instance that can evaluate to ``/usr/share/kalite``.
 
