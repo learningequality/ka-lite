@@ -239,6 +239,7 @@ if STATIC_BUILD:
         opts.build_dir = STATIC_DIST_PACKAGES_TEMP
         opts.download_cache = STATIC_DIST_PACKAGES_DOWNLOAD_CACHE
         opts.isolated = True
+        opts.ignore_installed = True
         opts.compile = False
         opts.ignore_dependencies = False
         # This is deprecated and will disappear in Pip 10
@@ -247,14 +248,17 @@ if STATIC_BUILD:
         # opts.no_binary = ':all:'  # Do not use any binary files (whl)
         opts.no_clean = NO_CLEAN
         command.run(opts, distributions)
-        # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
-        # requirement_set.install(opts)
 
     # Install requirements into kalite/packages/dist
     if DIST_BUILDING_COMMAND:
         install_distributions(RAW_REQUIREMENTS)
-        # Now remove Django because it's bundled
-        shutil.rmtree(os.path.join(STATIC_DIST_PACKAGES, "django"))
+
+        # Now remove Django because it's bundled. It gets installed as an egg
+        # so unfortunately, the path is a bit dependent on the specific
+        # version installed (we pinned it for reliability in requirements.txt)
+        shutil.rmtree(
+            os.path.join(STATIC_DIST_PACKAGES, "Django-1.5.12-py2.7.egg-info"),
+        )
 
 # It's not a build command with --static or it's not a build command at all
 else:

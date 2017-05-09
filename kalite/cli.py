@@ -75,18 +75,6 @@ Auto-generated usage instructions from ``kalite -h``::
 """.format(usage="\n".join(map(lambda x: "    " + x, USAGE.split("\n"))))
 
 
-# KALITE_DIR set, so probably called from bin/kalite
-if 'KALITE_DIR' in os.environ:
-    sys.path = [
-        os.path.join(os.environ['KALITE_DIR'], 'kalite'),  # TODO: What's this for?
-    ] + sys.path
-# KALITE_DIR not set, so called from some other source
-else:    
-    filedir = os.path.dirname(__file__)
-    sys.path = [
-        os.path.join(filedir, 'kalite'),  # TODO: What's this for?
-    ] + sys.path
-
 if sys.version_info >= (3,):
     sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
     sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
@@ -123,7 +111,7 @@ os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
 # Where to store user data
 KALITE_HOME = os.environ["KALITE_HOME"]
-SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
+DAEMON_LOG = os.path.join(KALITE_HOME, "server.log")
 
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
@@ -334,7 +322,7 @@ def get_pid():
 
     listen_port = port or DEFAULT_LISTEN_PORT
 
-    # Timeout is 1 second, we don't want the status command to be slow
+    # Timeout is 3 seconds, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
     try:
         conn.request("GET", PING_URL)
@@ -493,11 +481,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         from django.utils.daemonize import become_daemon
         kwargs = {}
         # Truncate the file
-        open(SERVER_LOG, "w").truncate()
-        print("Going to daemon mode, logging to {0}\n".format(SERVER_LOG))
+        open(DAEMON_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}\n".format(DAEMON_LOG))
         print_server_address(port)
-        kwargs['out_log'] = SERVER_LOG
-        kwargs['err_log'] = SERVER_LOG
+        kwargs['out_log'] = DAEMON_LOG
+        kwargs['err_log'] = DAEMON_LOG
         become_daemon(**kwargs)
         # Write the new PID
         with open(PID_FILE, 'w') as f:
@@ -665,7 +653,7 @@ status.codes = {
     STATUS_STOPPED: 'Stopped',
     STATUS_STARTING_UP: 'Starting up',
     STATUS_NOT_RESPONDING: 'Not responding',
-    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(SERVER_LOG),
+    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(DAEMON_LOG),
     STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
     STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
     STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',
