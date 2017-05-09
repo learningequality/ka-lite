@@ -1,6 +1,9 @@
 Windows
 =======
 
+Installation
+____________
+
 #. Download the KA Lite :url-windows-installer:`Windows installer <>` v. |release|.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
@@ -72,8 +75,8 @@ See the :doc:`release notes <release_notes>` for critical upgrade information fo
 Linux
 =====
 
-Main method: Ubuntu/Debian .deb
-_______________________________
+Ubuntu/Debian .deb
+__________________
 
 Download the :url-deb-installer:`latest .deb <>` installer v. |release|, and run this command::
 
@@ -118,6 +121,13 @@ process. Generally the default value is ok.
     If you want to receive automatic updates from online sources, you can
     also use :ref:`ppa-installation`.
 
+Upgrade
+~~~~~~~
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
+
 
 .. _raspberry-pi-install:
 
@@ -146,21 +156,9 @@ run ``sudo apt-get install ka-lite-raspberry-pi``.
 For a more thorough guide, see :ref:`raspberry-pi-tutorial`.
 
 
-Other options
-_____________
+Other distributions
+___________________
 
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
 
-Upgrade
-_______
-
-To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
-Your existing data will be preserved by default.
-See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
-
-Configuration after installation or update
-__________________________________________
-
-Every time you install or update KA Lite, you must run ``kalite manage setup`` command again to setup the database and download assessment items (video descriptions,
-exercises etc.).
