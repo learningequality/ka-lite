@@ -9,6 +9,15 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
+0.17.2 (unreleased)
+-------------------
+
+Bug fixes
+^^^^^^^^^
+
+ * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
+
+
 0.17.1
 ------
 
