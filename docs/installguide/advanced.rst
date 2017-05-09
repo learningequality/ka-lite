@@ -4,9 +4,8 @@ Other options
 =============
 
 .. note::
-    Every time you install or update kalite, you should (re)run
-    ``kalite manage setup`` to setup the database and download content packs
-    (exercise texts, images, translations etc.).
+    Every time you update kalite, you should (re)run ``kalite manage setup`` to
+    ensure that the database and contents are kept updated.
 
 
 .. _pip-installation:
@@ -14,20 +13,21 @@ Other options
 Generic installation ``pip install``
 ____________________________________
 
+You can install KA Lite from the online Python Package Index (PyPi) using its
+package system `pip`.
 
 .. note:: PyPi sources do not contain content and exercise data, so you need to
   :url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB).
 
-For command line users with access to pip, you can install KA Lite from an
-online source like this::
-
-    pip install ka-lite
-
-If you are installing system-wide, it's adviced to use the version of KA Lite
-which has all dependencies bundled in, so they don't interfere with your 
-system's setup::
+If you are installing system-wide, it's adviced to use ``ka-lite-static`` which
+has dependencies bundled in and doesn't interfere with your system's setup::
 
     sudo pip install ka-lite-static
+
+You can also install KA Lite in a virtual environment or on the current user's
+local python packages without dependencies bundled in::
+
+    pip install ka-lite
 
 
 Portable tarballs / zip files with setup.py
