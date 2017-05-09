@@ -19,7 +19,7 @@ package system `pip`.
 .. note:: PyPi sources do not contain content and exercise data, so you need to
   :url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB).
 
-If you are installing system-wide, it's adviced to use ``ka-lite-static`` which
+If you are installing system-wide, it's preferable to use ``ka-lite-static`` which
 has dependencies bundled in and doesn't interfere with your system's setup::
 
     sudo pip install ka-lite-static
@@ -75,7 +75,7 @@ User interface for Linux/GTK
 ____________________________
 
 A Control Panel for simple start/stop functionality and a bit of user setup is
-available with a userface. It's not feature-complete, but good enough for simple
+available with a user interface. It's not feature-complete, but good enough for simple
 usage.
 
 Make sure you have the PPA added (see :ref:`ppa-installation`), then run::
