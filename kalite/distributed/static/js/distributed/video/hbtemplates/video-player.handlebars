@@ -2,7 +2,7 @@
     <video class="video-player video-js vjs-default-skin vjs-fullscreen" id="{{ random_id }}">
         <source src="{{ content_urls.stream }}" type="{{ content_urls.stream_type }}" />
         {{#each subtitle_urls }}
-            <track kind="captions" src="{{ this.url }}" srclang="{{ this.code }}" label="{{ this.name }}" {{#current_language_is "en"}}default{{/current_language_is}}/>
+            <track kind="captions" src="{{ this.url }}" srclang="{{ this.code }}" label="{{ this.name }}" {{#current_language_is "en"}}{{#ifcond this.code "==" "en"}}default{{/ifcond}}{{/current_language_is}}/>
         {{/each}}
     </video>
 </div>
