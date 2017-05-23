@@ -12,7 +12,10 @@ to read the release notes.
 0.17.2 (unreleased)
 -------------------
 
-This version is available as the current ``develop`` branch on Github.
+Bug fixes
+^^^^^^^^^
+
+ * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
 
 
 0.17.1
