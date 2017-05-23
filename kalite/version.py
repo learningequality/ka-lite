@@ -2,8 +2,8 @@
 # Must be PEP 440 compliant: https://www.python.org/dev/peps/pep-0440/
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
 MAJOR_VERSION = "0"
-MINOR_VERSION = "18"
-PATCH_VERSION = "0dev0"
+MINOR_VERSION = "17"
+PATCH_VERSION = "2dev0"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
