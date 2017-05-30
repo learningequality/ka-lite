@@ -20,7 +20,7 @@ Bug fixes
 New Features
 ^^^^^^^^^^^^
 
-* Enabled captions by default for English dubbed videos. :url-issue:`5654`
+* Enabled captions by default for English dubbed videos. :url-issue:`5464`
 
 
 0.17.1
