@@ -265,3 +265,7 @@ device against.
 The solution is to add an exception to unblock ``hub.learningequality.org``
 (or ``staging.learningequality.org`` if you are a developer).
 
+Windows: "python.exe has stopped working"
+-----------------------------------------
+
+This is likely due to a broken Python installation or that you installed 32 bit Python on a 64 bit system (or vice versa). Try fetching a new Windows installer from `python.org <https://www.python.org/downloads/windows/>`__.
