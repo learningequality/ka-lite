@@ -1,13 +1,11 @@
 <div id="video-player"{{#unless content_urls }} class="client-online-only"{{/unless}}>
     <video class="video-player video-js vjs-default-skin vjs-fullscreen" id="{{ random_id }}">
         <source src="{{ content_urls.stream }}" type="{{ content_urls.stream_type }}" />
-        {{#current_language_is "en"}}
             {{#ifcond translated_youtube_lang "==" "en"}}
                 {{#each subtitle_urls}}
-                    <track kind="captions" src="{{ this.url }}" srclang="{{ this.code }}" label="{{ this.name }}" {{#ifcond this.code "==" "en"}}default{{/ifcond}}/>
+                    <track kind="captions" src="{{ this.url }}" srclang="{{ this.code }}" label="{{ this.name }}" {{#current_language_is this.code}}default{{/current_language_is}}/>
                 {{/each}}
             {{/ifcond}}
-        {{/current_language_is}}
     </video>
 </div>
 
