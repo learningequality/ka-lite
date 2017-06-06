@@ -113,4 +113,12 @@ Handlebars.registerHelper("ifObject", function(candidate, options){
     }
 });
 
+Handlebars.registerHelper("current_language_is", function(lc, options) {
+    if(window.sessionModel.get("CURRENT_LANGUAGE") == lc) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+});
+
 module.exports = Handlebars;

@@ -17,6 +17,11 @@ Bug fixes
 
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
 
+New Features
+^^^^^^^^^^^^
+
+* Enabled captions by default for English dubbed videos. :url-issue:`5464`
+
 
 0.17.1
 ------
