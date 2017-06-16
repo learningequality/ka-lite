@@ -5,9 +5,10 @@ steps:
   - wait
 
   - label: Build the python packages
-    command: mkdir -p dist && .buildkite/build_whl.sh && docker container prune -f
+    command: mkdir -p dist && .buildkite/build_python_packages.sh && docker container prune -f
 
 
-  - label: Build the pex file
-    command: mkdir -p dist && .buildkite/build_pex.sh
+  # - label: Build the pex file
+  #   command: mkdir -p dist && .buildkite/build_pex.sh && docker container prune -f
+
 
