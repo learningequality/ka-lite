@@ -662,32 +662,7 @@ status.codes = {
     STATUS_UNKNOW: 'Could not determine status',
 }
 
-
-def diagnose():
-    """
-    This command diagnoses an installation of KA Lite
-
-    It has to be able to work with instances of KA Lite that users do not
-    actually own, however it's assumed that the path and the 'kalite' commands
-    are configured and work.
-
-    The function is currently non-robust, meaning that not all aspects of
-    diagnose data collection is guaranteed to succeed, thus the command could
-    potentially fail :(
-
-    Example: KALITE_HOME=/home/otheruser/.kalite kalite diagnose --port=7007
-    """
-
-    print("")
-    print("KA Lite diagnostics")
-    print("")
-
-    # Tell users we are calculating, because checking the size of the
-    # content directory is slow. Flush immediately after.
-    print("Calculating diagnostics...")
-    sys.stdout.flush()
-    print("")
-
+def get_diagnostics():
     # Key, value store for diagnostics
     # Not using OrderedDict because of python 2.6
     diagnostics = []
@@ -728,10 +703,40 @@ def diagnose():
             diag("device ID", str(device.id))
             diag("device registered", str(device.is_registered()))
             diag("synced", str(sync_sessions.latest('timestamp').timestamp if sync_sessions.exists() else "Never"))
-            diag("sync result", ("OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
+            diag("sync result", (
+            "OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
             diag("zone ID", str(zone.id) if zone else "Unset")
         except:
             diag("Device failure", traceback.format_exc())
+
+    return diagnostics
+
+def diagnose():
+    """
+    This command diagnoses an installation of KA Lite
+
+    It has to be able to work with instances of KA Lite that users do not
+    actually own, however it's assumed that the path and the 'kalite' commands
+    are configured and work.
+
+    The function is currently non-robust, meaning that not all aspects of
+    diagnose data collection is guaranteed to succeed, thus the command could
+    potentially fail :(
+
+    Example: KALITE_HOME=/home/otheruser/.kalite kalite diagnose --port=7007
+    """
+
+    print("")
+    print("KA Lite diagnostics")
+    print("")
+
+    # Tell users we are calculating, because checking the size of the
+    # content directory is slow. Flush immediately after.
+    print("Calculating diagnostics...")
+    sys.stdout.flush()
+    print("")
+
+    diagnostics = get_diagnostics()
 
     for k, v in diagnostics:
 
