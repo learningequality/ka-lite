@@ -77,6 +77,9 @@ urlpatterns += patterns(__package__ + '.views',
 
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
+
+    url(r'^about/$', 'about', {}, 'about'),
+    url(r'^about/data', 'about_data', {}, 'about_data'),
 )
 
 if settings.DEBUG:
