@@ -17,9 +17,10 @@
 
 {% block content %}
     <div class="container">
-        <h2>Diagnostics</h2>
+        <h2>{% trans "Diagnostics" %}</h2>
         <div id="about-diagnostics-container">
-            <h4>Calculating diagnostics...</h4>
+            <p><em>{% trans "Calculating diagnostics..." %}</em></p>
+            <p>{% trans "This can take several minutes." %}</p>
         </div>
     </div>
 {% endblock content %}
