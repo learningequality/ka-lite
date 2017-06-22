@@ -703,8 +703,7 @@ def get_diagnostics():
             diag("device ID", str(device.id))
             diag("device registered", str(device.is_registered()))
             diag("synced", str(sync_sessions.latest('timestamp').timestamp if sync_sessions.exists() else "Never"))
-            diag("sync result", (
-            "OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
+            diag("sync result", ("OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
             diag("zone ID", str(zone.id) if zone else "Unset")
         except:
             diag("Device failure", traceback.format_exc())
