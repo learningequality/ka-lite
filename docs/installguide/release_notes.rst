@@ -21,6 +21,7 @@ New Features
 ^^^^^^^^^^^^
 
 * Enabled captions by default for English dubbed videos. :url-issue:`5464`
+* About/Diagnose page. :url-issue:`5452`
 
 
 0.17.1
