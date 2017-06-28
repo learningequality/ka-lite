@@ -45,6 +45,11 @@
       </li>
       <li role="presentation" class="divider"></li>
     {{/unless}}
+    {{#if is_admin}}
+        <li role="presentation">
+          <a role="menuitem" tabindex="-1" href="{{ url "about" }}" id="nav_about">{{_ "About" }}</a>
+      </li>
+    {{/if}}
       {{!-- Logout goes at the bottom! --}}
       <li role="presentation" id="logout">
         <a role="menuitem" tabindex="-1" id="nav_logout" href="#">

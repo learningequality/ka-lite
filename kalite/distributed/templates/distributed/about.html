@@ -1,0 +1,26 @@
+{% extends "distributed/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %}{% trans "About" %}{% endblock title %}
+{% block headjs %}
+    {{ block.super }}
+    <script src="{% static 'js/distributed/bundles/bundle_about.js' %}"></script>
+    <script>
+        $(function() {
+            var about_view = new window.AboutView({
+                el: $("#about-diagnostics-container")
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>{% trans "Diagnostics" %}</h2>
+        <div id="about-diagnostics-container">
+            <p><em>{% trans "Calculating diagnostics..." %}</em></p>
+            <p>{% trans "This can take several minutes." %}</p>
+        </div>
+    </div>
+{% endblock content %}
