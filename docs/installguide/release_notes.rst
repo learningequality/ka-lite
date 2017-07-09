@@ -14,6 +14,28 @@ to read the release notes.
 This version is available as the current ``develop`` branch on Github.
 
 
+0.17.2rc1
+---------
+
+Bug fixes
+^^^^^^^^^
+
+ * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
+
+New Features
+^^^^^^^^^^^^
+
+* Enabled captions by default for English dubbed videos :url-issue:`5464`
+* About/Diagnose page :url-issue:`5452`
+
+Installers
+^^^^^^^^^^
+
+* **Windows**: Update notification message when starting KA Lite server `ka-lite-installers#461 <https://github.com/learningequality/ka-lite-installers/pull/461>`_
+* **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
+* **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
+* **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
+
 0.17.1
 ------
 
