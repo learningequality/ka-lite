@@ -72,14 +72,12 @@ the community and contribute. In other words, we (Learning Equality) encourages
 you (community members), to feel empowered and take responsibility for the
 future of KA Lite.
 
-
 Connect
 ^^^^^^^
 
 - Community forums: `community.learningequality.org <https://community.learningequality.org/>`__
 - IRC: **#kalite** on Freenode
 - Twitter: `@ka_lite <http://twitter.com/ka_lite>`__
-- Mailing list: `dev@learningequality.org on Google Groups <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
 
 Contact Us
 ^^^^^^^^^^
