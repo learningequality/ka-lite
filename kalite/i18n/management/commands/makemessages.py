@@ -5,7 +5,6 @@ vanilla Django and again do our custom actions *on top of* the vanilla output.
 """
 import os
 import polib
-import yaml
 
 from django.conf import settings
 from django.core.management.commands import makemessages
