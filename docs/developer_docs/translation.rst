@@ -27,3 +27,32 @@ There are two aspects to translation of KA Lite:
        strings for KA Lite 0.14, you should focus on translating strings in
        ``0.14-django.po`` and ``0.14-djangojs.po``.
 
+
+Creating new source translations
+--------------------------------
+
+Facilitators of CrowdIn should do the following each time that a new major
+release approaches:
+  
+  1. Navigate to the root of your ka-lite git checkout. Make sure your
+     environment is activated.
+  2. Run::
+
+         make msgids
+
+  3. After this, you should have updated files in ``locale/``.
+  4. Commit the files to Github in a PR and have them merged. We track these
+     changes in Git to ensure a transparent mechanism for changes.
+  5. Upload the files with their versioned file names to CrowdIn.
+
+Legacy
+------
+
+Our translations have worked slightly differently since they were introduced in
+0.11. On CrowdIn, we have older versions avaiable, for which 0.14 through to
+0.16 all contain translation strings from the central server (the one running
+on hub.learningequality.org).
+
+As of 0.17, we have started to maintain the English source messages in Git and
+will sync them to CrowdIn after each string freeze.
+
