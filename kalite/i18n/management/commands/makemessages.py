@@ -10,19 +10,18 @@ import logging
 import re
 import os
 
-import kalite
-
 from django.core.management.commands import makemessages
 
 logger = logging.getLogger(__name__)
 
-IGNORE_PATTERNS = os.environ.get("IGNORE_PATTERNS", "").split(",")
+# This is done through an environment because there is a bug in Django or
+# somewhere else such that setting --ignore multiple times does not work!
+# Default: Ignore everything - great for our tests
+IGNORE_PATTERNS = os.environ.get("IGNORE_PATTERNS", "foo,bar").split(",")
 
 class Command(makemessages.Command):
 
     def handle_noargs(self, *args, **options):
-        # Set some sensible defaults
-        options.setdefault("no_obsolete", True)
         
         for ignore_pattern in IGNORE_PATTERNS:
             if ignore_pattern not in options["ignore_patterns"]:
@@ -35,7 +34,7 @@ class Command(makemessages.Command):
         # Make all the path annotations relative
         domain = options.get('domain', "django")
         django_po = os.path.join(
-            os.path.dirname(kalite.__file__),
+            os.getcwd(),
             "locale",
             "en",
             "LC_MESSAGES",
@@ -47,7 +46,7 @@ class Command(makemessages.Command):
         contents = open(django_po, "r").read()
         matches = msgid_re.search(contents)
         if not matches:
-            raise RuntimeError("No translations found")
+            raise RuntimeError("No translations found:\n\n{}".format(contents))
         absolute_path = matches.group(1)
         
         logger.info("Removing {} from {}.po".format(absolute_path, domain))
