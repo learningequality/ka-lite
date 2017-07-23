@@ -96,6 +96,7 @@ assets:
 	bin/kalite manage retrievecontentpack empty en --foreground --template
 
 msgids:
+	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*bundle*.js,*/kalite/*/js/i18n/*.js" ;\
 	cd kalite ;\
 	kalite manage makemessages -len ;\
 	kalite manage makemessages -len --domain=djangojs

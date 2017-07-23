@@ -12,23 +12,11 @@ import os
 
 import kalite
 
-from django.conf import settings
 from django.core.management.commands import makemessages
 
 logger = logging.getLogger(__name__)
 
-IGNORE_PATTERNS = [
-    "*/node_modules*",
-    "*/LC_MESSAGES/*",
-    "*/kalite/packages*",
-    "*/kalite/static*",
-    "*bundle*.js",
-    "*/ka-lite/build/*",
-    "*/js/i18n/*.js",
-    "*/ka-lite/docs/*",
-    "packages/dist",
-]
-
+IGNORE_PATTERNS = os.environ.get("IGNORE_PATTERNS", "").split(",")
 
 class Command(makemessages.Command):
 

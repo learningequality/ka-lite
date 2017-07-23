@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-22 02:56+0200\n"
+"POT-Creation-Date: 2017-07-23 21:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -491,6 +491,7 @@ msgid "# Groups"
 msgstr ""
 
 #: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:32
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:30
 msgid "Delete"
 msgstr ""
 
@@ -791,6 +792,7 @@ msgid "login"
 msgstr ""
 
 #: kalite/distributed/templates/admin/login.html.py:16
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:18
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] ""
@@ -1188,6 +1190,7 @@ msgstr ""
 
 #: kalite/facility/models.py:21
 #: kalite/facility/models.py:83
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:163
 msgid "Name"
 msgstr ""
 
@@ -1496,6 +1499,382 @@ msgstr ""
 msgid ""
 "This content was not found! You must login as an admin/coach to download the "
 "content."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:48
+msgid ""
+"Can't specify a shell_command if a django admin command is already specified"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:56
+msgid "Must specify either command or shell command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:73
+msgid "Job Details"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:77
+msgid "Frequency options"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:99
+msgid "Last run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:104
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:167
+msgid "OK"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:111
+msgid "Run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:117
+msgid "Logs"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:128
+#, python-format
+msgid "The job '%(job)s' was run successfully."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:152
+msgid "Output"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:159
+msgid "Duration"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:175
+msgid "(No output)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:182
+msgid "(No errors)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:28
+msgid "Yearly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:29
+msgid "Monthly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:30
+msgid "Weekly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:31
+msgid "Daily"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:32
+msgid "Hourly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:33
+msgid "Minutely"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:34
+msgid "Secondly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:40
+msgid "name"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:41
+msgid "frequency"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:42
+msgid "params"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:44
+msgid ""
+"Semicolon separated list (no spaces) of <a href=\"http://labix.org/python-"
+"dateutil\" target=\"_blank\">rrule parameters</a>. e.g: interval:15 or "
+"byhour:6;byminute:40"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:48
+msgid "command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:49
+msgid "A valid django-admin command to run."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:50
+msgid "shell command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:51
+msgid "A shell command."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:52
+msgid "This command needs to run within a shell?"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:53
+msgid "args"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
+msgid "Space separated list; e.g: arg1 option1=True"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+msgid "disabled"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+msgid "If checked this job will never run."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
+msgid "next run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
+msgid "If you don't set this it will be determined automatically"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:57
+msgid "last run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:58
+msgid "Running?"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:68
+#, python-format
+msgid "%(name)s - disabled"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:88
+msgid "never (disabled)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:93
+msgid "due"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:96
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:97
+#, python-format
+msgid "%(number)d %(type)s"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:103
+msgid "time until next run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/management/commands/cronserver.py:48
+msgid ""
+"Emulates a reoccurring cron call to run jobs at a specified interval.  This "
+"is meant primarily for development use."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/management/commands/cronserver_blocking.py:14
+msgid "Invoked by kalite CLI to run a blocking management command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:6
+msgid "Changelog"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:7
+msgid "View Logs"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:8
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_list.html.py:10
+msgid "Run Job"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:11
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:8
+msgid "View on site"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_list.html.py:11
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:7
+msgid "History"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/feeds/views.py:16
+#, python-format
+msgid "A subscription for '%s' was added."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/internet/decorators.py:33
+#, python-format
+msgid "Unexpected error: %(err)s"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/decorators.py:22
+#, python-format
+msgid ""
+"In order to access %(resource_name)s, you must register your device first."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:43
+msgid "You must select a sharing network from the given choices."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:47
+msgid "You must select a valid sharing network."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:54
+msgid "This public key has already been registered!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:91
+msgid "Registration status: "
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:102
+msgid "Central Server is not reachable; please try again after some time."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:125
+msgid ""
+"The device's public key has been successfully registered. You may now close "
+"this window."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:7
+msgid "Register a Device"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:31
+msgid "Device registration"
+msgstr ""
+
+#. Translators: Please do not edit the variable text: %(command)s
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:35
+msgid "Sorry, there was an error during registration."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:36
+msgid "The error message was:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:40
+msgid "Congratulations, this device has now been registered."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:44
+msgid "This device has already been registered."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:48
+msgid ""
+"The device needs to have internet access when first being registered. Please "
+"ensure it is connected to the internet, and then"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:48
+msgid "refresh this page"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:54
+msgid "Continue to management"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:62
+msgid "What is device registration?"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:64
+msgid ""
+"Once you register your installation with us, your data can be synced to our "
+"online repository when KA Lite has access to the Internet. This is a good "
+"thing! Here's why:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:67
+msgid "Your data will be backed up online"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:68
+msgid "You can login online and review your usage data"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:69
+msgid ""
+"Our team can use this data to objectively assess the impact our work is "
+"having around the world!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:74
+msgid "Ready to register? You have two options:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:77
+msgid "One-click registration (no online access to data)"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:79
+msgid ""
+"The perfect option for individual users who just want to get KA Lite up and "
+"running fast and don't need online access to data."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:82
+msgid ""
+"This allows you to get the registration process over in one-click without "
+"worrying about creating a login that you're never going to use."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:85
+msgid "One-click registration now!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:90
+msgid "Register with online access to data!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:92
+msgid "The perfect option for adminstrators of larger projects!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:95
+msgid ""
+"This option will walk you through the process of creating a login to our "
+"website that will allow you access your uploaded data and connect multiple "
+"installations to the same account."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:98
+msgid "Register with an online account now!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_server.html.py:5
+msgid "Register device to a sharing network"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_server.html.py:31
+msgid "Register a device"
 msgstr ""
 
 #: kalite/settings/base.py:249
