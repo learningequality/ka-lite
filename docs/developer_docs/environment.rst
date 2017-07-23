@@ -73,3 +73,13 @@ interfere with other Python software on your machine like this::
     $> mkvirtualenv my-kalite-env
     $> workon my-kalite-env
     $> pip install ka-lite
+
+
+Running tests
+_____________
+
+
+On Circle CI, we run Selenium 2.53.6 because it works in their environment. However,
+for more recent versions of Firefox, you need to upgrade Selenium::
+
+    pip install selenium\<3.5 --upgrade
