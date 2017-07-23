@@ -98,8 +98,8 @@ assets:
 msgids:
 	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*bundle*.js,*/kalite/*/js/i18n/*.js" ;\
 	cd kalite ;\
-	kalite manage makemessages -len ;\
-	kalite manage makemessages -len --domain=djangojs
+	kalite manage makemessages -len --no-obsolete ;\
+	kalite manage makemessages -len --no-obsolete --domain=djangojs
 
 release: dist man
 	ls -l dist
