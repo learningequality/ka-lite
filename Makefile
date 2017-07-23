@@ -15,6 +15,7 @@ help:
 	@echo "release - package and upload a release, options: format=[gztar,zip]"
 	@echo "dist - package locally, options: format=[gztar,zip]"
 	@echo "install - install the package to the active Python's site-packages"
+	@echo "msgids - generates source .po files for CrowdIn"
 
 # used for release and dist targets
 format?=gztar
@@ -93,6 +94,12 @@ assets:
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack empty en --foreground --template
+
+msgids:
+	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*bundle*.js,*/kalite/*/js/i18n/*.js" ;\
+	cd kalite ;\
+	kalite manage makemessages -len --no-obsolete ;\
+	kalite manage makemessages -len --no-obsolete --domain=djangojs
 
 release: dist man
 	ls -l dist

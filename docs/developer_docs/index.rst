@@ -13,4 +13,5 @@ Useful stuff our devs think that the rest of our devs ought to know about.
     Inline help <inline>
     Documentation <documentation>
     Accessibility <accessibility>
+    Translation <translation>
 
