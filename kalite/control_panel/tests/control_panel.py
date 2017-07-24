@@ -572,13 +572,13 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
         self.assertEqual(len(facility_select.find_elements_by_tag_name('option')), 2, "Invalid Number of Facilities")
 
         for option in facility_select.find_elements_by_tag_name('option'):
-            if option.text == 'facility1':
+            if option.text == self.facility.name:
                 option.click() # select() in earlier versions of webdriver
                 break
 
         # Check that group is enabled now
-        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
-        self.assertTrue(group_select.is_enabled(), "UI error")
+        group_select = WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "group-name")))
+        WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
 
         # Click and make sure something happens
         # note: not actually clicking the download since selenium cannot handle file save dialogs
@@ -604,7 +604,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
 
         # Check that group is enabled now
         group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
-        self.assertTrue(group_select.is_enabled(), "UI error")
+        WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
 
         # Click and make sure something happens
         # note: not actually clicking the download since selenium cannot handle file save dialogs
