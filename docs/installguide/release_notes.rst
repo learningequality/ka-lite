@@ -21,6 +21,7 @@ Bug fixes
 ^^^^^^^^^
 
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
+ * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
 
 New Features
 ^^^^^^^^^^^^
