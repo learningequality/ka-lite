@@ -9,7 +9,7 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
-0.17.2rc1
+0.17.2rc2
 ---------
 
 Bug fixes
@@ -17,6 +17,7 @@ Bug fixes
 
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
  * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
+ * Broken questions removed upstream (missing radio buttons) :url-issue:`5172`
 
 New Features
 ^^^^^^^^^^^^
