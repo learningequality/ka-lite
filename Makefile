@@ -86,6 +86,7 @@ man:
 	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
+	node --version | grep -q v6 || ( echo "Only tested to support Node.js v6" && exit 1 )
 	npm install --production
 	node build.js
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput

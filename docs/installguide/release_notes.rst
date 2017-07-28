@@ -34,6 +34,12 @@ Installers
 * **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
 * **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
 
+Developers
+^^^^^^^^^^
+
+* We now build with Node.js v.6
+
+
 0.17.1
 ------
 
