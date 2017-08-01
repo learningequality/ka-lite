@@ -32,6 +32,13 @@ Installers
 * **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
 * **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
 * **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
+* **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
+
+Developers
+^^^^^^^^^^
+
+* We now build with Node.js v.6
+
 
 0.17.1
 ------
