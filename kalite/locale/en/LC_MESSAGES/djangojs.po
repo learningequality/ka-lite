@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-23 21:59+0200\n"
+"POT-Creation-Date: 2017-08-01 11:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:144
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:27
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:35
+msgid "N/A"
+msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:148
 msgid "Hours spent on content"
@@ -91,11 +97,6 @@ msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:22
 msgid "Hours spent on content vs total hours logged"
-msgstr ""
-
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:27
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:35
-msgid "N/A"
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:30
@@ -347,6 +348,10 @@ msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:22
 msgid "Status"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:4
+msgid "Color legend"
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:23
