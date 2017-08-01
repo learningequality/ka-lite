@@ -13,7 +13,7 @@ from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -577,8 +577,15 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                 break
 
         # Check that group is enabled now
-        group_select = WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "group-name")))
-        WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
+        while True:
+            try:
+                group_select = WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "group-name")))
+                WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
+                break
+            except StaleElementReferenceException:
+                # This exception occurs once in a while because the element is
+                # somehow attached/detached/rebuilt by some clever JS
+                continue
 
         # Click and make sure something happens
         # note: not actually clicking the download since selenium cannot handle file save dialogs
