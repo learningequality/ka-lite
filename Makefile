@@ -123,12 +123,16 @@ install: clean
 pex:
 	ls dist/ka_lite-*.whl | while read whlfile; do pex $$whlfile -o dist/kalite-`unzip -p $$whlfile kalite/VERSION`.pex -m kalite --python-shebang=/usr/bin/python; done
 
-dockerenvclean:
+
+dockerwriteversion:
+	python -c "import kalite; print(kalite.__version__)" > kalite/VERSION
+
+dockerenvclean: 
 	docker container prune -f
 	docker image prune -f
 
-dockerenvbuild:
-	docker image build -t learningequality/kalite:$$(kalite --version) .
+dockerenvbuild: dockerwriteversion
+	docker image build -t learningequality/kalite:$$(cat kalite/VERSION) -t learningequality/kalite:latest .
 
-dockerenvdist:
-	docker run -v $$PWD/dist:/kalitedist learningequality/kalite:$$(kalite --version)
+dockerenvdist: dockerwriteversion
+	docker run -v $$PWD/dist:/kalitedist learningequality/kalite:$$(cat kalite/VERSION)
