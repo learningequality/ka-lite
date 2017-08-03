@@ -30,11 +30,11 @@ ENV KALITE_PYTHON=/kalite/kalite_env/bin/python
 # Installer dependencies
 RUN cd /kalite/ && git clone https://github.com/learningequality/ka-lite-installers.git
 RUN cd /kalite/ka-lite-installers/windows && wget http://pantry.learningequality.org/downloads/ka-lite/0.17/content/contentpacks/en.zip
-RUN cp -R /kalite/dist/ka_lite_static-*-py2-none-any.whl /kalite/ka-lite-installers/windows
 
 # Build the python packages and the ka-lite windows installer
 CMD cd /kalite && make dist \
 	&& cd /kalite/ka-lite-installers/windows \
+	&& cp -R /kalite/dist/ka_lite_static-*-py2-none-any.whl /kalite/ka-lite-installers/windows \
 	&& export KALITE_BUILD_VERSION=$(/kalite/kalite_env/bin/kalite --version) \
 	&& wine inno-compiler/ISCC.exe installer-source/KaliteSetupScript.iss \
 	&& cp /kalite/dist/* /kalitedist/ \
