@@ -30,7 +30,7 @@ ENV KALITE_PYTHON=/kalite/kalite_env/bin/python
 # Installer dependencies
 RUN cd /kalite/ && git clone https://github.com/learningequality/ka-lite-installers.git
 RUN cd /kalite/ka-lite-installers/windows && wget http://pantry.learningequality.org/downloads/ka-lite/0.17/content/contentpacks/en.zip
-RUN cp -R /kalite/dist/ka_lite_static-0.17.2.dev1-py2-none-any.whl /kalite/ka-lite-installers/windows
+RUN cp -R /kalite/dist/ka_lite_static-*-py2-none-any.whl /kalite/ka-lite-installers/windows
 
 # Build the python packages and the ka-lite windows installer
 CMD cd /kalite && make dist \
