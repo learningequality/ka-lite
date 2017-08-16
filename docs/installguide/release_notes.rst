@@ -16,6 +16,7 @@ Bug fixes
 ^^^^^^^^^
 
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
+ * Display resource titles on the chosen locale inside the Teach tab :url-issue:`5494`
 
 New Features
 ^^^^^^^^^^^^
