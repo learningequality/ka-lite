@@ -71,6 +71,7 @@ coverage:
 	coverage run --source kalite bin/kalite test
 	coverage report -m
 
+
 docs:
 	# rm -f docs/ka-lite.rst
 	# rm -f docs/modules.rst
@@ -114,7 +115,7 @@ sdist: clean docs assets
 	python setup.py sdist --formats=$(format) --static
 	python setup.py sdist --formats=$(format)
 
-dist: clean docs assets
+dist: clean docs assets 
 	# Building assets currently creates pyc files in the source dirs,
 	# so we should delete those...
 	make clean-pyc
@@ -126,3 +127,16 @@ dist: clean docs assets
 
 install: clean
 	python setup.py install
+
+dockerwriteversion:
+	python -c "import kalite; print(kalite.__version__)" > kalite/VERSION
+
+dockerenvclean: 
+	docker container prune -f
+	docker image prune -f
+
+dockerenvbuild: dockerwriteversion
+	docker image build -t learningequality/kalite:$$(cat kalite/VERSION) -t learningequality/kalite:latest .
+
+dockerenvdist: dockerwriteversion
+	docker run -v $$PWD/dist:/kalitedist learningequality/kalite:$$(cat kalite/VERSION)
