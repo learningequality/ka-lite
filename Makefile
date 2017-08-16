@@ -120,10 +120,6 @@ dist: clean docs assets
 install: clean
 	python setup.py install
 
-pex:
-	ls dist/ka_lite-*.whl | while read whlfile; do pex $$whlfile -o dist/kalite-`unzip -p $$whlfile kalite/VERSION`.pex -m kalite --python-shebang=/usr/bin/python; done
-
-
 dockerwriteversion:
 	python -c "import kalite; print(kalite.__version__)" > kalite/VERSION
 
