@@ -15,6 +15,7 @@ help:
 	@echo "release - package and upload a release, options: format=[gztar,zip]"
 	@echo "dist - package locally, options: format=[gztar,zip]"
 	@echo "install - install the package to the active Python's site-packages"
+	@echo "msgids - generates source .po files for CrowdIn"
 
 # used for release and dist targets
 format?=gztar
@@ -70,6 +71,7 @@ coverage:
 	coverage run --source kalite bin/kalite test
 	coverage report -m
 
+
 docs:
 	# rm -f docs/ka-lite.rst
 	# rm -f docs/modules.rst
@@ -85,6 +87,7 @@ man:
 	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
+	node --version | grep -q v6 || ( echo "Only tested to support Node.js v6" && exit 1 )
 	npm install --production
 	node build.js
 	KALITE_HOME=.kalite_dist_tmp bin/kalite manage syncdb --noinput
@@ -93,6 +96,12 @@ assets:
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack empty en --foreground --template
+
+msgids:
+	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*bundle*.js,*/kalite/*/js/i18n/*.js" ;\
+	cd kalite ;\
+	kalite manage makemessages -len --no-obsolete ;\
+	kalite manage makemessages -len --no-obsolete --domain=djangojs
 
 release: dist man
 	ls -l dist
@@ -106,7 +115,7 @@ sdist: clean docs assets
 	python setup.py sdist --formats=$(format) --static
 	python setup.py sdist --formats=$(format)
 
-dist: clean docs assets
+dist: clean docs assets 
 	# Building assets currently creates pyc files in the source dirs,
 	# so we should delete those...
 	make clean-pyc
@@ -118,3 +127,16 @@ dist: clean docs assets
 
 install: clean
 	python setup.py install
+
+dockerwriteversion:
+	python -c "import kalite; print(kalite.__version__)" > kalite/VERSION
+
+dockerenvclean: 
+	docker container prune -f
+	docker image prune -f
+
+dockerenvbuild: dockerwriteversion
+	docker image build -t learningequality/kalite:$$(cat kalite/VERSION) -t learningequality/kalite:latest .
+
+dockerenvdist: dockerwriteversion
+	docker run -v $$PWD/dist:/kalitedist learningequality/kalite:$$(cat kalite/VERSION)

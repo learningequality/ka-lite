@@ -21,15 +21,6 @@ recursive-include kalite/database/templates/content_items *sqlite
 # a local development environment
 recursive-exclude kalite/static *
 
-# There are still a couple of files left here, however main part is for build
-# process
-recursive-include data *
-recursive-exclude data/khan *
-
-# Necessary because it's a data directory so they
-# do not get automatically excluded
-recursive-exclude python-packages *pyc
-
 # Docs
 include docs/kalite.1.gz
 kalite/static-docs

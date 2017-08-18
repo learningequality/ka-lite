@@ -9,7 +9,7 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
-0.17.2rc1
+0.17.2rc2
 ---------
 
 Bug fixes
@@ -17,6 +17,8 @@ Bug fixes
 
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
  * Display resource titles on the chosen locale inside the Teach tab :url-issue:`5494`
+ * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
+ * Broken questions removed upstream (missing radio buttons) :url-issue:`5172`
 
 New Features
 ^^^^^^^^^^^^
@@ -31,6 +33,13 @@ Installers
 * **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
 * **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
 * **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
+* **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
+
+Developers
+^^^^^^^^^^
+
+* We now build with Node.js v.6
+
 
 0.17.1
 ------

@@ -30,8 +30,7 @@ freqs = (   ("YEARLY", _("Yearly")),
             ("WEEKLY", _("Weekly")),
             ("DAILY", _("Daily")),
             ("HOURLY", _("Hourly")),
-            ("MINUTELY", _("Minutely")),
-            ("SECONDLY", _("Secondly")))
+            ("MINUTELY", _("Minutely")))
 
 class Job(models.Model):
     """

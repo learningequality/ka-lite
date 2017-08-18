@@ -1,0 +1,3751 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-01 11:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:144
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:27
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:35
+msgid "N/A"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:148
+msgid "Hours spent on content"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:149
+msgid "Other activites (exercises, etc.)"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:308
+msgid "No recent learner data for this group is available."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:324
+msgid "Default: Overview"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:345
+msgid "Hide Tabular Report"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:351
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:59
+msgid "Show Tabular Report"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:427
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/facility-select.handlebars.py:8
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:9
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:14
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/zone-select.handlebars.py:5
+msgid "All"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:431
+msgid "Ungrouped"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/datepicker.handlebars.py:1
+msgid "Date Range"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/datepicker.handlebars.py:6
+msgid "Refresh"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/facility-select.handlebars.py:1
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/facility-select.handlebars.py:2
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:7
+msgid "Facility"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/facility-select.handlebars.py:8
+msgid "this device"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/group-select.handlebars.py:1
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:2
+msgid "Group"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/group-select.handlebars.py:8
+msgid "No groups"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:6
+msgid "Topic:"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:14
+msgid "This week"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:22
+msgid "Hours spent on content vs total hours logged"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:30
+msgid "Average progress in exercises"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:38
+msgid "Total exercise attempts"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:46
+msgid "Current status of user exercises"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:50
+msgid "Key"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:52
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:71
+#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:211
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:8
+msgid "Struggling"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:53
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:7
+msgid "Completed"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:54
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:6
+msgid "In Progress"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:65
+msgid "Student Activity Feed"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:71
+#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:210
+msgid "Complete"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:75
+msgid "Praise"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:77
+msgid "Help"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/views.js.c:96
+msgid ""
+"Click on the LEARN button above to get started on your learning journey."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:7
+msgid "In this topic "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:14
+msgid "there are "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:16
+msgid " videos."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:23
+msgid "You haven't started to watch videos! "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:27
+#, python-format
+msgid "%% Completed"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:28
+msgid "Of those you have completed "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:33
+#, python-format
+msgid "%% In-Progress"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:35
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:72
+msgid "You are still working on "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:39
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:76
+msgid "You are still working on all of them."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:51
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:95
+msgid "There are "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:53
+msgid " exercises."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:60
+msgid "You haven't started to work on exercises! "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:65
+msgid "Of those you have mastered "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:83
+msgid "And seem to be struggling with "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:97
+msgid " quizzes."
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-container.handlebars.py:105
+msgid "And your score is "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:6
+msgid " Status: "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:8
+msgid " Completed. "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:12
+msgid " In progress. "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:16
+msgid " Struggling. "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:20
+msgid " Not started. "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:27
+msgid " For this video you completed "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:32
+msgid " For this exercise your streak is "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:37
+msgid " For this quiz your score is "
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:51
+#, python-format
+msgid "%% Complete:"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:57
+msgid "Streak"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/playlist-progress-details.handlebars.py:63
+msgid "Score"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/student_progress/hbtemplates/student-progress-container.handlebars.py:1
+msgid "Progress report"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:208
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:9
+msgid "Not Attempted"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:209
+msgid "Attempted"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanel.handlebars.py:12
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:33
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:114
+msgid "Previous"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanel.handlebars.py:16
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:37
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:118
+msgid "Next"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanel.handlebars.py:24
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-explore-topic.handlebars.py:15
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-resume.handlebars.py:39
+msgid "Description"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanel.handlebars.py:26
+msgid "Points Earned"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanel.handlebars.py:27
+msgid "Progress"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:5
+msgid "Question"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:12
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:31
+msgid "Correct"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:12
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:31
+msgid "Incorrect"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:13
+msgid "Time taken"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:13
+msgid "seconds"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:14
+#: kalite/distributed/static/js/distributed/content/hbtemplates/content-points.handlebars.py:2
+msgid "Points"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:19
+msgid "Attempt"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:20
+msgid "Action"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:21
+msgid "Time"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/detailspanelbody.handlebars.py:22
+msgid "Status"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:4
+msgid "Color legend"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:23
+msgid "Learner"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:4
+msgid "Resource"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:7
+msgid "Facility User Logs"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:8
+msgid "Attempt Logs"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:9
+msgid "Exercise Logs"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:10
+msgid "Ratings"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:12
+msgid "Test Logs"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:15
+msgid "Device Logs"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:21
+msgid "Data Type"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:24
+msgid "CSV"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:32
+msgid "Export"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:10
+msgid "s"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/zone-select.handlebars.py:2
+msgid "Zone"
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/utils/force_sync.js.c:10
+msgid "Successfully launched data syncing job."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/utils/force_sync.js.c:11
+msgid ""
+"After syncing completes, visit the <a href='%(devman_url)s'>device "
+"management page</a> to view results."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/audio/hbtemplates/audio-player.handlebars.py:10
+msgid "Play / pause"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/audio/hbtemplates/audio-player.handlebars.py:25
+#: kalite/distributed/static/js/distributed/audio/hbtemplates/audio-player.handlebars.py:32
+msgid "0:00"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/content/hbtemplates/content-wrapper.handlebars.py:10
+msgid "Open PDF Reader"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/content/hbtemplates/content-wrapper.handlebars.py:29
+#: kalite/distributed/static/js/distributed/topics/hbtemplates/sidebar-entry.handlebars.py:14
+msgid "by:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/content/hbtemplates/content-wrapper.handlebars.py:45
+msgid "Related content:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/content/hbtemplates/content-wrapper.handlebars.py:70
+msgid "Tags:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-explore-topic.handlebars.py:6
+msgid "Based on your interest in"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-explore-topic.handlebars.py:6
+msgid ", we recommend you"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-explore.handlebars.py:5
+msgid "Explore"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-nextsteps-lesson.handlebars.py:32
+msgid "Topic"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-nextsteps.handlebars.py:5
+msgid "Next Steps"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/contentrec/hbtemplates/content-resume.handlebars.py:5
+msgid "Resume"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/software-keyboard.js.c:54
+msgid "Show Keypad"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/software-keyboard.js.c:54
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/software-keyboard.handlebars.py:1
+msgid "Hide Keypad"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:63
+msgid "points"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:291
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:28
+msgid "Loading..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:331
+msgid ""
+"This content was not found! Please contact your coach or an admin to have it "
+"downloaded."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:571
+msgid "loaded"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:845
+msgid ""
+"Answer %(numerator)d out of the last %(denominator)d questions correctly to "
+"complete your streak."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:852
+msgid "You have finished this exercise!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:934
+#: kalite/distributed/static/js/distributed/exercises/views.js.c:1040
+msgid "Submit Answer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise-hint.handlebars.py:2
+msgid "Need help?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise-hint.handlebars.py:4
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:863
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:1187
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:1389
+msgid "I'd like a hint"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise-hint.handlebars.py:6
+msgid "(will mark current answer as incorrect)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise-progress.handlebars.py:1
+msgid "Your progress streak bar for this exercise"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise-related-videos.handlebars.py:4
+msgid "Stuck? Watch a video."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:16
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:267
+msgid "Answer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:23
+msgid "Check Answer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:24
+msgid "Correct! Next Question..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:44
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:479
+msgid "Show scratchpad"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/exercise.handlebars.py:45
+msgid "Scratchpad not available"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/quiz-stop.handlebars.py:2
+msgid "Well done - you have finished the quiz!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/quiz-stop.handlebars.py:5
+#, python-format
+msgid "You got %(correct)d out of %(total_number)d questions correct."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/test-start.handlebars.py:4
+msgid "Please click the button below when you are ready to begin the test."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/test-start.handlebars.py:6
+msgid "Begin test"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/test-stop.handlebars.py:4
+msgid "You have finished the test!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/exercises/hbtemplates/test-stop.handlebars.py:6
+msgid "Click here to carry on learning!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:6
+msgid "Show Thumbnails"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:7
+msgid "Thumbnails"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:9
+msgid "Show Document Outline"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:10
+msgid "Document Outline"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:12
+msgid "Show Attachments"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:13
+msgid "Attachments"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:29
+msgid "Find:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:41
+msgid "Highlight all"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:43
+msgid "Match case"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:49
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:156
+msgid "Switch to Presentation Mode"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:50
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:157
+msgid "Presentation Mode"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:53
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:160
+msgid "Open File"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:54
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:161
+msgid "Open"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:57
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:58
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:164
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:165
+msgid "Print"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:61
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:62
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:168
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:169
+msgid "Download"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:65
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:172
+msgid "Current view (copy or open in new window)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:66
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:173
+msgid "Current View"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:71
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:72
+msgid "Go to First Page"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:74
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:75
+msgid "Go to Last Page"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:80
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:81
+msgid "Rotate Clockwise"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:83
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:84
+msgid "Rotate Counterclockwise"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:89
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:90
+msgid "Enable hand tool"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:95
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:96
+msgid "Document Properties…"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:105
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:106
+msgid "Toggle Sidebar"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:109
+msgid "Find in Document"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:110
+msgid "Find"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:113
+msgid "Previous Page"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:117
+msgid "Next Page"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:121
+msgid "Page:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:128
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:129
+msgid "Zoom Out"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:132
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:133
+msgid "Zoom In"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:137
+msgid "Zoom"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:138
+msgid "Automatic Zoom"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:139
+msgid "Actual Size"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:140
+msgid "Fit Page"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:141
+msgid "Full Width"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:143
+msgid "50%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:144
+msgid "75%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:145
+msgid "100%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:146
+msgid "125%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:147
+msgid "150%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:148
+msgid "200%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:149
+msgid "300%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:150
+msgid "400%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:178
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:179
+msgid "Tools"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:211
+msgid "More Information"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:214
+msgid "Less Information"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:219
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:283
+msgid "Close"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:231
+msgid "Enter the password to open this PDF file:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:237
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:358
+msgid "Cancel"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:238
+msgid "OK"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:245
+msgid "File name:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:248
+msgid "File size:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:252
+msgid "Title:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:255
+msgid "Author:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:258
+msgid "Subject:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:261
+msgid "Keywords:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:264
+msgid "Creation Date:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:267
+msgid "Modification Date:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:270
+msgid "Creator:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:274
+msgid "PDF Producer:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:277
+msgid "PDF Version:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:280
+msgid "Page Count:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:352
+msgid "Preparing document for printing..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/pdf/hbtemplates/pdf-viewer.handlebars.py:355
+msgid "0%"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:6002
+msgid "Make sure you select something for every row."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:7431
+msgid "Sorry, I don't understand that!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8041
+msgid "For $2\\cdot2$, enter **2*2**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "**Acceptable Formats**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $3y$, enter **3y** or **3*y**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\dfrac{1}{x}$, enter **1/x**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\dfrac{1}{xy}$, enter **1/(xy)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\dfrac{2}{x + 3}$, enter **2/(x + 3)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $x^{y}$, enter **x^y**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $x^{2/3}$, enter **x^(2/3)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\sqrt{x}$, enter **sqrt(x)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\sqrt[3]{x}$, enter **sqrt\\[3\\](x)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\pi$, enter **pi**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\sin \\theta$, enter **sin(theta)**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\le$ or $\\ge$, enter **<=** or **>=**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8046
+msgid "For $\\neq$, enter **=/=**"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8648
+msgid "a few words"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:8651
+msgid "your answer will be saved but not graded"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11903
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19547
+msgid "an integer, like $6$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11907
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19550
+msgid "a *proper* fraction, like $1/2$ or $6/10$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11909
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19550
+msgid "a *simplified proper* fraction, like $3/5$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11914
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19553
+msgid "an *improper* fraction, like $10/7$ or $14/8$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11916
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19553
+msgid "a *simplified improper* fraction, like $7/4$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11920
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19556
+msgid "a mixed number, like $1\\ 3/4$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11923
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19559
+msgid "an *exact* decimal, like $0.75$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11926
+msgid "a percent, like $12.34\\%$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:11929
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19562
+msgid "a multiple of pi, like $12\\ \\text{pi}$ or $2/3\\ \\text{pi}$"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:12073
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19745
+msgid "**Your answer should be** "
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:14810
+msgid "Click to add points"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:14812
+msgid "Click to add vertices"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:17049
+msgid "Click on the tiles to change the lights."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:17076
+msgid "You must turn on all of the lights to continue."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:17515
+msgid "Make sure you fill in all cells in the matrix."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:18864
+msgid "Switch direction"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:18870
+msgid "Make circle open"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:18870
+msgid "Make circle filled"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:19635
+msgid "Your answer:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:21274
+msgid ""
+"The symbol %(questionSymbol)s indicates that question %(questionNumber)s "
+"references this portion of the passage."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:21279
+msgid ""
+" The symbol %(sentenceSymbol)s indicates that the following sentence is "
+"referenced in a question."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:21578
+msgid "?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23066
+msgid "(Choice %(letter)s, Checked, Correct)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23068
+msgid "(Choice %(letter)s, Checked, Incorrect)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23072
+msgid "(Choice %(letter)s, Checked)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23077
+msgid "(Choice %(letter)s, Correct Answer)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23080
+msgid "(Choice %(letter)s)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23185
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23385
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "None of the above"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23222
+msgid "Why is this choice "
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+msgid "False"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+msgid "True"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+msgid "No"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+msgid "Yes"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23534
+msgid ""
+"'None of the above' may not be selected when other answers are selected."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26308
+msgid "Translate"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26309
+msgid "Translation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26310
+msgid "translation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26428
+msgid "Rotate"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26429
+msgid "Rotation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26430
+msgid "rotation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26577
+msgid "Reflect"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26578
+msgid "Reflection"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26579
+msgid "reflection"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26729
+msgid "Dilate"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26730
+msgid "Dilation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:26731
+msgid "dilation"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28558
+msgid "Your transformation must use a %(type)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28577
+msgid "Use the interactive graph to define a correct transformation."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28926
+msgid "I couldn't understand those units."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28940
+msgid "Check your significant figures."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28961
+msgid "That answer is numerically incorrect."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:28983
+msgid "Check your units."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:30455
+msgid "Hint #%(pos)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:29
+msgid "Problem history is not yet available for this exercise."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:33
+msgid "This exercise may have changed since it was completed"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:43
+msgid "Previous Problem"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:45
+msgid "Previous Step"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:106
+msgid "Next Problem"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:108
+msgid "Next Step"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:110
+msgid "Started"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:128
+msgid "%(time)ss"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:135
+msgid "Hint used"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:138
+msgid "Hint #%(num)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:150
+msgid "Answer Attempted"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:152
+msgid "Answer attempted"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:172
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:181
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:206
+msgid "Correct Answer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:174
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:189
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:211
+msgid "Incorrect Answer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:183
+msgid "Answer correct"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/history.js.c:191
+msgid "Answer incorrect"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:58
+msgid ""
+"Uh oh, it looks like a network request timed out! You'll need to <a "
+"href='%(refresh)s'>refresh</a> to continue. If you think this is a mistake, "
+"<a href='http://www.khanacademy.org/reportissue?type=Defect'>tell us</a>."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:69
+msgid ""
+"This page is out of date. You need to <a href='%(refresh)s'>refresh</a>, but "
+"don't worry, you haven't lost progress. If you think this is a mistake, <a "
+"href='http://www.khanacademy.org/reportissue?type=Defect'>tell us</a>."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:257
+msgid "There are still more parts of this question to answer."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:518
+msgid "Not correct yet, please try again."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:614
+msgid "Awesome! Show points..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:616
+msgid "Correct! Next question..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:856
+msgid "Show next hint (%(hintsLeft)s left)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:857
+msgid "Show hints (%(hintsLeft)s available)"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:860
+msgid "I'd like another hint (1 hint left)"
+msgid_plural "I'd like another hint (%(num)s hints left)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/interface.js.c:1138
+#: kalite/distributed/static/js/distributed/utils/api.js.c:57
+msgid "Please wait..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:248
+msgid " Refresh the page or <a href='' id='warn-report'>report a problem</a>."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:260
+msgid ""
+"Sorry!  There seems to be an issue with our math renderer loading the file: "
+"%(file)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:267
+msgid ""
+"You should <a href='http://missmarcialee.com/2011/08/how-to-enable-font-"
+"download-in-internet-explorer-8/' target='_blank'>enable font download</a> "
+"to improve the appearance of math expressions."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:274
+msgid ""
+"You should enable font download in your browser to improve the appearance of "
+"math expressions"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:454
+msgid "Hide scratchpad"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:610
+msgid "VIP Issue Report"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:638
+msgid "Tell us what the correct answer should be, and how you got that answer."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:642
+msgid "Tell us what the incorrect text says and what it should say instead."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:646
+msgid ""
+"Tell us exactly what you found confusing. How would you reword the question "
+"or hints to be less confusing?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:650
+msgid ""
+"Tell us exactly what happened and what you had expected to happen instead."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:656
+msgid ""
+"Tell us exactly what's wrong with the hints. What answer did you get and how "
+"did you get it?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:660
+msgid ""
+"Tell us exactly how you tried to input the answer from the hints. Did a "
+"different answer work instead?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:738
+msgid "Please provide a description of the issue."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:751
+msgid "Please specify the issue type."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:829
+msgid ""
+"<p>Thank you for your feedback! Issue <b>%(bugid)s</b> has been opened and "
+"we'll look into it shortly.</p>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:849
+msgid "Thank you for your feedback!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:1423
+msgid "Type in an answer first."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:1917
+msgid "Your internet might be too slow to see an exercise."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:1920
+msgid "Oops!  We can't seem to find this exercise."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/khan-exercise.js.c:1922
+msgid "Oops!  There was a problem loading this exercise."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:7
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:635
+msgid "Error"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:71
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:699
+msgid "Invalid variable ans"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:93
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:100
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:107
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:114
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:121
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:128
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:721
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:728
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:735
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:742
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:749
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:756
+msgid "undefined"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/build/calculator/calculator-tail.js.c:144
+#: kalite/distributed/static/js/distributed/perseus/ke/genfiles/calculator.js.c:772
+msgid "Invalid type %(type)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "Your answer is almost correct, but must be in capital letters."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "Your answer is almost correct, but must not be in capital letters."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "Your answer is almost correct, but must be in the correct case."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "an integer, like <code>6</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a <em>proper</em> fraction, like <code>1/2</code> or <code>6/10</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a <em>simplified proper</em> fraction, like <code>3/5</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"an <em>improper</em> fraction, like <code>10/7</code> or <code>14/8</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a <em>simplified improper</em> fraction, like <code>7/4</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"a multiple of pi, like <code>12\\ \\text{pi}</code> or <code>2/3\\ \\text{pi}"
+"</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "an expression, like <code>\\log(100)</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a percent, like <code>%(NUM)s\\%</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a mixed number, like <code>1\\ 3/4</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "an <em>exact</em> decimal, like <code>%(NUM)s</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a decimal, like <code>%(NUM)s</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"Your answer is almost correct, but it is missing a <code>\\%</code> at the "
+"end."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "Your answer is almost correct, but it needs to be simplified."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"Your answer is close, but you may have approximated pi. Enter your answer as "
+"a multiple of pi, like <code>12\\ \\text{pi}</code> or <code>2/3\\ \\text{pi}"
+"</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"We could not understand your answer. Please check your answer for extra text "
+"or symbols."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"a simplified radical, like <code>\\sqrt{2}</code> or <code>3\\sqrt{5}</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a radical, like <code>\\sqrt{8}</code> or <code>2\\sqrt{2}</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"a simplified radical, like <code>\\sqrt[3]{2}</code> or <code>3\\sqrt[3]{5}</"
+"code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a radical, like <code>\\sqrt[3]{8}</code> or <code>2\\sqrt[3]{2}</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a product of prime factors, like <code>2 \\times 3</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "a single prime number, like <code>5</code>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>2\\cdot2</code>, enter <strong>2*2</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>3y</code>, enter <strong>3y</strong> or <strong>3*y</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>\\dfrac{1}{x}</code>, enter <strong>1/x</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>x^{y}</code>, enter <strong>x^y</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>\\sqrt{x}</code>, enter <strong>sqrt(x)</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>\\pi</code>, enter <strong>pi</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>\\sin \\theta</code>, enter <strong>sin(theta)</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid ""
+"For <code>\\le</code> or <code>\\ge</code>, enter <strong><=</strong> or "
+"<strong>>=</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/answer-types.js.c:2
+msgid "For <code>\\neq</code>, enter <strong>=/=</strong>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:3
+msgid "Periodic table of the elements"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "zero"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "one"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "two"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "three"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "four"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "five"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "six"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "seven"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eight"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "nine"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "ten"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eleven"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "twelve"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "thirteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fourteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fifteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sixteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "seventeen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eighteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "nineteen"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "twenty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "zeroth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "first"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "second"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "third"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fourth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fifth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sixth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "seventh"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eighth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "ninth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "tenth"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eleventh"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "twelfth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "thirteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fourteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fifteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sixteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "seventeenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eighteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "nineteenth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "twentieth"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "thousand"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "million"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "billion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "trillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "quadrillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "quintillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sextillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "septillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "octillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "nonillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "decillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "undecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "duodecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "tredecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "quattuordecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "quindecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sexdecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "septendecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "octodecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "novemdecillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "vigintillion"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "thirty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "forty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "fifty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "sixty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "seventy"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "eighty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "ninety"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "%(unit)s hundred"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:25
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:6
+msgid "negative"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "hundred"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "hundredth"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "thousandth"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/chemistry.js.c:12
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:27
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/exponents.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers.js.c:10
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math-format.js.c:8
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/math.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:6
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/stat.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:4
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+#, fuzzy
+msgid "ten thousandth"
+msgstr ""
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  djangojs.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/cipher.js.c:2
+msgid "i have learned all kinds of different things from using khan academy"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/cipher.js.c:2
+msgid ""
+"the world is filled with secrets and mysteries just waiting to be discovered"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/cipher.js.c:2
+msgid ""
+"when a message contains a single character by itself, it is most likely "
+"either the letter i or a"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/cipher.js.c:2
+msgid ""
+"words which have repeating letters like too and all can also give a hint to "
+"what the secret message is"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/cipher.js.c:2
+msgid ""
+"you have just cracked a caesar cipher and obtained the title of code breaker"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/congruency.js.c:33
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-3d.js.c:20
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-drawing.js.c:18
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-geometry.js.c:22
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie.js.c:14
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/interactive.js.c:21
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/tmpl.js.c:4
+msgid "Watch %(author)s work through a very similar problem:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{The top number has 1 digit to the right of the decimal.}"
+msgid_plural ""
+"\\text{The top number has %(num)s digits to the right of the decimal.}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{The bottom number has 1 digit to the right of the decimal.}"
+msgid_plural ""
+"\\text{The bottom number has %(num)s digits to the right of the decimal.}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid ""
+"\\text{The product has %(numA)s + %(numB)s = %(numSum)s digits to the right "
+"of the decimal.}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{Shift the decimal 1 to the right.}"
+msgid_plural "\\text{Shift the decimal %(num)s to the right.}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{Bring the decimal up into the}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{answer (the quotient).}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid ""
+"\\text{How many times does }%(divisor)s\\text{ go into }\\color{#6495ED}"
+"{%(value)s}\\text{?}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid " with a remainder of "
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "\\text{Write in a decimal and a zero.}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid "The remainder is 0, so we have our answer."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/graphie-helpers-arithmetic.js.c:2
+msgid ""
+"\\text{Since } %(remainder)s \\text{ is less than } %(divisor)s \\text{, it "
+"is left as our remainder.}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/init-calculator.js.c:2
+msgid "DEG"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/init-calculator.js.c:2
+msgid "RAD"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:6
+msgid "\\text{mean}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/mean-and-median.js.c:6
+msgid "\\text{median}"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:8
+msgid ""
+"<p>To solve for the value of <code>%(name)s</code>, we need to solve for the "
+"value of <code>%(composedFuncWithVal)s</code>.</p>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/polynomials.js.c:8
+msgid "<p>That means <code>%(name)s(%(val)s) = %(hintEvalOf)s</code></p>"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/probability.js.c:2
+msgid "H"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/probability.js.c:2
+msgid "T"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/qhints.js.c:2
+msgid "Correct! The answer is %(answer)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/qhints.js.c:2
+msgid "Incorrect. The answer is %(answer)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/time.js.c:2
+msgid ""
+"Remember the hour hand is the short hand and the minute hand is the long hand"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/time.js.c:2
+msgid "Remember the hour hand needs to move over the course of the hour"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/triangle-congruence.js.c:2
+msgid "Reflect shape"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "next"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"The %(nth)s section of the derivative has a constant value of %(val)s, so it "
+"corresponds to an original function with a constant <b>slope</b> of %(val)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"The %(nth)s section of the antiderivative has a constant slope of %(val)s, "
+"so it corresponds to an original function that has a constant value of "
+"%(val)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "increasing and positive"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "decreasing and positive"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "increasing and negative"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid "decreasing and negative"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"The %(nth)s section of the derivative is %(inc)s, so it corresponds to an "
+"original function whose <b>slope</b> is %(inc)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"The %(nth)s section of the antiderivative has a %(inc)s slope, so it "
+"corresponds to an original function that is %(inc)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"Because these sections do not appear next to each other in the graph of "
+"<code>f(x)</code>, there is no solution."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/visualizing-derivatives.js.c:2
+msgid ""
+"The function in the window corresponds to <code>%(fnVar)s</code> where "
+"%(solution)s."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "%(item1)s and %(item2)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "%(items_with_commas)s, and %(last_item)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "ten thousand"
+msgid_plural "ten thousands"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "hundred thousand"
+msgid_plural "hundred thousands"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "m"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "meter"
+msgid_plural "meters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "cm"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "centimeter"
+msgid_plural "centimeters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "inch"
+msgid_plural "inches"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "foot"
+msgid_plural "feet"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "unit"
+msgid_plural "units"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Ashley"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Brandon"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Ben"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Christopher"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Daniel"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Emily"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Gabriela"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Ishaan"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Jessica"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Kevin"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Luis"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Michael"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Nadia"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Omar"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Stephanie"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Tiffany"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Umaima"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Vanessa"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "William"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "bike"
+msgid_plural "bikes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "car"
+msgid_plural "cars"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "horse"
+msgid_plural "horses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "motorcycle"
+msgid_plural "motorcycles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "scooter"
+msgid_plural "scooters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "train"
+msgid_plural "trains"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "chemistry"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "geometry"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "history"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "math"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "physics"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "language"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "exam"
+msgid_plural "exams"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "test"
+msgid_plural "tests"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "quiz"
+msgid_plural "quizzes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "party favor"
+msgid_plural "party favors"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "bag"
+msgid_plural "bags"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "jelly bean"
+msgid_plural "jelly beans"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "book"
+msgid_plural "books"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "shelf"
+msgid_plural "shelves"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "can of food"
+msgid_plural "cans of food"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "box"
+msgid_plural "boxes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "hardware"
+msgid_plural "hardwares"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "hammer"
+msgid_plural "hammers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "nail"
+msgid_plural "nails"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "saw"
+msgid_plural "saws"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "grocery"
+msgid_plural "groceries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "banana"
+msgid_plural "bananas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "loaf of bread"
+msgid_plural "loaves of bread"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "liter of milk"
+msgid_plural "liters of milk"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "potato"
+msgid_plural "potatoes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "gift"
+msgid_plural "gifts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "toy"
+msgid_plural "toys"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "game"
+msgid_plural "games"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "souvenir"
+msgid_plural "souvenirs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "school supply"
+msgid_plural "school supplies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pen"
+msgid_plural "pens"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pencil"
+msgid_plural "pencils"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "notebook"
+msgid_plural "notebooks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "stuffed animal"
+msgid_plural "stuffed animals"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "video game"
+msgid_plural "video games"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "race car"
+msgid_plural "race cars"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "doll"
+msgid_plural "dolls"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pizza"
+msgid_plural "pizzas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pie"
+msgid_plural "pies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "cake"
+msgid_plural "cakes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "in the morning"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "around noon"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "in the evening"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "at night"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "push-up"
+msgid_plural "push-ups"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "sit-up"
+msgid_plural "sit-ups"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "squat"
+msgid_plural "squats"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "jumping jack"
+msgid_plural "jumping jacks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "apple"
+msgid_plural "apples"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "coconut"
+msgid_plural "coconuts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "eggplant"
+msgid_plural "eggplants"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "kiwi fruit"
+msgid_plural "kiwi fruit"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "lemon"
+msgid_plural "lemons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "mango"
+msgid_plural "mangos"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "nectarine"
+msgid_plural "nectarines"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "orange"
+msgid_plural "oranges"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pomegranate"
+msgid_plural "pomegranates"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "watermelon"
+msgid_plural "watermelons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "binder"
+msgid_plural "binders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "crayon"
+msgid_plural "crayons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "eraser"
+msgid_plural "erasers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "folder"
+msgid_plural "folders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "glue stick"
+msgid_plural "glue sticks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "marker"
+msgid_plural "markers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "rubber stamp"
+msgid_plural "rubber stamps"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "red"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "yellow"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "green"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "blue"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "purple"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "white"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "black"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "brown"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "silver"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "gold"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pink"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Loyola"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Gardner Bullis"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Almond"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Covington"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Springer"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Santa Rita"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "Oak"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "chair"
+msgid_plural "chairs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "table"
+msgid_plural "tables"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "bed frame"
+msgid_plural "bed frames"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "sofa"
+msgid_plural "sofas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "couch"
+msgid_plural "couches"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "desk"
+msgid_plural "desks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "book shelf"
+msgid_plural "book shelves"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "television"
+msgid_plural "televisions"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "computer"
+msgid_plural "computers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "laptop"
+msgid_plural "laptops"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "camera"
+msgid_plural "cameras"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "hat"
+msgid_plural "hats"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "belt"
+msgid_plural "belts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "necklace"
+msgid_plural "necklaces"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of shoes"
+msgid_plural "pairs of shoes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "watch"
+msgid_plural "watches"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of socks"
+msgid_plural "pairs of socks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "sweatshirt"
+msgid_plural "sweatshirts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "sweater"
+msgid_plural "sweaters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "tie"
+msgid_plural "ties"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "scarf"
+msgid_plural "scarves"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of shorts"
+msgid_plural "pairs of shorts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of jeans"
+msgid_plural "pairs of jeans"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of gloves"
+msgid_plural "pairs of gloves"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "shirt"
+msgid_plural "shirts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of suspenders"
+msgid_plural "pairs of suspenders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "jacket"
+msgid_plural "jackets"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of glasses"
+msgid_plural "pairs of glasses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "pair of boots"
+msgid_plural "pairs of boots"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "backpack"
+msgid_plural "backpacks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "bear"
+msgid_plural "bears"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "gorilla"
+msgid_plural "gorillas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "lion"
+msgid_plural "lions"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "lizard"
+msgid_plural "lizards"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "meerkat"
+msgid_plural "meerkats"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "porcupine"
+msgid_plural "porcupines"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "seal"
+msgid_plural "seals"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "sloth"
+msgid_plural "sloths"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "snake"
+msgid_plural "snakes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "tiger"
+msgid_plural "tigers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "turtle"
+msgid_plural "turtles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "zebra"
+msgid_plural "zebras"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "farmer"
+msgid_plural "farmers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "tomato"
+msgid_plural "tomatoes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "carrot"
+msgid_plural "carrots"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "bean"
+msgid_plural "beans"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "corn stalk"
+msgid_plural "corn stalks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "field"
+msgid_plural "fields"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "gardener"
+msgid_plural "gardeners"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "rose"
+msgid_plural "roses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "tulip"
+msgid_plural "tulips"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "daisy"
+msgid_plural "daisies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "iris"
+msgid_plural "irises"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "lily"
+msgid_plural "lilies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "garden"
+msgid_plural "gardens"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "mile"
+msgid_plural "miles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/perseus/ke/utils/word-problems.js.c:6
+msgid "kilometer"
+msgid_plural "kilometers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:26
+msgid "Poor quality"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:27
+msgid "Somewhat poor"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:28
+#: kalite/distributed/static/js/distributed/rating/views.js.c:35
+msgid "Average"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:29
+msgid "Somewhat high"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:30
+msgid "High quality"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:33
+msgid "Very easy"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:34
+msgid "Easy"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:36
+msgid "Hard"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:37
+msgid "Very hard"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:63
+#: kalite/distributed/static/js/distributed/rating/views.js.c:89
+msgid "Quality"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:67
+#: kalite/distributed/static/js/distributed/rating/views.js.c:90
+msgid "Difficulty"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:137
+msgid "Very Low"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:138
+msgid "Low"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:139
+msgid "Normal"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:140
+msgid "High"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/views.js.c:141
+msgid "Very High"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/hbtemplates/rating.handlebars.py:6
+msgid "What did you think?"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/hbtemplates/rating.handlebars.py:7
+msgid "Your feedback will help us make better content for future learners!"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/hbtemplates/rating.handlebars.py:8
+msgid "You can change your rating at any time."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/hbtemplates/rating.handlebars.py:11
+msgid "Delete my review"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/rating/hbtemplates/text.handlebars.py:3
+msgid "Your comments:"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/search/views.js.c:75
+msgid ""
+"Unexpected error: no search data found for selected item. Please select "
+"another item."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:3
+msgid "Topic, video, exercise..."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:3
+msgid "Search for content"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:4
+msgid "Submit"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/views.js.c:392
+msgid " %(points)d points "
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:10
+msgid "Select Facility"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:20
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:22
+msgid "Username"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:27
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:29
+msgid "Password"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:34
+#: kalite/distributed/static/js/distributed/user/hbtemplates/loginmodal.handlebars.py:6
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:9
+msgid "Login"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:36
+msgid "Admin"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/login.handlebars.py:36
+msgid "Coach"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:2
+msgid "Teach"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:3
+msgid "Manage"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:6
+msgid "Learn"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:10
+msgid "Sign Up"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:15
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:17
+msgid "Open user manual in new window"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:16
+msgid "Docs"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:36
+msgid "User menu"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:40
+msgid "I have"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:43
+msgid "My Progress"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:50
+msgid "About"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/navigation.handlebars.py:56
+msgid "Logout"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/user/hbtemplates/superusercreatemodal.handlebars.py:5
+msgid "Create Admin Account"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/utils/api.js.c:57
+msgid "Connecting to the server."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/utils/api.js.c:64
+msgid ""
+"You are not authorized to complete the request.  Please login as an "
+"authorized user, then retry the request."
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/utils/api.js.c:79
+msgid ""
+"Unexpected error; contact the FLE with the following information: "
+"%(error_msg)s"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/video/hbtemplates/video-player.handlebars.py:12
+msgid "Sorry, this item has not been downloaded."
+msgstr ""
+
+#: kalite/inline/static/js/inline/hbtemplates/inline.handlebars.py:1
+msgid "Show me how!"
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:147
+msgid "Completed update successfully."
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:155
+msgid "Update cancelled successfully."
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:158
+msgid "Error during update: %(progress_log_notes)s"
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:164
+msgid "problem on server."
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:167
+msgid "Could not connect to the server."
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:170
+msgid "Error while checking update status: %(message)s"
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:199
+msgid ""
+"Overall progress: %(percent_complete)5.1f%% complete (%(cur_stage)d of "
+"%(num_stages)d)"
+msgstr ""
+
+#: kalite/updates/static/js/updates/updates/base.js.c:205
+msgid "Loading"
+msgstr ""
