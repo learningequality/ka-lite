@@ -12,8 +12,14 @@ RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates sudo software-properties-common
 RUN add-apt-repository -y ppa:ubuntu-wine/ppa && apt-get -y update && apt-get install --no-install-recommends --assume-yes wine
 
+# Install debian build dependencies
+RUN apt-get install -y devscripts
+RUN apt-get update && apt-get install -y \
+    equivs \
+	gdebi
 
 COPY . /kalite
+
 VOLUME /kalitedist/
 
 # for mounting the whl files into other docker containers
@@ -32,10 +38,10 @@ RUN cd /kalite/ && git clone https://github.com/learningequality/ka-lite-install
 RUN cd /kalite/ka-lite-installers/windows && wget http://pantry.learningequality.org/downloads/ka-lite/0.17/content/contentpacks/en.zip
 
 # Build the python packages and the ka-lite windows installer
-CMD cd /kalite && make dist \
-	&& cd /kalite/ka-lite-installers/windows \
-	&& cp -R /kalite/dist/ka_lite_static-*-py2-none-any.whl /kalite/ka-lite-installers/windows \
-	&& export KALITE_BUILD_VERSION=$(/kalite/kalite_env/bin/kalite --version) \
-	&& wine inno-compiler/ISCC.exe installer-source/KaliteSetupScript.iss \
-	&& cp /kalite/dist/* /kalitedist/ \
-	&& cp /kalite/ka-lite-installers/windows/KALiteSetup-$(/kalite/kalite_env/bin/kalite --version).exe /kalitedist/
+CMD cd /kalite && make dist
+#	&& cd /kalite/ka-lite-installers/windows \
+#	&& cp -R /kalite/dist/ka_lite_static-*-py2-none-any.whl /kalite/ka-lite-installers/windows \
+#	&& export KALITE_BUILD_VERSION=$(/kalite/kalite_env/bin/kalite --version) \
+#	&& wine inno-compiler/ISCC.exe installer-source/KaliteSetupScript.iss \
+#	&& cp /kalite/dist/* /kalitedist/ \
+#	&& cp /kalite/ka-lite-installers/windows/KALiteSetup-$(/kalite/kalite_env/bin/kalite --version).exe /kalitedist/
