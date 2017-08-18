@@ -125,7 +125,7 @@ def learner_logs(request):
             if topic_objects.count() == 0:
                 topic_objects = log_objects
             # Can return multiple items with same id, due to topic tree redundancy, so make unique by id here.
-            objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
+            objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects], language=request.language) or []]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -234,7 +234,7 @@ def aggregate_learner_logs(request):
         elif len(object_buffer) == 1:
             all_object_ids.add(object_buffer)
     if len(all_object_ids) > 0:
-        output_dict["available_topics"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids)))
+        output_dict["available_topics"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids), language=request.language))
     output_dict["total_not_attempted"] = number_content*len(learners) - (
         output_dict["total_complete"] + output_dict["total_struggling"] + output_dict["total_in_progress"])
     # Report total time in hours
