@@ -332,32 +332,29 @@ class Command(BaseCommand):
 
         install_clean = not database_exists
 
-        if database_file:
-            if not database_exists:
-                install_clean = True
+        if database_exists:
+            # We found an existing database file.  By default,
+            #   we will upgrade it; users really need to work hard
+            #   to delete the file (but it's possible, which is nice).
+            logger.info(
+                "-------------------------------------------------------------------\n"
+                "WARNING: Database file already exists!\n"
+                "-------------------------------------------------------------------"
+            )
+            if not options["interactive"] \
+               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
+               or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+               or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                install_clean = False
+                logger.info("Upgrading database to KA Lite version %s" % VERSION)
             else:
-                # We found an existing database file.  By default,
-                #   we will upgrade it; users really need to work hard
-                #   to delete the file (but it's possible, which is nice).
+                install_clean = True
+                logger.info("OK.  We will run a clean install; ")
+                # After all, don't delete--just move.
                 logger.info(
-                    "-------------------------------------------------------------------\n"
-                    "WARNING: Database file already exists!\n"
-                    "-------------------------------------------------------------------"
+                    "the database file will be moved to a deletable "
+                    "location."
                 )
-                if not options["interactive"] \
-                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
-                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
-                    install_clean = False
-                    logger.info("Upgrading database to KA Lite version %s" % VERSION)
-                else:
-                    install_clean = True
-                    logger.info("OK.  We will run a clean install; ")
-                    # After all, don't delete--just move.
-                    logger.info(
-                        "the database file will be moved to a deletable "
-                        "location."
-                    )
 
         if not install_clean and not database_file:
             # Make sure that, for non-sqlite installs, the database exists.
@@ -398,7 +395,7 @@ class Command(BaseCommand):
         ########################
 
         # Move database file (if exists)
-        if install_clean and database_file and os.path.exists(database_file):
+        if install_clean and database_file and database_exists:
             if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
                 # This is an overwrite install; destroy the old db
                 dest_file = tempfile.mkstemp()[1]
