@@ -51,7 +51,7 @@ Installers
 Developers
 ^^^^^^^^^^
 
-* We now build with Node.js v.6
+ * We now build with Node.js v.6
 
 
 0.17.1
