@@ -12,28 +12,41 @@ to read the release notes.
 0.17.2
 ------
 
+.. warning:: New content packs were built for this release (July 2017). Users of
+  non-English content packs should upgrade both the content packs and the videos. For the
+  English content update, there are 396 new videos to be downloaded.
+
+  If you are using only English contents, you have the option to stay with
+  previously downloaded content packs, provided that you use an installer that does not
+  bundle the English content pack (Debian/Ubuntu packages or `pip`).
+
+  If you are downloading videos from torrent (see: :ref:`bulk-video-downloads`), you
+  should re-use the target directory of your previously downloaded videos, then only
+  396 videos need to be downloaded.
+
+
 Bug fixes
 ^^^^^^^^^
 
+ * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
  * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
  * Display resource titles on the chosen locale inside the Teach tab :url-issue:`5494`
- * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
  * Broken questions removed upstream (missing radio buttons) :url-issue:`5172`
 
 New Features
 ^^^^^^^^^^^^
 
-* Enabled captions by default for English dubbed videos :url-issue:`5464`
-* About/Diagnose page :url-issue:`5452`
+ * Enabled captions by default for English dubbed videos :url-issue:`5464`
+ * About/Diagnose page :url-issue:`5452`
 
 Installers
 ^^^^^^^^^^
 
-* **Windows**: Update notification message when starting KA Lite server `ka-lite-installers#461 <https://github.com/learningequality/ka-lite-installers/pull/461>`_
-* **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
-* **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
-* **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
-* **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
+ * **Windows**: Update notification message when starting KA Lite server `ka-lite-installers#461 <https://github.com/learningequality/ka-lite-installers/pull/461>`_
+ * **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
+ * **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
+ * **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
+ * **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
 
 Developers
 ^^^^^^^^^^
