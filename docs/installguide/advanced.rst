@@ -1,56 +1,54 @@
 .. _advanced-installation:
 
-Advanced installation options
-=============================
+Other options
+=============
 
 .. note::
-    Every time you install or update kalite, you should (re)run
-    ``kalite manage setup`` to setup the database and download content packs
-    (exercise texts, images, translations etc.).
+    Every time you update kalite, you should (re)run ``kalite manage setup`` to
+    ensure that the database and contents are kept updated.
 
 
 .. _pip-installation:
 
-Generic installation (pip install)
-__________________________________
+Generic installation ``pip install``
+____________________________________
 
+You can install KA Lite from the online Python Package Index (PyPi) using its
+package system `pip`.
 
-Installing through pip or with setup.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note:: PyPi sources do not contain content and exercise data, so you need to
+  :url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB).
 
-For command line users with access to pip, you can install KA Lite from an
-online source like this::
+If you are installing system-wide, it's preferable to use ``ka-lite-static`` which
+has dependencies bundled in and doesn't interfere with your system's setup::
+
+    sudo pip install ka-lite-static
+
+You can also install KA Lite in a virtual environment or on the current user's
+local python packages without dependencies bundled in::
 
     pip install ka-lite
-
-
-Static version
-~~~~~~~~~~~~~~
-
-If you need to run KA Lite with static dependencies bundled and isolated from
-the rest of your environment, you can run::
-
-    pip install ka-lite-static
 
 
 Portable tarballs / zip files with setup.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you can't install KA Lite on systems with the standard Windows/Mac/Linux installers,
-you can fetch the KA Lite python package from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`_.
+If you can't install KA Lite on systems with the standard
+Windows/Mac/Linux installers, you can fetch the KA Lite python package from
+`PyPi <https://pypi.python.org/pypi/ka-lite-static>`_.
 
-To unpack the package for installation, run:
+To unpack the package for installation on Linux/Mac, run:
 
 .. parsed-literal::
 
    tar -xf ka-lite-static-|release|.tar.gz
 
-Once it's unpacked, install it by entering the extracted directory and running::
+Once it's unpacked, install it by entering the extracted directory and running:
 
+.. parsed-literal::
+
+    cd ka-lite-static-|release|
     sudo python setup.py install
-
-Beware that the PyPi sources do not contain assessment items, so you need to
-:url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB)..
 
 
 .. _ppa-installation:
@@ -73,12 +71,22 @@ To add the PPA as a repository on an apt-based system, you need to ensure that a
 
 .. _gtk-installation:
 
-User interface for Debian/Ubuntu
-__________________________________
+User interface for Linux/GTK
+____________________________
 
-Make sure you have the PPA added, then run::
+A Control Panel for simple start/stop functionality and a bit of user setup is
+available with a user interface. It's not feature-complete, but good enough for simple
+usage.
+
+Make sure you have the PPA added (see :ref:`ppa-installation`), then run::
 
     sudo apt-get install ka-lite-gtk
+
+
+On non-Debian systems, you can install the GTK interface with Pip::
+  
+    sudo pip install ka-lite-gtk  # Install
+    ka-lite-gtk  # Launch the KA Lite UI
 
 
 .. _development-installation:

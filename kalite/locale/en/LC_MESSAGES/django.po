@@ -1,0 +1,2184 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-01 11:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kalite/coachreports/templates/coachreports/coach.html.py:6
+#: kalite/coachreports/templates/coachreports/coach.html.py:37
+msgid "Coach Reports"
+msgstr ""
+
+#: kalite/coachreports/templates/coachreports/student_view.html.py:6
+#: kalite/coachreports/templates/coachreports/student_view.html.py:7
+msgid "User report"
+msgstr ""
+
+#: kalite/contentload/api_views.py:86
+#, python-format
+msgid "Unexpected error importing videos: %(err_msg)s"
+msgstr ""
+
+#: kalite/contentload/api_views.py:107
+#, python-format
+msgid "Unexpected error importing exercises: %(err_msg)s"
+msgstr ""
+
+#: kalite/contentload/api_views.py:110
+#, python-format
+msgid "Uploaded %(num_exercises)d exercises and %(num_videos)d videos"
+msgstr ""
+
+#: kalite/control_panel/views.py:67
+msgid "Failed to save the sharing network; please review errors below."
+msgstr ""
+
+#: kalite/control_panel/views.py:271
+msgid "Failed to save the facility; please review errors below."
+msgstr ""
+
+#: kalite/control_panel/views.py:279
+#, python-format
+msgid "The facility '%(facility_name)s' has been successfully saved!"
+msgstr ""
+
+#: kalite/control_panel/views.py:295
+#, python-format
+msgid "Error parsing date range: %(error_msg)s.  Please review and re-submit."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/account_management.html.py:14
+msgid "User Management"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/account_management.html.py:31
+#, python-format
+msgid "Account management page for %(student_name)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/account_management.html.py:39
+msgid "Edit account preferences"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/account_management.html.py:43
+msgid "Download data from Khan Academy"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base.html.py:48
+msgid "Local KA Lite Installation"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base.html.py:53
+msgid "New Sharing Network"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base.html.py:55
+msgid "Unregistered Device"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base.html.py:55
+msgid "Register Now!"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base.html.py:61
+#: kalite/control_panel/templates/control_panel/base.html.py:62
+#: kalite/control_panel/templates/control_panel/base.html.py:78
+#: kalite/control_panel/templates/control_panel/base.html.py:79
+#: kalite/control_panel/templates/control_panel/facility.html.py:7
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:42
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:38
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:52
+msgid "Edit"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/base_printable.html.py:6
+msgid "Print Report"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/data_export.html.py:10
+#: kalite/control_panel/templates/control_panel/data_export.html.py:83
+msgid "Data Export"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:6
+#, python-format
+msgid "%(device_name)s Device Syncing History"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:51
+msgid "Sync to central server!"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:52
+msgid "Register"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:64
+msgid "Device Metadata"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:70
+msgid "Device ID"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:72
+msgid "Current Version"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:74
+msgid "Database Size"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:76
+msgid "Database last update"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:78
+msgid "Install Directory"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:85
+msgid "Version"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:87
+msgid "Operating System"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:96
+msgid "Sync Sessions"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:101
+msgid "This device has never synced with the central server."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:104
+msgid ""
+"This device is not registered, and so cannot sync data with the central "
+"server."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:111
+msgid "A sync is currently in progress..."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:111
+msgid "(refresh)"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:117
+msgid "The last sync completed successfully"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:120
+msgid "There was an error during the last sync"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:122
+msgid "show details"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:134
+msgid "Sync Date"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:135
+msgid "# Models Uploaded"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:136
+msgid "# Models Downloaded"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:137
+msgid "# Errors"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:153
+msgid "Browse to the previous page of sync sessions."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:162
+#, python-format
+msgid "Browse to page # %(listed_page)s of sessions."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/device_management.html.py:165
+msgid "Browse to the next page of sessions."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:9
+msgid "Add"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/control_panel/templates/control_panel/facility.html.py:11
+#: kalite/facility/models.py:82
+#: kalite/facility/models.py:134
+msgid "Facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:183
+msgid "Edit a facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:183
+msgid "Add a new Facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:184
+msgid ""
+"Please enter the following information about your facility. Please enter a "
+"detailed address, because knowing where you are in the world allows us to "
+"better plan for future deployments and partnerships."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:186
+msgid ""
+"Please use this search box to locate your facility (and/or click on the map "
+"to select a spot), and then enter the additional information in the form "
+"below."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:187
+msgid ""
+"(Knowing, as closely as possible, where you are in the world allows us to "
+"better plan for future deployments and partnerships)"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:190
+msgid ""
+"Search for your facility's address or name to find its location on the map "
+"(enter to search)"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility.html.py:207
+msgid "Save facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:11
+msgid "Facility Management"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:78
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:85
+msgid "Export learner stats"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:92
+msgid "Start Date"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:98
+msgid "End Date"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:103
+msgid "User report for the previous month"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/facility_management.html.py:103
+msgid "Export to CSV"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:4
+msgid "Sharing Network Add / Edit"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:13
+msgid "Update Your Sharing Network"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:13
+msgid "Create A Sharing Network"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:14
+msgid ""
+"A 'Sharing Network' is a set of KA Lite installations that share logins and "
+"learner progress with each other through the internet (when available)."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:20
+msgid "Update Sharing Network"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_form.html.py:22
+msgid "Create Sharing Network"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_management.html.py:6
+msgid "Sharing Network Management Console"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_management.html.py:33
+msgid "Sync via USB"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/zone_management.html.py:36
+msgid "Export Data"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:10
+msgid "Coaches"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:12
+msgid ""
+"Coaches assist learners to learn, and can be teachers, parents, or fellow "
+"students."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:20
+msgid "You currently have no coaches for this facility."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:29
+msgid "Delete Coaches"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:41
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:39
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:53
+msgid "Coach"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:43
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:7
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:41
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:55
+msgid "Logins"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:44
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:9
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:42
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:56
+msgid "Login Time"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:45
+msgid "Coach Report Views"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:57
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:59
+#, python-format
+msgid "Edit user info for coach %(coachname)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:63
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:88
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:98
+msgid "hour(s)"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:81
+msgid "Add a new coach."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:87
+msgid "Browse to the previous page of coaches."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:91
+#, python-format
+msgid "Browse to page # %(listed_page)s of coaches."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_coaches_table.html.py:95
+msgid "Browse to the next page of coaches."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:8
+msgid "Devices"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:10
+msgid "A device is a KA Lite installation."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:10
+msgid "Devices in the same sharing network sync user data with each other."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:18
+msgid "You currently have no devices that sync data with the central server"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:25
+msgid "Device name"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:26
+msgid "# Times Synced"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:27
+msgid "Last Sync"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:28
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:31
+msgid "Last Usage"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:29
+msgid "Available Actions"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:57
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:53
+msgid "Never"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:69
+#: kalite/control_panel/templates/control_panel/snippets/sync_now.html.py:4
+msgid "Sync Now!"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_device_table.html.py:73
+msgid "Register device"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:7
+#: kalite/distributed/templates/distributed/base_manage.html.py:19
+#: kalite/facility/models.py:34
+msgid "Facilities"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:9
+#: kalite/facility/templates/facility/facility_selection.html.py:31
+msgid "A facility is a physical location where learners learn."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:15
+msgid ""
+"The facilities highlighted below are missing metadata (e.g. location, "
+"contact information). Click the pencil icon to edit or update this "
+"information."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:21
+msgid ""
+"You currently have no facilities that sync data with the central server."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:28
+msgid "Facility Name"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:29
+msgid "# Users"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:30
+msgid "# Groups"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:32
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:30
+msgid "Delete"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:41
+msgid "Edit/update information for this facility."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:63
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:64
+msgid "Delete facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_facility_table.html.py:82
+msgid "Add a new facility"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:5
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:40
+msgid "# Learners"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:11
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:43
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:57
+msgid "Videos Viewed"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:13
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:44
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:58
+msgid "Exercises Completed"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_group_summary.html.py:15
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:45
+msgid "Mastery "
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:7
+msgid "Ungrouped"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:15
+msgid "Learner Groups"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:17
+msgid ""
+"A 'group' is set of learners, such as a classroom of students or all "
+"students in one grade."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:17
+msgid "Add learners by selecting a group."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:23
+msgid "You currently have no group data available."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:28
+msgid "Delete Groups"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:37
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:54
+msgid "Group"
+msgstr ""
+
+#. Translators: this is a verb; by clicking this link, the user will be able to coach students.
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:55
+#, python-format
+msgid "Manage group %(groupname)s."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:66
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:68
+#: kalite/facility/views.py:187
+msgid "Edit group"
+msgstr ""
+
+#. Translators: this is a verb; by clicking this link, the user will be able to coach students.
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:77
+#, python-format
+msgid "Coach group %(groupname)s."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_groups_table.html.py:107
+msgid "Add a new group."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:10
+msgid "Learners"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:12
+msgid "This report contains information about recent learner activity."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:19
+msgid "You currently have no learner data available."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:25
+msgid "Change Learner Groups"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:42
+msgid "Delete Learners"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:51
+msgid "Learner Name"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:59
+msgid "Mastery"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:70
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:72
+#, python-format
+msgid "Edit learner %(studentname)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:77
+#, python-format
+msgid "Coach learner %(studentname)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:89
+#, python-format
+msgid "Manage group %(groupname)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:91
+#, python-format
+msgid "Coach group %(groupname)s"
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:118
+msgid "Add a new learner."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:125
+msgid "Browse to the previous page of learners."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:132
+#, python-format
+msgid "Browse to page # %(listed_page)s of learners."
+msgstr ""
+
+#: kalite/control_panel/templates/control_panel/partials/_students_table.html.py:135
+msgid "Browse to the next page of learners."
+msgstr ""
+
+#: kalite/distributed/demo_middleware.py:45
+#, python-format
+msgid ""
+"Welcome to our demo server!  Please visit our <a href='%(um_url)s'>user's "
+"manual</a> or <a href='%(home_url)s'>homepage</a> for more information."
+msgstr ""
+
+#: kalite/distributed/demo_middleware.py:57
+#, python-format
+msgid ""
+"<a href='%(sign_up_url)s'>Sign up as a learner</a>, or log in as the site-"
+"wide admin (username=%(user_name)s, password=%(passwd)s)"
+msgstr ""
+
+#: kalite/distributed/demo_middleware.py:67
+msgid "The admin interface is disabled in the demo server."
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/distributed/forms.py:8
+#: kalite/distributed/templates/admin/superuser_form.html.py:12
+#: kalite/facility/models.py:138
+msgid "Username"
+msgstr ""
+
+#: kalite/distributed/forms.py:11
+#: kalite/distributed/templates/admin/superuser_form.html.py:20
+#: kalite/facility/forms.py:23
+msgid "Password"
+msgstr ""
+
+#: kalite/distributed/forms.py:14
+#: kalite/distributed/templates/admin/superuser_form.html.py:28
+msgid "Re-enter Password"
+msgstr ""
+
+#: kalite/distributed/views.py:51
+#, python-format
+msgid ""
+"Please <a href='%s'>follow the directions to register your device</a>, so "
+"that it can synchronize with the central server."
+msgstr ""
+
+#: kalite/distributed/views.py:54
+#, python-format
+msgid ""
+"Please <a href='%s'>create a facility</a> now. Users will not be able to "
+"sign up for accounts until you have made a facility."
+msgstr ""
+
+#: kalite/distributed/views.py:68
+msgid ""
+"Please login with the admin account you created, then create your facility "
+"and register this device to complete the setup."
+msgstr ""
+
+#: kalite/distributed/views.py:72
+msgid ""
+"Dear Admin, you need to download a full version of the English language pack "
+"for KA Lite to work."
+msgstr ""
+
+#: kalite/distributed/views.py:76
+msgid "Go to Language Management"
+msgstr ""
+
+#: kalite/distributed/views.py:89
+msgid ""
+"Dear Admin, please log in and upgrade the following languages as soon as "
+"possible: {}"
+msgstr ""
+
+#: kalite/distributed/views.py:194
+msgid "Error: query not specified."
+msgstr ""
+
+#: kalite/distributed/views.py:226
+#, python-format
+msgid "Search results for '%(query)s'"
+msgstr ""
+
+#: kalite/distributed/views.py:255
+#: kalite/distributed/views.py:265
+msgid "Passwords don't match!"
+msgstr ""
+
+#: kalite/distributed/views.py:300
+msgid ""
+"You must be logged in with an account authorized to view this page (API)."
+msgstr ""
+
+#: kalite/distributed/views.py:302
+msgid "You must be logged in with an account authorized to view this page."
+msgstr ""
+
+#: kalite/distributed/management/commands/createtunnel.py:18
+msgid "Another createtunnel command is still running!"
+msgstr ""
+
+#: kalite/distributed/management/commands/createtunnel.py:61
+#, python-format
+msgid "Can't connect to %(server)s at port %(port)s."
+msgstr ""
+
+#: kalite/distributed/management/commands/createtunnel.py:104
+#, python-format
+msgid "Connection refused by %(server)s. Stdout: %(stdout)s"
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:89
+msgid "Downloading content pack."
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:92
+msgid "Installing a local content pack."
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:137
+msgid "Saved empty content database in {}."
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:163
+msgid "Moving content files to the right place."
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:172
+msgid "Looking for available content items."
+msgstr ""
+
+#: kalite/distributed/management/commands/retrievecontentpack.py:175
+msgid "Finished processing content pack."
+msgstr ""
+
+#: kalite/distributed/templates/admin/base.html.py:62
+#: kalite/distributed/templates/distributed/base.html.py:104
+msgid "Home"
+msgstr ""
+
+#: kalite/distributed/templates/admin/login.html.py:5
+msgid "login"
+msgstr ""
+
+#: kalite/distributed/templates/admin/login.html.py:16
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/templates/admin/login.html.py:32
+msgid "Username:"
+msgstr ""
+
+#: kalite/distributed/templates/admin/login.html.py:36
+msgid "Password:"
+msgstr ""
+
+#: kalite/distributed/templates/admin/login.html.py:41
+msgid "Log in"
+msgstr ""
+
+#: kalite/distributed/templates/admin/superuser_form.html.py:6
+msgid "This app requires a super user. Please correct the error below."
+msgid_plural "This app requires a super user. Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/distributed/templates/admin/superuser_form.html.py:36
+msgid "Create"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/404.html.py:4
+#: kalite/distributed/templates/distributed/404.html.py:7
+msgid "Page not found"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/404.html.py:9
+msgid "Sorry, but the requested page could not be found."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/500.html.py:4
+#: kalite/distributed/templates/distributed/500.html.py:7
+msgid "Error"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/500.html.py:11
+msgid ""
+"If you are reporting the error, please make sure to include the following "
+"information:"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/about.html.py:5
+msgid "About"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/about.html.py:20
+msgid "Diagnostics"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/about.html.py:22
+msgid "Calculating diagnostics..."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/about.html.py:23
+msgid "This can take several minutes."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base.html.py:15
+msgid "Welcome"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base.html.py:98
+msgid "Open menu"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base.html.py:105
+msgid "logo"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base.html.py:112
+msgid "Main menu"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:17
+msgid "Manage Users"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:17
+msgid "Users"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:19
+msgid "Manage Facilities"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:22
+msgid "Update this server with new videos and languages"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:22
+msgid "Videos"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_manage.html.py:23
+msgid "Language"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:19
+msgid "Track the progress of your learners"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:19
+msgid "Reports"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:22
+msgid "Assign playlists to learner groups"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:22
+msgid "Playlists"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:27
+msgid "See list of available tests."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:27
+msgid "Tests"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:30
+msgid "See list of current units for the facilities."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:30
+msgid "Units"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:35
+msgid "KA Lite Home"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/base_teach.html.py:35
+#: kalite/distributed/templates/distributed/learn.html.py:4
+msgid "Learn"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:9
+#: kalite/distributed/templates/distributed/help_student.html.py:9
+msgid "Administration Panel"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:17
+#: kalite/distributed/templates/distributed/help_student.html.py:17
+msgid "This page can help you administer your installation of KA Lite."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:22
+msgid "(Offline) Management and Reporting Tools"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:26
+msgid "Device information"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:27
+msgid ""
+"Information about your KA Lite install, as well as device synchronization."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:30
+msgid "Network management"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:31
+msgid "Access to summary data over all facilities and devices."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:36
+#: kalite/distributed/templates/distributed/help_student.html.py:22
+msgid "(Online) Help Documents"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:40
+#: kalite/distributed/templates/distributed/help_student.html.py:26
+msgid "KA Lite Wiki"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:41
+msgid "Contains the latest information about setting up and using KA Lite."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:44
+msgid "FAQ"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:45
+msgid "Contains the latest FAQ for troubleshooting."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:50
+msgid "Advanced User Tools"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:54
+msgid "Django admin"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:55
+msgid "Database of information stored in your KA Lite installation."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:60
+msgid "Warning: changing database values can break your KA Lite installation!"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:67
+msgid "Connection Information"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_admin.html.py:72
+msgid ""
+"To connect to this installation of KA Lite from another computer over the "
+"network, try these addresses:"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/help_student.html.py:27
+msgid "Contains the latest information about using KA Lite."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/homepage.html.py:31
+msgid "Learn!"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/homepage.html.py:32
+msgid "Learn with Khan Academy videos and exercises!"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/search_page.html.py:25
+#, python-format
+msgid "showing first %(max_results)s results"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/search_page.html.py:46
+msgid "current"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/_footer.html.py:12
+msgid "Select language"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/_footer.html.py:23
+msgid "Foundation for Learning Equality logo"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/_footer.html.py:26
+msgid "KA Lite version"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/_footer.html.py:33
+msgid ""
+"Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States "
+"License"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:5
+#: kalite/settings/base.py:245
+msgid "KA Lite"
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:6
+#: kalite/settings/base.py:246
+msgid "A free world-class education for anyone anywhere."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:7
+#: kalite/settings/base.py:247
+msgid ""
+"KA Lite is a light-weight web server for viewing and interacting with core "
+"Khan Academy content (videos and exercises) without needing an Internet "
+"connection."
+msgstr ""
+
+#: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:8
+msgid "Videos and Exercises © 2014 Khan Academy"
+msgstr ""
+
+#: kalite/facility/api_resources.py:116
+#: kalite/facility/api_resources.py:136
+msgid ""
+"Username and password do not match. Make sure you choose the right facility."
+msgstr ""
+
+#: kalite/facility/api_resources.py:118
+#: kalite/facility/api_resources.py:138
+msgid "Username and password do not match."
+msgstr ""
+
+#: kalite/facility/api_resources.py:150
+msgid "You've been logged in! We hope you enjoy your time with KA Lite "
+msgstr ""
+
+#: kalite/facility/api_resources.py:151
+msgid "-- be sure to log out when you finish."
+msgstr ""
+
+#: kalite/facility/api_views.py:35
+#, python-format
+msgid "Moved %(num_users)d users to group %(group_name)s successfully."
+msgstr ""
+
+#: kalite/facility/api_views.py:48
+#, python-format
+msgid "Deleted %(num_users)d users successfully."
+msgstr ""
+
+#: kalite/facility/api_views.py:58
+msgid "Method is not allowed."
+msgstr ""
+
+#: kalite/facility/api_views.py:64
+#, python-format
+msgid "Deleted facility %(facility_name)s successfully."
+msgstr ""
+
+#: kalite/facility/api_views.py:74
+#, python-format
+msgid "Deleted %(num_groups)d group(s) successfully."
+msgstr ""
+
+#: kalite/facility/decorators.py:96
+msgid "To continue, you must first add a facility (e.g. for your school). "
+msgstr ""
+
+#: kalite/facility/decorators.py:97
+msgid "Please use the form below to add a facility."
+msgstr ""
+
+#: kalite/facility/decorators.py:100
+msgid ""
+"You must first have the administrator of this server log in below to add a "
+"facility."
+msgstr ""
+
+#: kalite/facility/forms.py:24
+msgid "Confirm password"
+msgstr ""
+
+#: kalite/facility/forms.py:25
+msgid "Default Language"
+msgstr ""
+
+#: kalite/facility/forms.py:82
+msgid ""
+"A user with this username already exists. Please choose a new username and "
+"try again."
+msgstr ""
+
+#: kalite/facility/forms.py:89
+#: kalite/facility/forms.py:108
+msgid "The passwords didn't match. Please re-enter the passwords."
+msgstr ""
+
+#: kalite/facility/forms.py:117
+#, python-format
+msgid ""
+"%(num_users)d user(s) with first name '%(f_name)s' and last name "
+"'%(l_name)s' already exist(s)."
+msgstr ""
+
+#: kalite/facility/forms.py:121
+msgid ""
+"If you are sure you want to create this user, you may re-submit the form to "
+"complete the process."
+msgstr ""
+
+#: kalite/facility/forms.py:131
+msgid "Name (required)"
+msgstr ""
+
+#: kalite/facility/forms.py:144
+msgid "User count should should be at least one."
+msgstr ""
+
+#: kalite/facility/forms.py:153
+msgid "There is already a facility with this name."
+msgstr ""
+
+#: kalite/facility/forms.py:184
+msgid ""
+"This group name is reserved. Please choose one without 'ungrouped' in the "
+"name."
+msgstr ""
+
+#: kalite/facility/forms.py:189
+msgid "There is already a group with this name."
+msgstr ""
+
+#: kalite/facility/models.py:21
+#: kalite/facility/models.py:83
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:163
+msgid "Name"
+msgstr ""
+
+#: kalite/facility/models.py:21
+msgid ""
+"(This is the name that learners/coaches will see when choosing their "
+"facility; it can be in the local language.)"
+msgstr ""
+
+#: kalite/facility/models.py:22
+#: kalite/facility/models.py:84
+msgid "Description"
+msgstr ""
+
+#: kalite/facility/models.py:23
+msgid "Address"
+msgstr ""
+
+#: kalite/facility/models.py:23
+msgid "(Please provide as detailed an address as possible.)"
+msgstr ""
+
+#: kalite/facility/models.py:25
+msgid "Latitude"
+msgstr ""
+
+#: kalite/facility/models.py:26
+msgid "Longitude"
+msgstr ""
+
+#: kalite/facility/models.py:27
+msgid "Zoom"
+msgstr ""
+
+#: kalite/facility/models.py:28
+msgid "Contact Name"
+msgstr ""
+
+#: kalite/facility/models.py:28
+msgid "(Who should we contact with any questions about this facility?)"
+msgstr ""
+
+#: kalite/facility/models.py:29
+msgid "Contact Phone"
+msgstr ""
+
+#: kalite/facility/models.py:30
+msgid "Contact Email"
+msgstr ""
+
+#: kalite/facility/models.py:31
+msgid "User Count"
+msgstr ""
+
+#: kalite/facility/models.py:31
+msgid "(How many potential users do you estimate there are at this facility?)"
+msgstr ""
+
+#: kalite/facility/models.py:59
+msgid "Default Facility"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/facility/models.py:136
+msgid "(Group/class)"
+msgstr ""
+
+#: kalite/facility/models.py:136
+msgid "(optional)"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/facility/models.py:140
+msgid "First Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/facility/models.py:142
+msgid "Last Name"
+msgstr ""
+
+#. Translators: This is a label in a form.
+#: kalite/facility/models.py:144
+msgid "(whether this user should have coach permissions)"
+msgstr ""
+
+#: kalite/facility/models.py:168
+#: kalite/facility/models.py:193
+msgid "Unknown password format."
+msgstr ""
+
+#: kalite/facility/models.py:170
+msgid "Call set_password before saving the user."
+msgstr ""
+
+#: kalite/facility/models.py:174
+msgid "Facility group must be in the same facility as the user."
+msgstr ""
+
+#: kalite/facility/views.py:32
+msgid "Add a new coach"
+msgstr ""
+
+#: kalite/facility/views.py:47
+msgid "Add a new learner"
+msgstr ""
+
+#: kalite/facility/views.py:60
+msgid ""
+"Please contact a coach or administrator to receive login information to this "
+"installation."
+msgstr ""
+
+#: kalite/facility/views.py:62
+msgid "You may not sign up as a facility user on the central server."
+msgstr ""
+
+#: kalite/facility/views.py:64
+msgid "Sign up for an account"
+msgstr ""
+
+#: kalite/facility/views.py:76
+#, python-format
+msgid "Edit user %(username)s"
+msgstr ""
+
+#: kalite/facility/views.py:98
+msgid ""
+"There was a problem saving the information provided; please review errors "
+"below."
+msgstr ""
+
+#: kalite/facility/views.py:103
+msgid "You must be a teacher to edit or create a teacher."
+msgstr ""
+
+#: kalite/facility/views.py:112
+msgid "You successfully updated your user settings."
+msgstr ""
+
+#: kalite/facility/views.py:117
+#, python-format
+msgid "Changes saved for user '%(username)s'"
+msgstr ""
+
+#: kalite/facility/views.py:123
+#, python-format
+msgid "You successfully created user '%(username)s'"
+msgstr ""
+
+#: kalite/facility/views.py:133
+msgid "You successfully registered."
+msgstr ""
+
+#: kalite/facility/views.py:175
+msgid "Failed to save the group; please review errors below."
+msgstr ""
+
+#: kalite/facility/views.py:187
+#: kalite/facility/templates/facility/facility_user.html.py:32
+msgid "Add a new group"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_group.html.py:33
+msgid "Create group"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_group.html.py:33
+msgid "Update group"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:5
+msgid "Select facility"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:30
+msgid "Please select a facility"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:41
+msgid "(this is the default)"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:44
+msgid "(set as the default facility)"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:52
+msgid "You currently have no facilities. Would you like to create a facility?"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_selection.html.py:54
+msgid ""
+"There are currently no facilities available, please ask an administrator or "
+"coach to set one up."
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_user.html.py:39
+msgid "Create user"
+msgstr ""
+
+#: kalite/facility/templates/facility/facility_user.html.py:39
+msgid "Update user"
+msgstr ""
+
+#: kalite/inline/api_views.py:27
+msgid "No inline help is available for this page."
+msgstr ""
+
+#: kalite/inline/narratives.py:9
+msgid ""
+"Welcome! This is the landing page for admins. If at any point you would like "
+"to navigate back to this page, click on this tab!"
+msgstr ""
+
+#: kalite/inline/narratives.py:14
+msgid ""
+"Clicking on this tab will show you a quick overview of all facilities and "
+"devices you have set up."
+msgstr ""
+
+#: kalite/inline/narratives.py:19
+msgid "An overview of all facilities will be shown here"
+msgstr ""
+
+#: kalite/inline/narratives.py:23
+msgid "To add new facilities, click on this link."
+msgstr ""
+
+#: kalite/inline/narratives.py:28
+msgid ""
+"To view more detailed information such as learner groups, learners, and "
+"coaches belonging to a facility, click on the facility name."
+msgstr ""
+
+#: kalite/inline/narratives.py:32
+msgid "Information on your device status will be shown here"
+msgstr ""
+
+#: kalite/inline/narratives.py:37
+msgid "Any more questions? Be sure to consult the FAQ and Documentation!"
+msgstr ""
+
+#: kalite/inline/narratives.py:44
+msgid ""
+"Selecting the \"Language\" tab will take you to the place where you can "
+"download or update language packs!"
+msgstr ""
+
+#: kalite/inline/narratives.py:49
+msgid "Click on this drop down menu to view the available language packs..."
+msgstr ""
+
+#: kalite/inline/narratives.py:53
+msgid "...select the language of your choice..."
+msgstr ""
+
+#: kalite/inline/narratives.py:59
+msgid ""
+"...and details such as the number of subtitles, translation completion, and "
+"total download size will be displayed for the chosen language pack!"
+msgstr ""
+
+#: kalite/inline/narratives.py:64
+msgid "Just click this button to start your download!"
+msgstr ""
+
+#: kalite/inline/narratives.py:69
+msgid ""
+"Any language packs already installed on your device will be shown in this "
+"section"
+msgstr ""
+
+#: kalite/inline/narratives.py:76
+msgid ""
+"Selecting this \"Videos\" tab will lead you to the place where you can "
+"download new videos for all topics!"
+msgstr ""
+
+#: kalite/inline/narratives.py:81
+msgid "Downloadable content will be organized in this topic tree."
+msgstr ""
+
+#: kalite/inline/narratives.py:86
+msgid "Simply toggle topic button to view see more subtopics."
+msgstr ""
+
+#: kalite/main/api_views.py:44
+msgid ""
+"Search completed, no content was found for your search. Try something else."
+msgstr ""
+
+#: kalite/main/api_views.py:69
+msgid ""
+"This content was not found! You can download it by going to the Manage > "
+"Videos page."
+msgstr ""
+
+#: kalite/main/api_views.py:71
+msgid ""
+"This content was not found! Please contact your coach or an admin to have it "
+"downloaded."
+msgstr ""
+
+#: kalite/main/api_views.py:73
+msgid ""
+"This content was not found! You must login as an admin/coach to download the "
+"content."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:48
+msgid ""
+"Can't specify a shell_command if a django admin command is already specified"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:56
+msgid "Must specify either command or shell command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:73
+msgid "Job Details"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:77
+msgid "Frequency options"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:99
+msgid "Last run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:104
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:167
+msgid "OK"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:111
+msgid "Run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:117
+msgid "Logs"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:128
+#, python-format
+msgid "The job '%(job)s' was run successfully."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:152
+msgid "Output"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:159
+msgid "Duration"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:175
+msgid "(No output)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/admin.py:182
+msgid "(No errors)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:28
+msgid "Yearly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:29
+msgid "Monthly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:30
+msgid "Weekly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:31
+msgid "Daily"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:32
+msgid "Hourly"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:33
+msgid "Minutely"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:39
+msgid "name"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:40
+msgid "frequency"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:41
+msgid "params"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:43
+msgid ""
+"Semicolon separated list (no spaces) of <a href=\"http://labix.org/python-"
+"dateutil\" target=\"_blank\">rrule parameters</a>. e.g: interval:15 or "
+"byhour:6;byminute:40"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:47
+msgid "command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:48
+msgid "A valid django-admin command to run."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:49
+msgid "shell command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:50
+msgid "A shell command."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:51
+msgid "This command needs to run within a shell?"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:52
+msgid "args"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:53
+msgid "Space separated list; e.g: arg1 option1=True"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
+msgid "disabled"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
+msgid "If checked this job will never run."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+msgid "next run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+msgid "If you don't set this it will be determined automatically"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
+msgid "last run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:57
+msgid "Running?"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:67
+#, python-format
+msgid "%(name)s - disabled"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:87
+msgid "never (disabled)"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:92
+msgid "due"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:95
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:96
+#, python-format
+msgid "%(number)d %(type)s"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:102
+msgid "time until next run"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/management/commands/cronserver.py:48
+msgid ""
+"Emulates a reoccurring cron call to run jobs at a specified interval.  This "
+"is meant primarily for development use."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/management/commands/cronserver_blocking.py:14
+msgid "Invoked by kalite CLI to run a blocking management command"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:6
+msgid "Changelog"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:7
+msgid "View Logs"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:8
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_list.html.py:10
+msgid "Run Job"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_form.html.py:11
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:8
+msgid "View on site"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/job/change_list.html.py:11
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/chronograph/templates/admin/chronograph/log/change_form.html.py:7
+msgid "History"
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/feeds/views.py:16
+#, python-format
+msgid "A subscription for '%s' was added."
+msgstr ""
+
+#: kalite/packages/bundled/fle_utils/internet/decorators.py:33
+#, python-format
+msgid "Unexpected error: %(err)s"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/decorators.py:22
+#, python-format
+msgid ""
+"In order to access %(resource_name)s, you must register your device first."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:43
+msgid "You must select a sharing network from the given choices."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:47
+msgid "You must select a valid sharing network."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/forms.py:54
+msgid "This public key has already been registered!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:91
+msgid "Registration status: "
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:102
+msgid "Central Server is not reachable; please try again after some time."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/devices/views.py:125
+msgid ""
+"The device's public key has been successfully registered. You may now close "
+"this window."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:7
+msgid "Register a Device"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:31
+msgid "Device registration"
+msgstr ""
+
+#. Translators: Please do not edit the variable text: %(command)s
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:35
+msgid "Sorry, there was an error during registration."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:36
+msgid "The error message was:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:40
+msgid "Congratulations, this device has now been registered."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:44
+msgid "This device has already been registered."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:48
+msgid ""
+"The device needs to have internet access when first being registered. Please "
+"ensure it is connected to the internet, and then"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:48
+msgid "refresh this page"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:54
+msgid "Continue to management"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:62
+msgid "What is device registration?"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:64
+msgid ""
+"Once you register your installation with us, your data can be synced to our "
+"online repository when KA Lite has access to the Internet. This is a good "
+"thing! Here's why:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:67
+msgid "Your data will be backed up online"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:68
+msgid "You can login online and review your usage data"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:69
+msgid ""
+"Our team can use this data to objectively assess the impact our work is "
+"having around the world!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:74
+msgid "Ready to register? You have two options:"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:77
+msgid "One-click registration (no online access to data)"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:79
+msgid ""
+"The perfect option for individual users who just want to get KA Lite up and "
+"running fast and don't need online access to data."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:82
+msgid ""
+"This allows you to get the registration process over in one-click without "
+"worrying about creating a login that you're never going to use."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:85
+msgid "One-click registration now!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:90
+msgid "Register with online access to data!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:92
+msgid "The perfect option for adminstrators of larger projects!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:95
+msgid ""
+"This option will walk you through the process of creating a login to our "
+"website that will allow you access your uploaded data and connect multiple "
+"installations to the same account."
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_client.html.py:98
+msgid "Register with an online account now!"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_server.html.py:5
+msgid "Register device to a sharing network"
+msgstr ""
+
+#: kalite/packages/bundled/securesync/templates/securesync/register_public_key_server.html.py:31
+msgid "Register a device"
+msgstr ""
+
+#: kalite/settings/base.py:249
+#, python-brace-format
+msgid ""
+"Videos © {year:d} Khan Academy (Creative Commons) // Exercises © {year:d} "
+"Khan Academy"
+msgstr ""
+
+#: kalite/settings/base.py:385
+msgid ""
+"<p>Sorry, this page is having an unexpected problem - the error <strong>is "
+"not your fault</strong></p><p>Don't let that stop you, try selecting another "
+"video or exercise from ~30,000 videos and exercises to continue your "
+"learning...</p>"
+msgstr ""
+
+#: kalite/shared/api_auth/auth.py:183
+msgid "You are not allowed to access that resource."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:38
+msgid "You must be logged in to access this page."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:64
+msgid "You must be logged in as an admin to access this page."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:98
+msgid ""
+"You requested information for a user that you are not authorized to view."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:154
+msgid ""
+"You requested device information for a device without a sharing network.  "
+"Only super users can do this!"
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:162
+msgid ""
+"You requested facility information for a facility with no sharing network.  "
+"Only super users can do this!"
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:173
+#: kalite/shared/decorators/auth.py:178
+msgid ""
+"You requested information from an organization that you're not authorized on."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:180
+msgid "This organization is not linked to the requested sharing network."
+msgstr ""
+
+#: kalite/shared/decorators/auth.py:202
+msgid "You must be logged in as a superuser to access this endpoint."
+msgstr ""
+
+#: kalite/testing/asserts.py:14
+msgid "This path is only available on the central server."
+msgstr ""
+
+#: kalite/testing/asserts.py:25
+msgid "This path is only available on distributed servers."
+msgstr ""
+
+#: kalite/updates/api_views.py:41
+msgid "process_id is not numeric."
+msgstr ""
+
+#: kalite/updates/api_views.py:68
+msgid "Must specify process_id or process_name"
+msgstr ""
+
+#: kalite/updates/api_views.py:116
+msgid "Cancelled update progress successfully."
+msgstr ""
+
+#: kalite/updates/api_views.py:137
+#: kalite/updates/templates/updates/update_videos.html.py:42
+msgid "Download Videos"
+msgstr ""
+
+#: kalite/updates/api_views.py:139
+msgid "Launched video download process successfully."
+msgstr ""
+
+#: kalite/updates/api_views.py:164
+#, python-format
+msgid "Deleted %(num_videos)s video(s) successfully."
+msgstr ""
+
+#: kalite/updates/api_views.py:177
+msgid "Cancelled video download process successfully."
+msgstr ""
+
+#: kalite/updates/api_views.py:186
+#: kalite/updates/templates/updates/update_videos.html.py:51
+msgid "Scan for Videos"
+msgstr ""
+
+#: kalite/updates/api_views.py:188
+msgid "Scanning for videos started."
+msgstr ""
+
+#: kalite/updates/api_views.py:203
+msgid "Must call API endpoint with POST verb."
+msgstr ""
+
+#: kalite/updates/api_views.py:210
+#, python-format
+msgid "Successfully started language pack download for %(lang_name)s."
+msgstr ""
+
+#: kalite/updates/api_views.py:223
+#, python-format
+msgid "Successfully deleted language pack for %(lang_name)s."
+msgstr ""
+
+#: kalite/updates/api_views.py:247
+msgid "You did not select a valid choice for an update mechanism."
+msgstr ""
+
+#: kalite/updates/api_views.py:255
+msgid "Launched software update process successfully."
+msgstr ""
+
+#: kalite/updates/models.py:20
+msgid "process name"
+msgstr ""
+
+#: kalite/updates/models.py:22
+msgid "stage name"
+msgstr ""
+
+#: kalite/updates/views.py:27
+msgid "video downloads"
+msgstr ""
+
+#: kalite/updates/views.py:35
+msgid "language packs"
+msgstr ""
+
+#: kalite/updates/management/utils.py:59
+msgid "Starting fresh."
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:41
+msgid "Download all videos marked to be downloaded"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:48
+msgid "Create cached files"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:89
+#, python-format
+msgid "Downloading '%(video_title)s'"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:96
+msgid "Download cancelled!"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:122
+msgid "Nothing to download; exiting."
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:131
+#, python-format
+msgid "Downloading video '%(youtube_id)s'..."
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:157
+#, python-format
+msgid "Retrieving youtube video %(youtube_id)s via youtube-dl"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:179
+msgid "Download is complete!"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:191
+#, python-format
+msgid "Error in downloading %(youtube_id)s: %(error_msg)s"
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:195
+#, python-format
+msgid "%(error_msg)s; continuing to next video."
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:201
+#, python-format
+msgid ""
+"Downloaded %(num_handled_videos)s of %(num_total_videos)s videos "
+"successfully."
+msgstr ""
+
+#: kalite/updates/management/commands/videodownload.py:207
+#, python-format
+msgid "Error: %(error_msg)s"
+msgstr ""
+
+#: kalite/updates/management/commands/videoscan.py:35
+#, python-brace-format
+msgid "Annotating content for language: {language}, channel: {channel}"
+msgstr ""
+
+#: kalite/updates/management/commands/videoscan.py:40
+#, python-brace-format
+msgid "Annotation complete for language: {language}, channel: {channel}"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:5
+msgid "Update Languages"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:33
+msgid "Download or Update Language Packs"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:37
+msgid ""
+"Language packs contain all available translations for the interface and "
+"video subtitles."
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:49
+msgid "Select language pack"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:56
+msgid "Show beta language packs"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:59
+msgid "Get Language Pack"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:62
+msgid "subtitle(s)"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:63
+msgid "translated"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:64
+msgid "to download"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:66
+msgid "on disk"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:67
+msgid "exercise(s)"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_languages.html.py:79
+msgid "Installed Languages"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:6
+msgid "Update Videos"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:26
+#, python-format
+msgid "Videos for language %(lang_name)s"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:28
+#, python-format
+msgid "Videos for language <a href=\"#\">%(lang_name)s</a>"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:43
+msgid "Please select videos to download (below)"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:46
+msgid "Delete Videos"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:49
+msgid "Please select videos to delete (below)"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:52
+msgid "Scan content folder for videos"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:61
+msgid "Help for downloading videos"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:65
+msgid "Q: How do I bulk-download videos?"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:81
+msgid "Cancel Video Downloads"
+msgstr ""
+
+#: kalite/updates/templates/updates/update_videos.html.py:86
+msgid "Loading topic tree... Please wait!"
+msgstr ""

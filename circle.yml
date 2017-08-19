@@ -1,6 +1,8 @@
 machine:
   python:
     version: 2.7.11
+  node:
+    version: 6.1.0
 
 dependencies:
   cache_directories:
@@ -8,18 +10,17 @@ dependencies:
   override:
     - pip install -r requirements_sphinx.txt
     - pip install -e .
-
-test:
-  pre:
+    - make assets
+    - make docs
     - wget -O geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux64.tar.gz
     - gunzip -c geckodriver.tar.gz | tar xopf -
     - chmod +x geckodriver
     - sudo mv geckodriver /home/ubuntu/bin
+
+test:
+  pre:
     - export PATH="$PATH:/home/ubuntu/bin"
   override:
-    - make assets:
-        parallel: true
-    - make docs
     - kalite start --traceback -v2
     - sleep 6s  # Necessary for server to be ready
     - kalite status

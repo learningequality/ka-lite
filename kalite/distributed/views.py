@@ -142,6 +142,20 @@ def help_student(request):
     }
     return context
 
+@render_to("distributed/about.html")
+def about(request):
+    """
+    About Page
+    """
+    return {}
+
+def about_data(request):
+    from kalite.cli import get_diagnostics
+
+    diagnostics = get_diagnostics()
+    data = {'diagnostics': diagnostics, 'status': 'success'}
+
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 @require_admin
 def zone_redirect(request):

@@ -1,0 +1,1 @@
+from .makemessages_tests import *

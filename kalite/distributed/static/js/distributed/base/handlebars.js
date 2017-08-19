@@ -113,4 +113,19 @@ Handlebars.registerHelper("ifObject", function(candidate, options){
     }
 });
 
+Handlebars.registerHelper("current_language_is", function(lc, options) {
+    if(window.sessionModel.get("CURRENT_LANGUAGE") == lc) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+});
+
+//from https://stackoverflow.com/questions/12331077/does-handlebars-js-replace-newline-characters-with-br/12397602#12397602
+Handlebars.registerHelper('breaklines', function(text) {
+    text = Handlebars.Utils.escapeExpression(text);
+    text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+    return new Handlebars.SafeString(text);
+});
+
 module.exports = Handlebars;

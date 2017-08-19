@@ -686,3 +686,23 @@ ______________________
   Every time your installation syncs data, we record the time of the sync, the # of successful logs that were uploaded and downloaded, and any failures.
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
+
+
+Environment variables
+_____________________
+
+This is usable in advanced deployments.
+
+An environment variable is something which you can define in your terminal or
+using a terminal script.
+
+ * ``KALITE_HOME = </desired/to/user_data>`` Sets the home directory which the
+   user data is stored in. Default: ``~/.kalite``
+ * ``KALITE_LISTEN_PORT`` Instead of using the command line parameter
+   ``kalite --port=1234``, you can also set this environment variable.
+   Default: ``8008``
+ * ``KALITE_DIR = </path/to/shared/data>`` Where KA Lite finds shared program
+   data (a environment sometimes configured by installers). Default: ``(unset)``.
+   If not set, it will be evaluated to ``<sys.prefix>/share/kalite``, for
+   instance that can evaluate to ``/usr/share/kalite``.
+

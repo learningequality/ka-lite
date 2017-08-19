@@ -141,7 +141,7 @@ var CoachSummaryView = BaseView.extend({
         var targetElemP = $("#" + target_elem + "_p").get(0);
 
         if(!data_sub || !data_total) {
-            targetElemP.innerHTML = "N/A";
+            targetElemP.innerHTML = gettext("N/A");
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions

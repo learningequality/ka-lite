@@ -1,0 +1,8 @@
+steps:
+  - label: Build the docker environment
+    command: make dockerenvbuild
+
+  - wait
+
+  - label: Build the python packages and windows installer
+    command: mkdir -p dist && .buildkite/build_and_upload_artifact.sh && docker container prune -f

@@ -46,7 +46,7 @@ For more information about using Browserify to handle dependencies, please refer
 Building Frontend Code
 ----------------------
 
-The build script uses `node.js <https://nodejs.org/>`_ - to run the build server for production simply run ``node compile_javascript.js``.
+The build script uses `node.js <https://nodejs.org/>`_ - to run the build server for production simply run ``npm install --production`` and ``node build.js`` or build all assets with one command, ``make assets``.
 
 Alternatively, for development, running ``bin/kalite start`` with the ``--watch`` flag will automatically run the build process in watch mode, recompiling Javascript as it changes, on the fly.
 

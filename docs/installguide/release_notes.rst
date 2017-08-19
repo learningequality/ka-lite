@@ -9,6 +9,51 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
+0.17.2
+------
+
+.. warning:: New content packs were built for this release (July 2017). Users of
+  non-English content packs should upgrade both the content packs and the videos. For the
+  English content update, there are 396 new videos to be downloaded.
+
+  If you are using only English contents, you have the option to stay with
+  previously downloaded content packs, provided that you use an installer that does not
+  bundle the English content pack (Debian/Ubuntu packages or `pip`).
+
+  If you are downloading videos from torrent (see: :ref:`bulk-video-downloads`), you
+  should re-use the target directory of your previously downloaded videos, then only
+  396 videos need to be downloaded.
+
+
+Bug fixes
+^^^^^^^^^
+
+ * Severe: Missing translations - all content packs rebuilt :url-issue:`5477`
+ * Do not rely on ``ifconfig`` removed in Ubuntu 17.04+ :url-issue:`5455`
+ * Display resource titles on the chosen locale inside the Teach tab :url-issue:`5494`
+ * Broken questions removed upstream (missing radio buttons) :url-issue:`5172`
+
+New Features
+^^^^^^^^^^^^
+
+ * Enabled captions by default for English dubbed videos :url-issue:`5464`
+ * About/Diagnose page :url-issue:`5452`
+
+Installers
+^^^^^^^^^^
+
+ * **Windows**: Update notification message when starting KA Lite server `ka-lite-installers#461 <https://github.com/learningequality/ka-lite-installers/pull/461>`_
+ * **Windows**: Menu item for displaying log `ka-lite-installers#457 <https://github.com/learningequality/ka-lite-installers/pull/457>`_
+ * **Windows**: Notification message when port 8008 is occupied `ka-lite-installers#454 <https://github.com/learningequality/ka-lite-installers/pull/454>`_
+ * **Debian/Ubuntu/Raspberry Pi**: Support for system.d ``systemctl enable`` command `ka-lite-installers#450 <https://github.com/learningequality/ka-lite-installers/pull/450>`_
+ * **Debian/Ubuntu/Raspberry Pi**: System command ``service ka-lite status`` fixed
+
+Developers
+^^^^^^^^^^
+
+ * We now build with Node.js v.6
+
+
 0.17.1
 ------
 
@@ -45,7 +90,7 @@ Known issues
 
  * **Chrome 55-56** has issues scrolling the menus on touch devices. Upgrading to Chrome 57 fixes this. :url-issue:`5407`
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
- * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around <https://github.com/learningequality/installers/issues/106#issuecomment-237729680>`__)
  * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
  * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
  * A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
@@ -143,16 +188,15 @@ Known issues
 ^^^^^^^^^^^^
 
  * **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
- * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around`<https://github.com/learningequality/installers/issues/106#issuecomment-237729680>__)
+ * **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around <https://github.com/learningequality/installers/issues/106#issuecomment-237729680>`__)
  * **Windows 8** installation on 32bit is reported to take ~1 hour before eventually finishing.
  * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
- * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+ * **Firefox 47** has misaligned subtitles in the video player. This is fixed by
+   upgrading Firefox.
 
-
-.. note::
-  Code and command cleanups listed below are harmless if you installed KA Lite
-  using an installer and only relevant in these cases:
-
+.. note:: Code and command cleanups listed below are harmless if you installed KA Lite
+   using an installer and only relevant in these cases:
+   
    * You run a specialized setup or deployment
    * Your deployment is 1½+ years old
    * You're a KA Lite developer
@@ -426,8 +470,7 @@ General
  * KA Lite is officially supported on OSX 10.11 (El Capitan).
  * We've revamped the language packs into a new format, called content packs.
    This results in significantly faster startup times across the board.
-   .. WARNING::
-     You will have to redownload all your languages to fully support 0.16.
+   .. WARNING:: You will have to redownload all your languages to fully support 0.16.
  * We introduced a new beta inline help system. Check this out by going to the Facility management page and clicking "Show me how!"
  * A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
