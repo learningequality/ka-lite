@@ -321,7 +321,10 @@ var CoachSummaryView = BaseView.extend({
 
 
         $('#topic-list').multiselect({
+            allSelectedText: gettext('All selected'),
             nonSelectedText: gettext('Default: Overview'),
+            nSelectedText: gettext('selected'),
+            filterPlaceholder: gettext('Search'),
             buttonWidth: '75%',
             numberDisplayed: 2,
             maxHeight: 350,
