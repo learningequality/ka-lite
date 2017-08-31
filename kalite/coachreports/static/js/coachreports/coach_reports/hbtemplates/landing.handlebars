@@ -8,7 +8,7 @@
 					<select id="topic-list" multiple="multiple">
 					</select>
 				</div>
-				<button id="topic-list-submit" type="button" class="btn btn-primary btn-md">Submit</button>
+				<button id="topic-list-submit" type="button" class="btn btn-primary btn-md">{{_ "Submit" }}</button>
 			</div>
 		</div>
 		<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
@@ -51,7 +51,8 @@
 				        <ul id="legend">
 				        	<li class="barlegend"><div class="struggling"></div><span>{{_ "Struggling" }}</span></li>
 				            <li class="barlegend"><div class="complete"></div><span>{{_ "Completed" }}</span></li>
-				       		<li class="barlegend"><div class="partial"></div><span>{{_ "In Progress" }}</span></li>
+                            <li class="barlegend"><div class="partial"></div><span>{{_ "In Progress" }}</span></li>
+                            <li class="barlegend"><div class="not-attempted"></div><span>{{_ "Not Attempted" }}</span></li>
 			        	</ul>
 		        	</div>
 		        </div>

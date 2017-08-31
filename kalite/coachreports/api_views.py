@@ -57,7 +57,7 @@ def get_learners_from_GET(request):
 
     return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
 
-def return_log_type_details(log_type, topic_ids=None):
+def return_log_type_details(log_type, topic_ids=None, language=None):
     fields = ["user", "points", "complete", "completion_timestamp", "completion_counter", "latest_activity_timestamp"]
     if log_type == "exercise":
         LogModel = ExerciseLog
@@ -75,7 +75,7 @@ def return_log_type_details(log_type, topic_ids=None):
         return None
     id_field = obj_id_field.split("__")[0]
     if topic_ids:
-        objects = [obj for topic_id in topic_ids for obj in get_topic_contents(topic_id=topic_id, kinds=[log_type.title()])]
+        objects = [obj for topic_id in topic_ids for obj in get_topic_contents(topic_id=topic_id, kinds=[log_type.title()], language=language)]
         obj_ids = {obj_id_field: [obj.get("id") for obj in objects]}
     else:
         objects = []
@@ -117,7 +117,7 @@ def learner_logs(request):
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     for log_type in log_types:
-        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
+        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids, request.language)
 
         log_objects = LogModel.objects.filter(user__in=learners, **obj_ids).values(*fields)
         if not topic_ids:
@@ -192,7 +192,7 @@ def aggregate_learner_logs(request):
 
     for log_type in log_types:
 
-        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)   
+        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids, request.language)
 
         log_objects = LogModel.objects.filter(
             user__in=learners,
