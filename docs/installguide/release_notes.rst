@@ -8,6 +8,14 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+0.17.3
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Remaining content titles and message IDs in Coach Reports translated :url-issue:`5511` :url-issue:`5509`
+
 
 0.17.2
 ------
