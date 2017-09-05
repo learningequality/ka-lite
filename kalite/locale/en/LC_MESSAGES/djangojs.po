@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-01 11:18+0200\n"
+"POT-Creation-Date: 2017-09-05 14:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,19 +36,31 @@ msgid "No recent learner data for this group is available."
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:324
+msgid "All selected"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:325
 msgid "Default: Overview"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:345
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:326
+msgid "selected"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:327
+msgid "Search"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:348
 msgid "Hide Tabular Report"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:351
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:59
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:354
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:60
 msgid "Show Tabular Report"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:427
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:430
 #: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/facility-select.handlebars.py:8
 #: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:9
 #: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/group-select.handlebars.py:14
@@ -56,7 +68,7 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:431
+#: kalite/coachreports/static/js/coachreports/coach_reports/views.js.c:434
 msgid "Ungrouped"
 msgstr ""
 
@@ -91,6 +103,11 @@ msgstr ""
 msgid "Topic:"
 msgstr ""
 
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:11
+#: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:4
+msgid "Submit"
+msgstr ""
+
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:14
 msgid "This week"
 msgstr ""
@@ -116,36 +133,38 @@ msgid "Key"
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:52
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:71
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:72
 #: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:211
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:8
 msgid "Struggling"
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:53
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:7
 msgid "Completed"
 msgstr ""
 
 #: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:54
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:6
 msgid "In Progress"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:65
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:55
+#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:208
+msgid "Not Attempted"
+msgstr ""
+
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:66
 msgid "Student Activity Feed"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:71
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:72
 #: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:210
 msgid "Complete"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:75
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:76
 msgid "Praise"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:77
+#: kalite/coachreports/static/js/coachreports/coach_reports/hbtemplates/landing.handlebars.py:78
 msgid "Help"
 msgstr ""
 
@@ -272,11 +291,6 @@ msgstr ""
 msgid "Progress report"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:208
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:9
-msgid "Not Attempted"
-msgstr ""
-
 #: kalite/coachreports/static/js/coachreports/tabular_reports/views.js.c:209
 msgid "Attempted"
 msgstr ""
@@ -350,11 +364,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:4
-msgid "Color legend"
-msgstr ""
-
-#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:23
+#: kalite/coachreports/static/js/coachreports/tabular_reports/hbtemplates/tabular-view.handlebars.py:12
 msgid "Learner"
 msgstr ""
 
@@ -3605,10 +3615,6 @@ msgstr ""
 
 #: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:3
 msgid "Search for content"
-msgstr ""
-
-#: kalite/distributed/static/js/distributed/search/hbtemplates/search-bar.handlebars.py:4
-msgid "Submit"
 msgstr ""
 
 #: kalite/distributed/static/js/distributed/user/views.js.c:392
