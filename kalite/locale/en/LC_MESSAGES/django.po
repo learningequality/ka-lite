@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-23 21:58+0200\n"
+"POT-Creation-Date: 2017-09-06 09:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1580,106 +1580,102 @@ msgstr ""
 msgid "Minutely"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:34
-msgid "Secondly"
-msgstr ""
-
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:40
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:39
 msgid "name"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:41
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:40
 msgid "frequency"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:42
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:41
 msgid "params"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:44
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:43
 msgid ""
 "Semicolon separated list (no spaces) of <a href=\"http://labix.org/python-"
 "dateutil\" target=\"_blank\">rrule parameters</a>. e.g: interval:15 or "
 "byhour:6;byminute:40"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:48
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:47
 msgid "command"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:49
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:48
 msgid "A valid django-admin command to run."
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:50
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:49
 msgid "shell command"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:51
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:50
 msgid "A shell command."
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:52
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:51
 msgid "This command needs to run within a shell?"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:53
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:52
 msgid "args"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:53
 msgid "Space separated list; e.g: arg1 option1=True"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
 msgid "disabled"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:54
 msgid "If checked this job will never run."
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
 msgid "next run"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:55
 msgid "If you don't set this it will be determined automatically"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:57
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:56
 msgid "last run"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:58
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:57
 msgid "Running?"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:68
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:67
 #, python-format
 msgid "%(name)s - disabled"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:88
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:87
 msgid "never (disabled)"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:93
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:92
 msgid "due"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:96
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:95
 msgid "second"
 msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:97
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:96
 #, python-format
 msgid "%(number)d %(type)s"
 msgstr ""
 
-#: kalite/packages/bundled/fle_utils/chronograph/models.py:103
+#: kalite/packages/bundled/fle_utils/chronograph/models.py:102
 msgid "time until next run"
 msgstr ""
 

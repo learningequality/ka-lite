@@ -13,7 +13,8 @@ from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -80,6 +81,15 @@ class FacilityControlTests(FacilityMixins,
         self.admin = self.create_admin(**self.admin_data)
 
         super(FacilityControlTests, self).setUp()
+
+    def test_delete_facility(self):
+        facility_name = 'should-be-deleted'
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+
+        selector = '.facility-delete-link'
+        self.browser_click_and_accept(selector, text=facility_name)
 
     def test_teachers_have_no_facility_delete_button(self):
         facility_name = 'should-not-be-deleted'
@@ -168,6 +178,22 @@ class GroupControlTests(FacilityMixins,
         self.group = self.create_group(name=group_name, facility=self.facility)
 
         super(GroupControlTests, self).setUp()
+
+    def test_delete_group(self):
+
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
+        group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
+        if not group_delete_checkbox.is_selected():
+            group_delete_checkbox.click()
+
+        confirm_group_selector = ".delete-group"
+        self.browser_click_and_accept(confirm_group_selector)
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
 
     def test_teachers_have_no_group_delete_button(self):
         teacher_username, teacher_password = 'teacher1', 'password'
@@ -507,6 +533,11 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
 
+        # Test filtering by zone
+        self.client.login(username='admin', password='admin')
+        zone_filtered_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id + "&format=csv").content
+        rows = filter(None, zone_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 2, "API response incorrect")
 
     def test_attempt_log_csv_endpoint(self):
         # Test filtering by facility
@@ -522,9 +553,67 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.client.logout()
 
 
-    def test_device_log_csv_endpoint(self):
-        # Test filtering by zone
-        self.client.login(username='admin', password='admin')
-        zone_filtered_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id + "&format=csv").content
-        rows = filter(None, zone_filtered_resp.split("\n"))
-        self.assertEqual(len(rows), 2, "API response incorrect")
+class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(CSVExportBrowserTests, self).setUp()
+
+    def test_user_interface(self):
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.distributed_data_export_url)
+
+        # Check that group is disabled until facility is selected
+        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
+        self.assertFalse(group_select.is_enabled(), "UI error")
+
+        # Select facility, wait, and ensure group is enabled
+        facility_select = self.browser.find_element_by_id("facility-name")
+
+        self.assertEqual(len(facility_select.find_elements_by_tag_name('option')), 2, "Invalid Number of Facilities")
+
+        for option in facility_select.find_elements_by_tag_name('option'):
+            if option.text == self.facility.name:
+                option.click() # select() in earlier versions of webdriver
+                break
+
+        # Check that group is enabled now
+        while True:
+            try:
+                group_select = WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "group-name")))
+                WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
+                break
+            except StaleElementReferenceException:
+                # This exception occurs once in a while because the element is
+                # somehow attached/detached/rebuilt by some clever JS
+                continue
+
+        # Click and make sure something happens
+        # note: not actually clicking the download since selenium cannot handle file save dialogs
+        export = self.browser.find_element_by_id("export-button")
+        self.assertTrue(export.is_enabled(), "UI error")
+
+    def test_user_interface_teacher(self):
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+        self.browse_to(self.distributed_data_export_url)
+
+        facility_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "facility-name")))
+        self.assertFalse(facility_select.is_enabled(), "UI error")
+
+        for option in facility_select.find_elements_by_tag_name('option'):
+            if option.text == self.teacher.facility.name:
+                self.assertTrue(option.is_selected(), "Invalid Facility Selected")
+                break
+
+        # Check that group is enabled now
+        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
+        WebDriverWait(self.browser, 5).until(lambda *_: group_select.is_enabled())
+
+        # Click and make sure something happens
+        # note: not actually clicking the download since selenium cannot handle file save dialogs
+        export = self.browser.find_element_by_id("export-button")
+        self.assertTrue(export.is_enabled(), "UI error")
