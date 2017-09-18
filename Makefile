@@ -46,7 +46,9 @@ clean-test:
 	rm -fr htmlcov/
 
 clean-assets:
-	npm cache clean
+	# This is only relevant for npm<5
+	# https://github.com/learningequality/ka-lite/issues/5519
+	# npm cache clean
 	rm -rf kalite/database/templates/
 	rm -rf .kalite_dist_tmp
 
