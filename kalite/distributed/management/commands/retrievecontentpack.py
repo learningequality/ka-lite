@@ -14,7 +14,7 @@ from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
+    download_content_pack, get_subtitle_file_path as get_subtitle_path, \
     extract_content_db
 from kalite.topic_tools import settings as topic_settings
 from kalite.updates.management.utils import UpdatesStaticCommand
@@ -161,8 +161,6 @@ class Command(UpdatesStaticCommand):
     def process_content_pack(self, zf, lang):
 
         self.next_stage(_("Moving content files to the right place."))
-        extract_catalog_files(zf, lang)
-        update_jsi18n_file(lang)
         extract_content_db(zf, lang, is_template=self.is_template)
         extract_subtitles(zf, lang)
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
@@ -176,27 +174,14 @@ class Command(UpdatesStaticCommand):
 
 
 def extract_content_pack_metadata(zf, lang):
+    lang = lcode_to_django_lang(lang)
+    modir = get_po_filepath(lang)
+    ensure_dir(modir)
     metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
     pack_metadata_name = "metadata.json"
 
     with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
         shutil.copyfileobj(mf, f)
-
-
-def extract_catalog_files(zf, lang):
-    lang = lcode_to_django_lang(lang)
-    modir = get_po_filepath(lang)
-    ensure_dir(modir)
-
-    filename_mapping = {"frontend.mo": "djangojs.mo",
-                        "backend.mo": "django.mo"}
-
-    for zipmo, djangomo in filename_mapping.items():
-        zipmof = zf.open(zipmo)
-        mopath = os.path.join(modir, djangomo)
-        logging.debug("writing to %s" % mopath)
-        with open(mopath, "wb") as djangomof:
-            shutil.copyfileobj(zipmof, djangomof)
 
 
 def extract_subtitles(zf, lang):
