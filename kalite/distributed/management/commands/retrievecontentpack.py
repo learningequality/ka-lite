@@ -176,7 +176,8 @@ class Command(UpdatesStaticCommand):
 def extract_content_pack_metadata(zf, lang):
     lang = lcode_to_django_lang(lang)
     modir = get_po_filepath(lang)
-    ensure_dir(modir)
+    if not os.path.exists:
+        os.makedirs(modir)      
     metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
     pack_metadata_name = "metadata.json"
 
