@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
-from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
+from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_metadata_path, \
     download_content_pack, get_subtitle_file_path as get_subtitle_path, \
     extract_content_db
 from kalite.topic_tools import settings as topic_settings
@@ -175,11 +175,7 @@ class Command(UpdatesStaticCommand):
 
 def extract_content_pack_metadata(zf, lang):
     lang = lcode_to_django_lang(lang)
-    modir = get_po_filepath(lang)
-    if not os.path.exists(modir):
-        os.makedirs(modir)
-      
-    metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
+    metadata_path = os.path.join(get_metadata_path(), "{lang}_metadata.json".format(lang=lang))
     pack_metadata_name = "metadata.json"
 
     with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
