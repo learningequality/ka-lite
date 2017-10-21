@@ -30,7 +30,9 @@
 {% endblock headcss %}
 
 {% block content %}
-
+    {% if request.session.logged_in_first_time  and request.is_admin %}
+        {% include "control_panel/partials/_welcome_message.html" %}
+    {% endif %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
     {% block titlebar %}

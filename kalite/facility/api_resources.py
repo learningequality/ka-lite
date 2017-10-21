@@ -59,6 +59,9 @@ def flag_facility_cache(**kwargs):
     global FACILITY_LIST
     FACILITY_LIST = None
 
+def logged_in_first_time(user):
+    return user.last_login == user.date_joined
+
 post_save.connect(flag_facility_cache, sender=Facility)
 
 class FacilityUserResource(ModelResource):
@@ -103,6 +106,7 @@ class FacilityUserResource(ModelResource):
         if not settings.CENTRAL_SERVER:
             user = authenticate(username=username, password=password)
             if user:
+                request.session["logged_in_first_time"] = logged_in_first_time(user)
                 login(request, user)
                 return self.create_response(request, {
                     'success': True,
