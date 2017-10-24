@@ -12,6 +12,11 @@ to read the release notes.
 0.17.4 (unreleased)
 -------------------
 
+Bug fixes
+^^^^^^^^^
+
+* Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
+
 Developers
 ^^^^^^^^^^
 
