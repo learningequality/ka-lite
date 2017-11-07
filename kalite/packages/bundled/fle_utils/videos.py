@@ -20,15 +20,12 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
     ensure_dir(download_path)
 
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
-    url = download_url % (video_filename, video_filename)
-
     thumb_filename = "%(id)s.png" % {"id": youtube_id}
+
+    url = download_url % (video_filename, video_filename)
     thumb_url = download_url % (video_filename, thumb_filename)
 
-    video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = os.path.join(download_path, video_filename)
-
-    thumb_filename = "%(id)s.png" % {"id": youtube_id}
     thumb_filepath = os.path.join(download_path, thumb_filename)
 
     try:
