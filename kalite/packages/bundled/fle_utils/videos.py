@@ -14,7 +14,10 @@ OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default
 logger = logging.getLogger(__name__)
 
 
-def get_outside_video_urls(youtube_id, download_url=OUTSIDE_DOWNLOAD_URL, format="mp4"):
+def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
+    """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
+
+    ensure_dir(download_path)
 
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     url = download_url % (video_filename, video_filename)
@@ -22,15 +25,6 @@ def get_outside_video_urls(youtube_id, download_url=OUTSIDE_DOWNLOAD_URL, format
     thumb_filename = "%(id)s.png" % {"id": youtube_id}
     thumb_url = download_url % (video_filename, thumb_filename)
 
-    return (url, thumb_url)
-
-
-def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE_DOWNLOAD_URL, format="mp4", callback=None):
-    """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
-
-    ensure_dir(download_path)
-
-    url, thumb_url = get_outside_video_urls(youtube_id, download_url=download_url, format=format)
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
     filepath = os.path.join(download_path, video_filename)
 
