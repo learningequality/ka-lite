@@ -47,7 +47,7 @@ class Command(NoArgsCommand):
         zf_po_file_name = "versioned/{version}-django.po".format(version=SHORTVERSION)
         zf_js_po_file_name = "versioned/{version}-djangojs.po".format(version=SHORTVERSION)
 
-        po_file_dir = os.path.join(settings.KALITE_LOCALE_APP_DIR, "en", "LC_MESSAGES")
+        po_file_dir = os.path.join(settings.KALITE_LOCALE_DIR, "en", "LC_MESSAGES")
         ensure_dir(po_file_dir)
 
         zf_po_file = zf.read(zf_po_file_name)

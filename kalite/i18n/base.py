@@ -41,17 +41,20 @@ def get_locale_path(lang_code=None):
     if none is provided."""
 
     if not lang_code:
-        return settings.KALITE_APP_LOCALE_DIR
+        return settings.KALITE_LOCALE_DIR
     else:
-        return os.path.join(settings.KALITE_APP_LOCALE_DIR, lcode_to_django_dir(lang_code))
+        return os.path.join(settings.KALITE_LOCALE_DIR, lcode_to_django_dir(lang_code))
 
 def get_po_filepath(lang_code, filename=None):
     """Return the LC_MESSAGES directory for the language code, with an optional filename appended."""
     base_dirpath = os.path.join(get_locale_path(lang_code=lang_code), "LC_MESSAGES")
     return (filename and os.path.join(base_dirpath, filename)) or base_dirpath
 
-def get_metadata_path():
-    return settings.CONTENT_PACK_METADATA_DIR
+def get_metadata_path(lang_code=None):
+    if not lang_code:
+        return settings.CONTENT_PACK_METADATA_DIR
+    
+    return os.path.join(settings.CONTENT_PACK_METADATA_DIR, lcode_to_django_dir(lang_code))
 
 LANG2CODE_MAP = None
 CACHE_VARS.append("LANG2CODE_MAP")
@@ -210,36 +213,30 @@ def _get_installed_language_packs():
         'native_name': 'English',
     }]
 
-    # Loop through locale folders
-    for locale_dir in settings.LOCALE_PATHS:
-        if not os.path.exists(locale_dir):
+
+    # Loop through folders in each locale dir
+    # This is idiotic, it just assumes that every directory / file is
+    # a valid language code
+    for django_disk_code in os.listdir(settings.CONTENT_PACK_METADATA_DIR):
+        if not os.path.isdir(os.path.join(get_metadata_path(django_disk_code))):
             continue
 
-        # Loop through folders in each locale dir
-        # This is idiotic, it just assumes that every directory / file is
-        # a valid language code
-        for django_disk_code in os.listdir(locale_dir):
+        # Inside each folder, read from the JSON file - language name, % UI trans, version number
+        try:
+            # Get the metadata
+            metadata_filepath = os.path.join(get_metadata_path(django_disk_code), "%s_metadata.json" % lcode_to_ietf(django_disk_code))
+            lang_meta = softload_json(metadata_filepath, raises=True)
 
-            # Skip if it's a file
-            if not os.path.isdir(os.path.join(locale_dir, django_disk_code)):
-                continue
+            logging.debug("Found language pack %s" % (django_disk_code))
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
+            else:
+                logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
+            continue
 
-            # Inside each folder, read from the JSON file - language name, % UI trans, version number
-            try:
-                # Get the metadata
-                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % lcode_to_ietf(django_disk_code))
-                lang_meta = softload_json(metadata_filepath, raises=True)
-
-                logging.debug("Found language pack %s" % (django_disk_code))
-            except IOError as e:
-                if e.errno == errno.ENOENT:
-                    logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
-                else:
-                    logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
-                continue
-
-            installed_language_packs.append(lang_meta)
-
+        installed_language_packs.append(lang_meta)
+        
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 

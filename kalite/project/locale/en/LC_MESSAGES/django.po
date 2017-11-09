@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-01 11:18+0200\n"
+"POT-Creation-Date: 2017-11-09 15:03+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -774,11 +774,11 @@ msgstr ""
 msgid "Moving content files to the right place."
 msgstr ""
 
-#: kalite/distributed/management/commands/retrievecontentpack.py:172
+#: kalite/distributed/management/commands/retrievecontentpack.py:170
 msgid "Looking for available content items."
 msgstr ""
 
-#: kalite/distributed/management/commands/retrievecontentpack.py:175
+#: kalite/distributed/management/commands/retrievecontentpack.py:173
 msgid "Finished processing content pack."
 msgstr ""
 
@@ -1056,17 +1056,17 @@ msgid ""
 msgstr ""
 
 #: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:5
-#: kalite/settings/base.py:245
+#: kalite/settings/base.py:248
 msgid "KA Lite"
 msgstr ""
 
 #: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:6
-#: kalite/settings/base.py:246
+#: kalite/settings/base.py:249
 msgid "A free world-class education for anyone anywhere."
 msgstr ""
 
 #: kalite/distributed/templates/distributed/partials/khan_dummy_channel_translation.html.py:7
-#: kalite/settings/base.py:247
+#: kalite/settings/base.py:250
 msgid ""
 "KA Lite is a light-weight web server for viewing and interacting with core "
 "Khan Academy content (videos and exercises) without needing an Internet "
@@ -1873,14 +1873,14 @@ msgstr ""
 msgid "Register a device"
 msgstr ""
 
-#: kalite/settings/base.py:249
+#: kalite/settings/base.py:252
 #, python-brace-format
 msgid ""
 "Videos © {year:d} Khan Academy (Creative Commons) // Exercises © {year:d} "
 "Khan Academy"
 msgstr ""
 
-#: kalite/settings/base.py:385
+#: kalite/settings/base.py:388
 msgid ""
 "<p>Sorry, this page is having an unexpected problem - the error <strong>is "
 "not your fault</strong></p><p>Don't let that stop you, try selecting another "

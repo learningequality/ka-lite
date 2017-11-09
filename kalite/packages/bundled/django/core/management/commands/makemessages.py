@@ -295,8 +295,8 @@ def make_messages(locale=None, domain='django', verbosity=1, all=False,
         invoked_for_django = True
         # Ignoring all contrib apps
         ignore_patterns += ['contrib/*']
-    elif os.path.isdir('locale'):
-        localedir = os.path.abspath('locale')
+    elif os.path.isdir('project'):
+        localedir = os.path.join(os.path.abspath('project'), 'locale')
     else:
         raise CommandError("This script should be run from the Django Git "
                 "tree or your project or app tree. If you did indeed run it "
