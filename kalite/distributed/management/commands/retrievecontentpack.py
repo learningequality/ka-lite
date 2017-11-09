@@ -174,11 +174,16 @@ class Command(UpdatesStaticCommand):
 
 
 def extract_content_pack_metadata(zf, lang):
-    lang = lcode_to_django_lang(lang)
-    metadata_path = os.path.join(get_metadata_path(), "{lang}_metadata.json".format(lang=lang))
+    lang = lcode_to_django_lang(lang)        
+    metadata_path = get_metadata_path(lang)
+
+    if not os.path.exists(metadata_path):
+        os.makedirs(metadata_path)
+
+    metadata_file = os.path.join(metadata_path, "{lang}_metadata.json".format(lang=lang))
     pack_metadata_name = "metadata.json"
 
-    with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
+    with open(metadata_file, "wb") as f, zf.open(pack_metadata_name) as mf:
         shutil.copyfileobj(mf, f)
 
 
