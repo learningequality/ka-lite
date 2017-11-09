@@ -28,7 +28,7 @@ class MakemessagesTestCase(TestCase):
         f.close()
         try:
             call_command("makemessages", locale="en")
-            f = open(os.path.join(kalite_dir, "locale", "en", "LC_MESSAGES", "django.po"), "r")
+            f = open(os.path.join(kalite_dir, "project", "locale", "en", "LC_MESSAGES", "django.po"), "r")
             self.assertIn("Something", f.read())
         finally:
             os.chdir(cwd)
