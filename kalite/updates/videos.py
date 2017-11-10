@@ -21,7 +21,7 @@ def get_local_video_size(youtube_id, default=None):
         return default
 
 
-def download_video(youtube_id, format="mp4", callback=None):
+def download_video(youtube_id, extension="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
 
     download_url = ("http://%s/download/videos/" % (settings.CENTRAL_SERVER_HOST)) + "%s/%s"
@@ -30,7 +30,7 @@ def download_video(youtube_id, format="mp4", callback=None):
     
     ensure_dir(download_path)
 
-    video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
+    video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": extension}
     thumb_filename = "%(id)s.png" % {"id": youtube_id}
 
     url = download_url % (video_filename, video_filename)
