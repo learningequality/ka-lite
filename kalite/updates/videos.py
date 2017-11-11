@@ -40,33 +40,34 @@ def download_video(youtube_id, extension="mp4", callback=None):
     thumb_filepath = os.path.join(download_path, thumb_filename)
 
     try:
-        response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
+        response = download_file(url, dst=filepath, callback=callback_percent_proxy(callback, end_percent=95))
         if (
                 not os.path.isfile(filepath) or
                 "content-length" not in response.headers or
                 not os.path.getsize(filepath) == int(response.headers['content-length'])):
             raise URLNotFound("Video was not found, tried: {}".format(url))
 
-        response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        response = download_file(thumb_url, dst=thumb_filepath, callback=callback_percent_proxy(callback, start_percent=95, end_percent=100))
         if (
                 not os.path.isfile(thumb_filepath) or
                 "content-length" not in response.headers or
                 not os.path.getsize(thumb_filepath) == int(response.headers['content-length'])):
-            raise URLNotFound("Thumbnail was not found, tried: {}".format(thumb_url))
+            logger.critical("Thumbnail was not found, tried: {}".format(thumb_url))
+            raise URLNotFound("Thumbnail was not found, tried: {}".format(url))
 
     except DownloadCancelled:
-        delete_downloaded_files(youtube_id, download_path)
+        delete_downloaded_files(youtube_id)
         raise
 
     except (socket.timeout, IOError) as e:
         logger.exception(e)
         logger.info("Timeout -- Network UnReachable")
-        delete_downloaded_files(youtube_id, download_path)
+        delete_downloaded_files(youtube_id)
         raise
 
     except Exception as e:
         logger.exception(e)
-        delete_downloaded_files(youtube_id, download_path)
+        delete_downloaded_files(youtube_id)
         raise
 
 
