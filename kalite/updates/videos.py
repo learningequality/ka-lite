@@ -21,23 +21,59 @@ def get_local_video_size(youtube_id, default=None):
         return default
 
 
+def get_url_pattern():
+    """
+    Returns a pattern for generating URLs of videos and thumbnails
+    """
+    base = "http://{}/download/videos/".format(settings.CENTRAL_SERVER_HOST)
+    return base + "{dir}/{filename}"
+
+
+def get_video_filename(youtube_id, extension="mp4"):
+    return "%(id)s.%(format)s" % {"id": youtube_id, "format": extension}
+
+
+def get_video_url(youtube_id, extension="mp4"):
+    filename = get_video_filename(youtube_id, extension)
+    return get_url_pattern().format(
+        dir=filename,
+        filename=filename
+    )
+    
+
+def get_thumbnail_filename(youtube_id):
+    return "%(id)s.png" % {"id": youtube_id}
+
+
+def get_thumbnail_url(youtube_id, video_extension="mp4"):
+    return get_url_pattern().format(
+        dir=get_video_filename(youtube_id, video_extension),
+        filename=get_thumbnail_filename(youtube_id)
+    )
+
+
+def get_video_local_path(youtube_id, extension="mp4"):
+    download_path=settings.CONTENT_ROOT
+    filename = get_video_filename(youtube_id, extension)
+    return os.path.join(download_path, filename)
+
+
+def get_thumbnail_local_path(youtube_id, extension="mp4"):
+    download_path=settings.CONTENT_ROOT
+    filename = get_thumbnail_filename(youtube_id)
+    return os.path.join(download_path, filename)
+
+
 def download_video(youtube_id, extension="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
 
-    download_url = ("http://%s/download/videos/" % (settings.CENTRAL_SERVER_HOST)) + "%s/%s"
+    ensure_dir(settings.CONTENT_ROOT)
 
-    download_path=settings.CONTENT_ROOT
-    
-    ensure_dir(download_path)
+    url = get_video_url(youtube_id, extension)
+    thumb_url = get_thumbnail_url(youtube_id, extension)
 
-    video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": extension}
-    thumb_filename = "%(id)s.png" % {"id": youtube_id}
-
-    url = download_url % (video_filename, video_filename)
-    thumb_url = download_url % (video_filename, thumb_filename)
-
-    filepath = os.path.join(download_path, video_filename)
-    thumb_filepath = os.path.join(download_path, thumb_filename)
+    filepath = get_video_local_path(youtube_id, extension)
+    thumb_filepath = get_thumbnail_local_path(youtube_id, extension)
 
     try:
         response = download_file(url, dst=filepath, callback=callback_percent_proxy(callback, end_percent=95))
