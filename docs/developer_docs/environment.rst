@@ -1,7 +1,7 @@
 .. _development-environment:
 
-Setting up your development environment
-=======================================
+Getting started
+===============
 
 .. warning::  These directions may be out of date! This page needs to be consolidated with the `Getting Started page on our wiki <https://github.com/learningequality/ka-lite/wiki/Getting-started>`_.
 
@@ -69,10 +69,10 @@ __________
 You can install KA Lite in its very own separate environment that does not
 interfere with other Python software on your machine like this::
 
-    $> pip install virtualenv virtualenvwrapper
-    $> mkvirtualenv my-kalite-env
-    $> workon my-kalite-env
-    $> pip install ka-lite
+    pip install virtualenv virtualenvwrapper
+    mkvirtualenv my-kalite-env
+    workon my-kalite-env
+    pip install ka-lite
 
 
 Running tests
@@ -83,3 +83,20 @@ On Circle CI, we run Selenium 2.53.6 because it works in their environment. Howe
 for more recent versions of Firefox, you need to upgrade Selenium::
 
     pip install selenium\<3.5 --upgrade
+
+To run all of the tests (this is slow)::
+
+    kalite manage test
+
+To skip BDD tests (because they are slow)::
+
+    kalite manage test --no-bdd
+
+To run a specific test (not a BDD test), add an argument ``<app>.<TestClass>``::
+
+    kalite manage test updates.TestDownload --no-bdd
+
+To run a specific item from :ref:`bdd`, use ``<app>.<feature_module_name>``::
+
+    kalite manage test distributed.content_rating --bdd-only
+

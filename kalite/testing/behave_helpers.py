@@ -415,10 +415,8 @@ def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
 
 def logout(context):
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
-    context.browser.get(build_url(context, url))
-    pre_element = find_css_with_wait(context, "pre")
-    json_response_text = pre_element.text
-    assert "success" in json_response_text and "true" in json_response_text
+    response = urllib.urlopen(build_url(context, url))
+    assert response.getcode() == 200
 
 
 def post(context, url, data=""):
