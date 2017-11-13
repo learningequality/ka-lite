@@ -35,6 +35,7 @@ class Command(makemessages.Command):
         domain = options.get('domain', "django")
         django_po = os.path.join(
             os.getcwd(),
+            "project",
             "locale",
             "en",
             "LC_MESSAGES",

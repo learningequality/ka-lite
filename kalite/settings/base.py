@@ -188,14 +188,17 @@ DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
 # the user running kalite and should be in a user-data
 # storage place.
 
-USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+KALITE_LOCALE_DIR = os.path.join(PACKAGE_PATH, "project", "locale")
+if not os.path.exists(KALITE_LOCALE_DIR):
+    os.mkdir(KALITE_LOCALE_DIR)
 
-LOCALE_PATHS = (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR)
-if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
-    os.mkdir(USER_WRITABLE_LOCALE_DIR)
+CONTENT_PACK_METADATA_DIR = os.path.join(USER_DATA_ROOT, "locale")
+if not os.path.exists(CONTENT_PACK_METADATA_DIR):
+    os.mkdir(CONTENT_PACK_METADATA_DIR)
 
+LOCALE_PATHS = (KALITE_LOCALE_DIR,)
 DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+
 if not os.path.exists(DEFAULT_DATABASE_DIR):
     os.mkdir(DEFAULT_DATABASE_DIR)
 

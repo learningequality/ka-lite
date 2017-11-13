@@ -21,14 +21,14 @@ class MakemessagesTestCase(TestCase):
         kalite_dir = os.path.join(d, "kalite")
         os.mkdir(kalite_dir)
         os.chdir(kalite_dir)
-        os.mkdir(os.path.join(kalite_dir, "locale"))
         os.mkdir(os.path.join(kalite_dir, "templates"))
+        os.makedirs(os.path.join(kalite_dir, "project", "locale"))
         f = open(os.path.join(kalite_dir, "templates", "test.html"), "w")
         f.write("""{% trans "Something for translation" %}""")
         f.close()
         try:
             call_command("makemessages", locale="en")
-            f = open(os.path.join(kalite_dir, "locale", "en", "LC_MESSAGES", "django.po"), "r")
+            f = open(os.path.join(kalite_dir, "project", "locale", "en", "LC_MESSAGES", "django.po"), "r")
             self.assertIn("Something", f.read())
         finally:
             os.chdir(cwd)
