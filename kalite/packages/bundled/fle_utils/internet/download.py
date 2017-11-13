@@ -1,3 +1,4 @@
+import os
 import requests
 import socket
 import sys
@@ -71,4 +72,12 @@ def download_file(url, dst=None, callback=None, max_retries=5):
                     total_size = float(response.headers['content-length'])
                     fraction = min(float(bytes_fetched) / total_size, 1.0)
                 callback(fraction)
+        # Verify file existence
+        if (
+            not os.path.isfile(dst) or
+            "content-length" not in response.headers or
+            not os.path.getsize(dst) == int(response.headers['content-length'])
+        ):
+            raise URLNotFound("URL was not found, tried: {}".format(url))
+
     return response

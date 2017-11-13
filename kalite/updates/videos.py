@@ -76,30 +76,21 @@ def download_video(youtube_id, extension="mp4", callback=None):
     thumb_filepath = get_thumbnail_local_path(youtube_id)
 
     try:
-        response = download_file(
+        # Download video
+        download_file(
             url,
             dst=filepath,
             callback=callback_percent_proxy(callback, end_percent=95),
             max_retries=settings.DOWNLOAD_MAX_RETRIES
         )
-        if (
-                not os.path.isfile(filepath) or
-                "content-length" not in response.headers or
-                not os.path.getsize(filepath) == int(response.headers['content-length'])):
-            raise URLNotFound("Video was not found, tried: {}".format(url))
 
-        response = download_file(
+        # Download thumbnail
+        download_file(
             thumb_url,
             dst=thumb_filepath,
             callback=callback_percent_proxy(callback, start_percent=95, end_percent=100),
             max_retries=settings.DOWNLOAD_MAX_RETRIES
         )
-        if (
-                not os.path.isfile(thumb_filepath) or
-                "content-length" not in response.headers or
-                not os.path.getsize(thumb_filepath) == int(response.headers['content-length'])):
-            logger.critical("Thumbnail was not found, tried: {}".format(thumb_url))
-            raise URLNotFound("Thumbnail was not found, tried: {}".format(url))
 
     except (socket.timeout, IOError) as e:
         logger.exception(e)
