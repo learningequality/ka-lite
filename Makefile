@@ -46,7 +46,9 @@ clean-test:
 	rm -fr htmlcov/
 
 clean-assets:
-	npm cache clean
+	# This is only relevant for npm<5
+	# https://github.com/learningequality/ka-lite/issues/5519
+	# npm cache clean
 	rm -rf kalite/database/templates/
 	rm -rf .kalite_dist_tmp
 
@@ -98,7 +100,7 @@ assets:
 	bin/kalite manage retrievecontentpack empty en --foreground --template
 
 msgids:
-	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*bundle*.js,*/kalite/*/js/i18n/*.js" ;\
+	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*/bundles/bundle*.js,*/kalite/*/js/i18n/*.js" ;\
 	cd kalite ;\
 	kalite manage makemessages -len --no-obsolete ;\
 	kalite manage makemessages -len --no-obsolete --domain=djangojs

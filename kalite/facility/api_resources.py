@@ -72,6 +72,7 @@ class FacilityUserResource(ModelResource):
             'facility': ALL_WITH_RELATIONS,
             'is_teacher': ['exact']
         }
+        max_limit = 0
         exclude = ["password"]
 
     def prepend_urls(self):

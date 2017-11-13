@@ -8,6 +8,27 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+
+0.17.4 (unreleased)
+-------------------
+
+Bug fixes
+^^^^^^^^^
+
+* Video download retry upon connection timeouts/errors :url-issue:`5528`
+* Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
+
+Developers
+^^^^^^^^^^
+
+ * Do not use `npm clean`, now requires npm>=5 for building on unclean systems :url-issue:`5519`
+
+Contents
+^^^^^^^^
+
+ * Resized video torrent set for English rebuilt with missing videos
+
+
 0.17.3
 ------
 

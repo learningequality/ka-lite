@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-01 11:18+0200\n"
+"POT-Creation-Date: 2017-09-06 09:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -358,6 +358,48 @@ msgstr ""
 msgid "Learner"
 msgstr ""
 
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:72
+msgid "Please choose a group to move users to."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:74
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:113
+msgid "Please select users first."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:75
+msgid "You are about to move selected users to another group."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:114
+msgid ""
+"You are about to delete selected users, they will be permanently deleted."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:129
+msgid "Please select groups first."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/facility_management.js.c:130
+msgid ""
+"You are about to permanently delete the selected group(s). Note that any "
+"learners currently in this group will now be characterized as 'Ungrouped' "
+"but their profiles will not be deleted."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/zone_management.js.c:15
+#, javascript-format
+msgid ""
+"Are you sure you want to delete '%s'? You will lose all associated learner, "
+"group, and coach accounts. If you are sure, type the name of the facility "
+"into the box below and press OK."
+msgstr ""
+
+#: kalite/control_panel/static/js/control_panel/bundle_modules/zone_management.js.c:29
+msgid ""
+"The facility has not been deleted. Did you spell the facility name correctly?"
+msgstr ""
+
 #: kalite/control_panel/static/js/control_panel/data_export/hbtemplates/data-export-container.handlebars.py:4
 msgid "Resource"
 msgstr ""
@@ -423,6 +465,10 @@ msgstr ""
 #: kalite/distributed/static/js/distributed/audio/hbtemplates/audio-player.handlebars.py:25
 #: kalite/distributed/static/js/distributed/audio/hbtemplates/audio-player.handlebars.py:32
 msgid "0:00"
+msgstr ""
+
+#: kalite/distributed/static/js/distributed/bundle_modules/register_public_key_client.js.c:12
+msgid "Contacting central server to register; page will reload upon success."
 msgstr ""
 
 #: kalite/distributed/static/js/distributed/content/hbtemplates/content-wrapper.handlebars.py:10
@@ -1075,10 +1121,14 @@ msgid "True"
 msgstr ""
 
 #: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:122
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:291
 msgid "No"
 msgstr ""
 
 #: kalite/distributed/static/js/distributed/perseus/build/perseus-5.js.c:23512
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:108
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:255
 msgid "Yes"
 msgstr ""
 
@@ -3714,6 +3764,142 @@ msgstr ""
 
 #: kalite/inline/static/js/inline/hbtemplates/inline.handlebars.py:1
 msgid "Show me how!"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:81
+msgid "You have to download at least the English content pack."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:92
+msgid "Set as default"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:95
+msgid "Default"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:97
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:128
+msgid "Subtitles"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:98
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:126
+msgid "Translated"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:124
+msgid "<button type='button' class='btn btn-info'>Upgrade</button>"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:134
+msgid "Up to Date"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:140
+msgid "Delete"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:159
+msgid "Are you sure you want to delete language pack '%(lang_code)s'"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:165
+msgid "Confirm Delete"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:210
+msgid "beta"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_languages.js.c:323
+msgid ""
+"Could not connect to the central server; language packs cannot be downloaded "
+"at this time."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:32
+msgid "Installation finished."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:39
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:44
+msgid "Installation finished! Refreshing the page in %(sec)s seconds"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:60
+msgid "Remote version information unavailable."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:77
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:84
+msgid "None"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:84
+#, javascript-format
+msgid "<li>(%s)</li>"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:117
+msgid "Error starting update process %(status)s: %(responseText)s"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:127
+msgid ""
+"Are you sure you want to update your installation of KA Lite? This process "
+"is irreversible!"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:130
+msgid "Confirm update"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:150
+msgid "Your installation is offline, and therefore cannot access updates."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_software.js.c:175
+msgid ""
+"Could not connect to the central server; software cannot be updated at this "
+"time."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:175
+msgid "Please select videos to download (below)"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:177
+msgid "Download %(vid_count)d new selected video(s)"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:186
+msgid "Please select videos to delete (below)"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:188
+msgid "Delete %(vid_count)d selected video(s)"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:207
+msgid ""
+"Could not connect to the central server; videos cannot be downloaded at this "
+"time."
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:248
+msgid "Are you sure you want to delete?"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:299
+msgid "Deleting the downloaded video(s) will lead to permanent loss of data"
+msgstr ""
+
+#: kalite/updates/static/js/updates/bundle_modules/update_videos.js.c:343
+msgid ""
+"Scanning for videos and updating your database - this can take several "
+"minutes, depending on how many videos that are found. Please be patient and "
+"stay on this page. Once completed, results will be shown on this page."
 msgstr ""
 
 #: kalite/updates/static/js/updates/updates/base.js.c:147

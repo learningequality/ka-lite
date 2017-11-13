@@ -674,7 +674,7 @@ _________________
   In order to keep local data in the ``UserLog`` model, detailing usage, you can choose the number of ``UserLog`` objects that you wish to retain. These objects are not sync'ed.
 
 
-Online Synchronization
+Online synchronization
 ______________________
 
 * ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency (number, amount of time)>``
@@ -687,6 +687,15 @@ ______________________
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
 
+
+Other settings
+______________
+
+* ``KALITE_DOWNLOAD_RETRIES = <integer>``
+  ``(default = 5)``
+  If you are trying to download videos with a very unstable connection, this
+  setting will increase the number of retries for individual video downloads.
+  The grace period between each attempt automatically increases.
 
 Environment variables
 _____________________
