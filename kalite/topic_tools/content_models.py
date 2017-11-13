@@ -59,6 +59,9 @@ class Item(Model):
         kwargs = parse_model_data(kwargs)
         super(Item, self).__init__(*args, **kwargs)
 
+    def __repr__(self):
+        return "{}: {} (id: {})".format(self.kind, self.title, self.id)
+
 
 class AssessmentItem(Model):
     id = CharField(max_length=50)
