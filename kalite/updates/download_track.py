@@ -19,7 +19,7 @@ class VideoQueue(object):
 
     def add_files(self, files, language=None):
         """
-        Add files to the queue - this should be a list of youtube_ids
+        Add files to the queue - this should be a dict {youtube_id: title}
         and optionally, the language of the video.
         """
         files = [{"youtube_id": key, "title": value, "language": language} for key, value in files.items()]

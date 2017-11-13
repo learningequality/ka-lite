@@ -3,15 +3,12 @@ import requests
 import socket
 import sys
 import tempfile
-from requests.utils import default_user_agent
+
+
+from requests.packages.urllib3.util.retry import Retry
+
 
 socket.setdefaulttimeout(20)
-
-
-class DownloadCancelled(Exception):
-
-    def __str__(self):
-        return "Download has been cancelled"
 
 
 class URLNotFound(Exception):
@@ -28,36 +25,33 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     return callback_percent_proxy_inner_fn
 
 
-def _reporthook(numblocks, blocksize, filesize, url=None):
-    base = os.path.basename(url)
-    if filesize <= 0:
-        filesize = blocksize
-    try:
-        percent = min((numblocks * blocksize * 100) / filesize, 100)
-    except:
-        percent = 100
-    if numblocks != 0:
-        sys.stdout.write("\b" * 40)
-    sys.stdout.write("%-36s%3d%%" % (base, percent))
-    if percent == 100:
-        sys.stdout.write("\n")
-
-
 def _nullhook(*args, **kwargs):
     pass
 
 
-def download_file(url, dst=None, callback=None):
+def download_file(url, dst=None, callback=None, max_retries=5):
     if sys.stdout.isatty():
-        callback = callback or _reporthook
+        callback = callback or _nullhook
     else:
         callback = callback or _nullhook
     dst = dst or tempfile.mkstemp()[1]
 
+    
+    from requests.adapters import HTTPAdapter
+
+    s = requests.Session()
+    
+    retries = Retry(
+        total=max_retries,
+        backoff_factor=0.1,
+    )
+    
+    s.mount('http://', HTTPAdapter(max_retries=retries))
+
     # Assuming the KA Lite version is included in user agent because of an
     # intention to create stats on learningequality.org
     from kalite.version import user_agent
-    response = requests.get(
+    response = s.get(
         url,
         allow_redirects=True,
         stream=True,
@@ -78,4 +72,12 @@ def download_file(url, dst=None, callback=None):
                     total_size = float(response.headers['content-length'])
                     fraction = min(float(bytes_fetched) / total_size, 1.0)
                 callback(fraction)
+        # Verify file existence
+        if (
+            not os.path.isfile(dst) or
+            "content-length" not in response.headers or
+            not os.path.getsize(dst) == int(response.headers['content-length'])
+        ):
+            raise URLNotFound("URL was not found, tried: {}".format(url))
+
     return response

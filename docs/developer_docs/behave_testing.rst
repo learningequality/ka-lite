@@ -1,3 +1,5 @@
+.. _bdd:
+
 Behavior-Driven Integration Tests
 =================================
 
