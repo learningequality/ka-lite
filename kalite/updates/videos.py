@@ -5,9 +5,11 @@ import logging
 import os
 import socket
 
-from django.conf import settings
+from . import settings
+
+from django.conf import settings as django_settings
 from fle_utils.general import ensure_dir
-from fle_utils.internet.download import callback_percent_proxy, download_file, URLNotFound
+from fle_utils.internet.download import callback_percent_proxy, download_file
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def get_local_video_size(youtube_id, default=None):
     try:
-        return os.path.getsize(os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
+        return os.path.getsize(os.path.join(django_settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
     except Exception as e:
         logger.debug(str(e))
         return default
@@ -25,7 +27,7 @@ def get_url_pattern():
     """
     Returns a pattern for generating URLs of videos and thumbnails
     """
-    base = "http://{}/download/videos/".format(settings.CENTRAL_SERVER_HOST)
+    base = "http://{}/download/videos/".format(django_settings.CENTRAL_SERVER_HOST)
     return base + "{dir}/{filename}"
 
 
@@ -53,21 +55,23 @@ def get_thumbnail_url(youtube_id, video_extension="mp4"):
 
 
 def get_video_local_path(youtube_id, extension="mp4"):
-    download_path=settings.CONTENT_ROOT
+    download_path=django_settings.CONTENT_ROOT
     filename = get_video_filename(youtube_id, extension)
     return os.path.join(download_path, filename)
 
 
 def get_thumbnail_local_path(youtube_id):
-    download_path=settings.CONTENT_ROOT
+    download_path=django_settings.CONTENT_ROOT
     filename = get_thumbnail_filename(youtube_id)
     return os.path.join(download_path, filename)
 
 
 def download_video(youtube_id, extension="mp4", callback=None):
-    """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
+    """
+    Downloads video file to disk
+    """
 
-    ensure_dir(settings.CONTENT_ROOT)
+    ensure_dir(django_settings.CONTENT_ROOT)
 
     url = get_video_url(youtube_id, extension)
     thumb_url = get_thumbnail_url(youtube_id, extension)
@@ -105,7 +109,7 @@ def download_video(youtube_id, extension="mp4", callback=None):
 
 
 def delete_downloaded_files(youtube_id):
-    download_path = settings.CONTENT_ROOT
+    download_path = django_settings.CONTENT_ROOT
     files_deleted = 0
     for filepath in glob.glob(os.path.join(download_path, youtube_id + ".*")):
         try:

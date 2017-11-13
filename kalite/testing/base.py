@@ -183,6 +183,7 @@ def setup_content_db(instance, db):
             available=False,
             kind="Video",
             id="unavail123",
+            youtube_id="unavail123",
             slug="unavail",
             path=instance.content_unavailable_content_path,
             parent=random.choice(instance.content_subsubtopics).pk,
