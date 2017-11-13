@@ -58,7 +58,7 @@ def get_video_local_path(youtube_id, extension="mp4"):
     return os.path.join(download_path, filename)
 
 
-def get_thumbnail_local_path(youtube_id, extension="mp4"):
+def get_thumbnail_local_path(youtube_id):
     download_path=settings.CONTENT_ROOT
     filename = get_thumbnail_filename(youtube_id)
     return os.path.join(download_path, filename)
@@ -73,17 +73,27 @@ def download_video(youtube_id, extension="mp4", callback=None):
     thumb_url = get_thumbnail_url(youtube_id, extension)
 
     filepath = get_video_local_path(youtube_id, extension)
-    thumb_filepath = get_thumbnail_local_path(youtube_id, extension)
+    thumb_filepath = get_thumbnail_local_path(youtube_id)
 
     try:
-        response = download_file(url, dst=filepath, callback=callback_percent_proxy(callback, end_percent=95))
+        response = download_file(
+            url,
+            dst=filepath,
+            callback=callback_percent_proxy(callback, end_percent=95),
+            max_retries=settings.DOWNLOAD_MAX_RETRIES
+        )
         if (
                 not os.path.isfile(filepath) or
                 "content-length" not in response.headers or
                 not os.path.getsize(filepath) == int(response.headers['content-length'])):
             raise URLNotFound("Video was not found, tried: {}".format(url))
 
-        response = download_file(thumb_url, dst=thumb_filepath, callback=callback_percent_proxy(callback, start_percent=95, end_percent=100))
+        response = download_file(
+            thumb_url,
+            dst=thumb_filepath,
+            callback=callback_percent_proxy(callback, start_percent=95, end_percent=100),
+            max_retries=settings.DOWNLOAD_MAX_RETRIES
+        )
         if (
                 not os.path.isfile(thumb_filepath) or
                 "content-length" not in response.headers or

@@ -3,6 +3,10 @@ import socket
 import sys
 import tempfile
 
+
+from requests.packages.urllib3.util.retry import Retry
+
+
 socket.setdefaulttimeout(20)
 
 
@@ -30,17 +34,29 @@ def _nullhook(*args, **kwargs):
     pass
 
 
-def download_file(url, dst=None, callback=None):
+def download_file(url, dst=None, callback=None, max_retries=5):
     if sys.stdout.isatty():
         callback = callback or _nullhook
     else:
         callback = callback or _nullhook
     dst = dst or tempfile.mkstemp()[1]
 
+    
+    from requests.adapters import HTTPAdapter
+
+    s = requests.Session()
+    
+    retries = Retry(
+        total=max_retries,
+        backoff_factor=0.1,
+    )
+    
+    s.mount('http://', HTTPAdapter(max_retries=retries))
+
     # Assuming the KA Lite version is included in user agent because of an
     # intention to create stats on learningequality.org
     from kalite.version import user_agent
-    response = requests.get(
+    response = s.get(
         url,
         allow_redirects=True,
         stream=True,
