@@ -10,12 +10,6 @@ from requests.packages.urllib3.util.retry import Retry
 socket.setdefaulttimeout(20)
 
 
-class DownloadCancelled(Exception):
-
-    def __str__(self):
-        return "Download has been cancelled"
-
-
 class URLNotFound(Exception):
     pass
 

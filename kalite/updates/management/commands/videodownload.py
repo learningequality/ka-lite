@@ -14,9 +14,16 @@ from kalite.updates.management.utils import UpdatesDynamicCommand
 from ...videos import download_video
 from ...download_track import VideoQueue
 from fle_utils import set_process_priority
-from fle_utils.videos import DownloadCancelled, URLNotFound
+from fle_utils.internet.download import URLNotFound
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
+
+
+class DownloadCancelled(Exception):
+
+    def __str__(self):
+        return "Download has been cancelled"
+
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -91,7 +98,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 if percent == 100:
                     self.video = {}
 
-        except DownloadCancelled as de:
+        except DownloadCancelled:
             if self.video:
                 self.stdout.write(_("Download cancelled!") + "\n")
 

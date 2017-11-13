@@ -7,7 +7,7 @@ import socket
 
 from django.conf import settings
 from fle_utils.general import ensure_dir
-from fle_utils.internet.download import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
+from fle_utils.internet.download import callback_percent_proxy, download_file, URLNotFound
 
 
 logger = logging.getLogger(__name__)
@@ -100,10 +100,6 @@ def download_video(youtube_id, extension="mp4", callback=None):
                 not os.path.getsize(thumb_filepath) == int(response.headers['content-length'])):
             logger.critical("Thumbnail was not found, tried: {}".format(thumb_url))
             raise URLNotFound("Thumbnail was not found, tried: {}".format(url))
-
-    except DownloadCancelled:
-        delete_downloaded_files(youtube_id)
-        raise
 
     except (socket.timeout, IOError) as e:
         logger.exception(e)
