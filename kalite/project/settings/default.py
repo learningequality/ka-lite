@@ -1,7 +1,6 @@
 import os
 
 DEFAULT_USER_SETTINGS_FILE = os.path.join(os.environ["KALITE_HOME"], 'settings.py')
-
 # Check if default user file exists and load settings from there
 if os.path.isfile(DEFAULT_USER_SETTINGS_FILE):
     execfile(DEFAULT_USER_SETTINGS_FILE)
@@ -22,5 +21,6 @@ else:
             "\n"
             "# Put your custom settings here\n"
             "# MY_SETTING = 123\n"
+            "\n"
         )
     from .base import *

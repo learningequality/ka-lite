@@ -36,5 +36,6 @@ def custom(request):
         "False": False,
         "is_config_package_nalanda": getattr(settings, 'NALANDA', False),
         "HIDE_CONTENT_RATING": settings.HIDE_CONTENT_RATING,
-        "universal_js_user_error": settings.AJAX_ERROR
+        "universal_js_user_error": settings.AJAX_ERROR,
+        "welcome_message": settings.KALITE_WELCOME_MESSAGE,
     }
