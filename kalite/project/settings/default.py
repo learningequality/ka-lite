@@ -21,5 +21,15 @@ else:
             "\n"
             "# Put your custom settings here\n"
             "# MY_SETTING = 123\n"
+            "\n"
+            "KALITE_WELCOME_MESSAGE = \"\"\"""\n"
+            "<h2>KA Lite for <custom_name_here></h2>""\n"
+            "<p>You are running an instance of KA Lite shipped with a RACHEL Pi. You can get online support for the device itself or KA Lite depending on the nature of your problem:</p>\n"
+            "<ul>\n"
+            "  <li><a href='http://community.learningequality.org/' target='_blank'>KA Lite community</a></li>\n"
+            "  <li><a href='http://community.rachelfriends.org/' target='_blank'>RACHEL community</a></li>\n"
+            "</ul>\n"
+            "\"\"\"""\n"
+
         )
     from .base import *
