@@ -21,7 +21,7 @@ Bug fixes
 New Features
 ^^^^^^^^^^^^
 
-* Customizable welcome message for first time KA Lite admins! :url-issue:`5522`
+* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
 
 Developers
 ^^^^^^^^^^

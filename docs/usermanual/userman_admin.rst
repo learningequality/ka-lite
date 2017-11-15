@@ -656,6 +656,9 @@ ____________________
   service itself is running from. Setting this option will change certain
   system messages to use a different port. It does not affect the port that
   KA Lite is using.
+* ``KALITE_WELCOME_MESSAGE = <str>``
+  HTML code to be rendered to admin users on their first login. Default text
+  links to offline documentation and online support forums.
 
 
 User restrictions
