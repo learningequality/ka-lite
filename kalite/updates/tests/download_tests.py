@@ -1,10 +1,17 @@
-from .base import UpdatesTestCase
-from kalite.updates.videos import download_video, delete_downloaded_files
-from fle_utils.internet.download import URLNotFound
+import mock
+import os
+import socket
+
+from django.core.management import call_command
+
 from kalite.topic_tools.content_models import get_content_item,\
     annotate_content_models_by_youtube_id
 from kalite.updates.download_track import VideoQueue
-from django.core.management import call_command
+from kalite.updates.videos import download_video, delete_downloaded_files,\
+    get_video_local_path
+
+from .base import UpdatesTestCase
+from requests.exceptions import HTTPError
 
 
 class TestDownload(UpdatesTestCase):
@@ -22,9 +29,21 @@ class TestDownload(UpdatesTestCase):
         self.assertTrue(updated['available'])
 
     def test_download_unavailable(self):
-        with self.assertRaises(URLNotFound):
+        with self.assertRaises(HTTPError):
             download_video(self.content_unavailable_item.youtube_id)
+        self.assertFalse(os.path.exists(
+            get_video_local_path(self.content_unavailable_item.youtube_id)
+        ))
 
+    @mock.patch("requests.adapters.HTTPAdapter.send")
+    def test_network_error(self, requests_get):
+        requests_get.side_effect = socket.timeout
+        with self.assertRaises(socket.timeout):
+            download_video(self.content_unavailable_item.youtube_id)
+        self.assertFalse(os.path.exists(
+            get_video_local_path(self.content_unavailable_item.youtube_id)
+        ))
+    
     def test_download_command(self):
         delete_downloaded_files(self.real_video.youtube_id)
         # Check that it's been marked unavailable
@@ -38,3 +57,17 @@ class TestDownload(UpdatesTestCase):
         # Check that it's been marked available
         updated = get_content_item(content_id=self.real_video.id)
         self.assertTrue(updated['available'])
+
+    @mock.patch("kalite.updates.videos.get_thumbnail_url")
+    @mock.patch("kalite.updates.videos.get_video_url")
+    def test_500_download(self, get_thumbnail_url, get_video_url):
+        delete_downloaded_files(self.real_video.youtube_id)
+        get_thumbnail_url.return_value = "https://httpstat.us/500"
+        get_video_url.return_value = "https://httpstat.us/500"
+        
+        with self.assertRaises(HTTPError):
+            download_video(self.real_video.youtube_id)
+        
+        self.assertFalse(os.path.exists(
+            get_video_local_path(self.real_video.youtube_id)
+        ))

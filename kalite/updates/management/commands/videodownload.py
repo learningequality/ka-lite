@@ -7,6 +7,7 @@ from functools import partial
 from optparse import make_option
 
 from django.conf import settings
+from requests.exceptions import HTTPError
 logging = settings.LOG
 from django.utils.translation import ugettext as _
 
@@ -14,7 +15,6 @@ from kalite.updates.management.utils import UpdatesDynamicCommand
 from ...videos import download_video
 from ...download_track import VideoQueue
 from fle_utils import set_process_priority
-from fle_utils.internet.download import URLNotFound
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
 
@@ -155,12 +155,10 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             # Download via urllib
                             download_video(video.get("youtube_id"), callback=progress_callback)
 
-                        except URLNotFound:
-                            # Video was not found on amazon cloud service,
-                            #   either due to a KA mistake, or due to the fact
-                            #   that it's a dubbed video.
-                            #
-                            # We can use youtube-dl to get that video!!
+                        except HTTPError as e:
+                            # Something happened in the HTTP layer, perhaps
+                            # our servers are down or outdated info.. try
+                            # youtube-dl.
                             logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
 
                             def youtube_dl_cb(stats, progress_callback, *args, **kwargs):

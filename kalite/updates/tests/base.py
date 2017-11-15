@@ -5,7 +5,7 @@ from kalite.topic_tools.content_models import set_database, Item
 
 
 # Some small videos from the content database 2017-11-13
-TEST_YOUTUBE_IDS = ["riXcZT2ICjA", "_7aUxFzTG5w"]
+TEST_YOUTUBE_IDS = ["9P80OLC6wKY", "zaGUlwslGGg"]
 
 
 @set_database

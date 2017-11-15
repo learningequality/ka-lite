@@ -1,3 +1,4 @@
+import logging
 import os
 import requests
 import socket
@@ -11,8 +12,7 @@ from requests.packages.urllib3.util.retry import Retry
 socket.setdefaulttimeout(20)
 
 
-class URLNotFound(Exception):
-    pass
+logger = logging.getLogger(__name__)
 
 
 def callback_percent_proxy(callback, start_percent=0, end_percent=100):
@@ -57,6 +57,9 @@ def download_file(url, dst=None, callback=None, max_retries=5):
         stream=True,
         headers={"user-agent": user_agent()}
     )
+    
+    response.raise_for_status()
+    
     # If a destination is set, then we'll write a file and send back updates
     if dst:
         chunk_size = 1024
@@ -73,11 +76,23 @@ def download_file(url, dst=None, callback=None, max_retries=5):
                     fraction = min(float(bytes_fetched) / total_size, 1.0)
                 callback(fraction)
         # Verify file existence
-        if (
-            not os.path.isfile(dst) or
-            "content-length" not in response.headers or
-            not os.path.getsize(dst) == int(response.headers['content-length'])
-        ):
-            raise URLNotFound("URL was not found, tried: {}".format(url))
+        if os.path.isfile(dst):
+            size_on_disk = os.path.getsize(dst)
+        else:
+            size_on_disk = 0
+        if 'content-length' in response.headers:
+            size_header = int(response.headers['content-length'])
+        size_header = 0
+        
+        if size_on_disk <=0 or (size_header and size_on_disk != size_header):
+            logger.error((
+                "Error downloading {url}, incorrect file size, disk full? "
+                "Expected {header}, got {disk}").format(
+                    url=url,
+                    header=size_header,
+                    disk=size_header,
+                )
+            )
+            raise RuntimeError("Download failed to write correct file.")
 
     return response
