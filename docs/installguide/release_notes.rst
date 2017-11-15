@@ -18,6 +18,11 @@ Bug fixes
 * Video download retry upon connection timeouts/errors :url-issue:`5528`
 * Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
 
+New Features
+^^^^^^^^^^^^
+
+* Customizable welcome message for first time KA Lite admins! :url-issue:`5522`
+
 Developers
 ^^^^^^^^^^
 
