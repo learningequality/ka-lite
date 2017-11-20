@@ -58,6 +58,20 @@ class TestDownload(UpdatesTestCase):
         updated = get_content_item(content_id=self.real_video.id)
         self.assertTrue(updated['available'])
 
+    @mock.patch("requests.adapters.HTTPAdapter.send")
+    def test_download_command_fallback(self, requests_get):
+        """
+        Tests that we download via youtube-dl when `requests` module is patched
+        to fail.
+        """
+        requests_get.side_effect = socket.timeout
+        queue = VideoQueue()
+        queue.add_files({self.real_video.youtube_id: self.real_video.title}, language="en")
+        call_command("videodownload")
+        self.assertTrue(os.path.exists(
+            get_video_local_path(self.real_video.youtube_id)
+        ))
+
     @mock.patch("kalite.updates.videos.get_thumbnail_url")
     @mock.patch("kalite.updates.videos.get_video_url")
     def test_500_download(self, get_thumbnail_url, get_video_url):

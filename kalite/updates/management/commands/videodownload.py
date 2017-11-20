@@ -159,7 +159,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             # Something happened in the HTTP layer, perhaps
                             # our servers are down or outdated info.. try
                             # youtube-dl.
-                            logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
+                            logging.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
 
                             def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
                                 if stats['status'] == "finished":
