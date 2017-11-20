@@ -16,6 +16,7 @@ Bug fixes
 ^^^^^^^^^
 
 * Video download retry upon connection timeouts/errors :url-issue:`5528`
+* Blank videos produced when ``kalite.learningequality.org`` server down :url-issue:`5538`
 * Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
 
 Developers
