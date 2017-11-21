@@ -41,9 +41,15 @@ def download_file(url, dst=None, callback=None, max_retries=5):
 
     s = requests.Session()
     
+    # Define the way that we do retries.
+    # retries = 100
+    # backoff = 0.3
+    # 0.3 * (2 ^ (20 - 1)) = 6.8 seconds
     retries = Retry(
         total=max_retries,
-        backoff_factor=0.1,
+        connect=max_retries,
+        read=max_retries,
+        backoff_factor=0.3,
     )
     
     s.mount('http://', HTTPAdapter(max_retries=retries))

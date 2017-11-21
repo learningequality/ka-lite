@@ -11,7 +11,7 @@ from kalite.updates.videos import download_video, delete_downloaded_files,\
     get_video_local_path
 
 from .base import UpdatesTestCase
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 
 
 class TestDownload(UpdatesTestCase):
@@ -20,6 +20,9 @@ class TestDownload(UpdatesTestCase):
     """
 
     def test_simple_download(self):
+        """
+        Tests that a real, existing video can be downloaded
+        """
         # Download a video that exists for real!
         download_video(self.real_video.youtube_id)
         # After downloading the video, annotate the database
@@ -29,6 +32,9 @@ class TestDownload(UpdatesTestCase):
         self.assertTrue(updated['available'])
 
     def test_download_unavailable(self):
+        """
+        Tests that a non-existent video doesn't result in any new files
+        """
         with self.assertRaises(HTTPError):
             download_video(self.content_unavailable_item.youtube_id)
         self.assertFalse(os.path.exists(
@@ -36,7 +42,10 @@ class TestDownload(UpdatesTestCase):
         ))
 
     @mock.patch("requests.adapters.HTTPAdapter.send")
-    def test_network_error(self, requests_get):
+    def test_socket_error(self, requests_get):
+        """
+        Tests that a mocked socket error makes the download fail
+        """
         requests_get.side_effect = socket.timeout
         with self.assertRaises(socket.timeout):
             download_video(self.content_unavailable_item.youtube_id)
@@ -44,6 +53,18 @@ class TestDownload(UpdatesTestCase):
             get_video_local_path(self.content_unavailable_item.youtube_id)
         ))
     
+    @mock.patch("requests.adapters.HTTPAdapter.send")
+    def test_connection_error(self, requests_get):
+        """
+        Tests that a mocked connection error makes the download fail
+        """
+        requests_get.side_effect = ConnectionError
+        with self.assertRaises(ConnectionError):
+            download_video(self.content_unavailable_item.youtube_id)
+        self.assertFalse(os.path.exists(
+            get_video_local_path(self.content_unavailable_item.youtube_id)
+        ))
+
     def test_download_command(self):
         delete_downloaded_files(self.real_video.youtube_id)
         # Check that it's been marked unavailable
@@ -51,6 +72,9 @@ class TestDownload(UpdatesTestCase):
         annotate_content_models_by_youtube_id(youtube_ids=[self.real_video])
         self.assertFalse(updated['available'])
         queue = VideoQueue()
+        # Yes this is weird, but the VideoQueue instance will return an
+        # instance of a queue that already exists
+        queue.clear()
         queue.add_files({self.real_video.youtube_id: self.real_video.title}, language="en")
         call_command("videodownload")
         annotate_content_models_by_youtube_id(youtube_ids=[self.real_video.youtube_id])
@@ -66,6 +90,9 @@ class TestDownload(UpdatesTestCase):
         """
         requests_get.side_effect = socket.timeout
         queue = VideoQueue()
+        # Yes this is weird, but the VideoQueue instance will return an
+        # instance of a queue that already exists
+        queue.clear()
         queue.add_files({self.real_video.youtube_id: self.real_video.title}, language="en")
         call_command("videodownload")
         self.assertTrue(os.path.exists(

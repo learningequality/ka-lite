@@ -3,12 +3,14 @@
 import os
 import youtube_dl
 import time
+import logging
+
 from functools import partial
 from optparse import make_option
 
 from django.conf import settings
 from requests.exceptions import HTTPError
-logging = settings.LOG
+
 from django.utils.translation import ugettext as _
 
 from kalite.updates.management.utils import UpdatesDynamicCommand
@@ -17,6 +19,9 @@ from ...download_track import VideoQueue
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
+
+
+logger = logging.getLogger(__name__)
 
 
 class DownloadCancelled(Exception):
@@ -115,7 +120,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
         handled_youtube_ids = []  # stored to deal with caching
         failed_youtube_ids = []  # stored to avoid requerying failures.
 
-        set_process_priority.lowest(logging=settings.LOG)
+        set_process_priority.lowest(logging=logger)
 
         try:
             while True:
@@ -159,7 +164,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             # Something happened in the HTTP layer, perhaps
                             # our servers are down or outdated info.. try
                             # youtube-dl.
-                            logging.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
+                            logger.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
 
                             def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
                                 if stats['status'] == "finished":
@@ -171,8 +176,11 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                 progress_callback(percent=percent)
                             scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
 
+                        # This is problematic... if a video download breaks
+                        # while downloading, we just remove it instead of
+                        # retrying. Should be fixed.
                         except IOError as e:
-                            logging.exception(e)
+                            logger.exception(e)
                             failed_youtube_ids.append(video.get("youtube_id"))
                             video_queue.remove_file(video.get("youtube_id"))
                             time.sleep(10)
