@@ -3,7 +3,6 @@
 import os
 import socket
 import youtube_dl
-import time
 import logging
 
 from functools import partial
@@ -176,20 +175,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                     percent = 0.
                                 progress_callback(percent=percent)
                             scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
-
-                        # Okay if we cannot handle whatever happened
-                        except Exception as e:
-                            logger.exception(e)
-                            logger.info(
-                                (
-                                    "Exception downloading '{}', removing "
-                                    "from queue and picking next item"
-                                ).format(self.video.get("title"))
-                            )
-                            failed_youtube_ids.append(video.get("youtube_id"))
-                            video_queue.remove_file(video.get("youtube_id"))
-                            time.sleep(10)
-                            continue
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.get("youtube_id"))
