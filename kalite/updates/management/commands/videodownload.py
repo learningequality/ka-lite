@@ -1,6 +1,7 @@
 """
 """
 import os
+import socket
 import youtube_dl
 import time
 import logging
@@ -9,7 +10,7 @@ from functools import partial
 from optparse import make_option
 
 from django.conf import settings
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 
 from django.utils.translation import ugettext as _
 
@@ -160,7 +161,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             # Download via urllib
                             download_video(video.get("youtube_id"), callback=progress_callback)
 
-                        except HTTPError as e:
+                        except (HTTPError, socket.timeout, ConnectionError) as e:
                             # Something happened in the HTTP layer, perhaps
                             # our servers are down or outdated info.. try
                             # youtube-dl.
@@ -176,11 +177,15 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                 progress_callback(percent=percent)
                             scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
 
-                        # This is problematic... if a video download breaks
-                        # while downloading, we just remove it instead of
-                        # retrying. Should be fixed.
-                        except IOError as e:
+                        # Okay if we cannot handle whatever happened
+                        except Exception as e:
                             logger.exception(e)
+                            logger.info(
+                                (
+                                    "Exception downloading '{}', removing "
+                                    "from queue and picking next item"
+                                ).format(self.video.get("title"))
+                            )
                             failed_youtube_ids.append(video.get("youtube_id"))
                             video_queue.remove_file(video.get("youtube_id"))
                             time.sleep(10)
@@ -199,11 +204,14 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     failed_youtube_ids.append(video.get("youtube_id"))
 
                 except Exception as e:
+                    logger.error(
+                        "Unhandled exception while downloading {}".format(self.video.get("title"))
+                    )
+                    logger.exception(e)
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
-                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
+                    msg = _("Error downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
                     self.stderr.write("%s\n" % msg)
-
                     # Rather than getting stuck on one video, continue to the next video.
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
                     failed_youtube_ids.append(video.get("youtube_id"))
