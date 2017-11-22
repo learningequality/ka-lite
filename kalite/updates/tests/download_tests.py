@@ -12,6 +12,7 @@ from kalite.updates.videos import download_video, delete_downloaded_files,\
 
 from .base import UpdatesTestCase
 from requests.exceptions import HTTPError, ConnectionError
+from kalite.updates.models import UpdateProgressLog
 
 
 class TestDownload(UpdatesTestCase):
@@ -40,6 +41,21 @@ class TestDownload(UpdatesTestCase):
         self.assertFalse(os.path.exists(
             get_video_local_path(self.content_unavailable_item.youtube_id)
         ))
+
+    def test_download_unavailable_youtubedl(self):
+        """
+        Tests that falling back to youtube-dl works but we ultimately complete
+        successfully with 0 videos downloaded
+        """
+        queue = VideoQueue()
+        # Yes this is weird, but the VideoQueue instance will return an
+        # instance of a queue that already exists
+        queue.clear()
+        queue.add_files({self.content_unavailable_item.youtube_id: self.content_unavailable_item.title}, language="en")
+        call_command("videodownload")
+        log = UpdateProgressLog.objects.get(process_name__icontains="videodownload")
+        self.assertIn("Downloaded 0 of 1 videos successfully", log.notes)
+        
 
     @mock.patch("requests.adapters.HTTPAdapter.send")
     def test_socket_error(self, requests_get):
