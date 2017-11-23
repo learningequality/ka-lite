@@ -69,7 +69,7 @@ def download_file(url, dst=None, callback=None, max_retries=5):
     
     # If a destination is set, then we'll write a file and send back updates
     if dst:
-        chunk_size = 1024
+        chunk_size = 1024 * 50 # 50 KB
         if isinstance(dst, basestring):
             fd = open(dst, 'wb')
         else:
