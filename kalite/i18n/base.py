@@ -19,6 +19,8 @@ from kalite.topic_tools import settings as topic_settings
 
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
+from fle_utils.internet.download import download_file
+import sys
 
 
 CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
@@ -391,13 +393,19 @@ def download_content_pack(fobj, lang, minimal=False):
     )
 
     logging.info("Downloading content pack from {}".format(url))
-    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+    
+    # httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
 
-    shutil.copyfileobj(httpf, fobj)
+    def callback(fraction):
+        sys.stdout.write("\rProgress: =>{} ({}%)".format(
+            "=" * (int(fraction * 100) / 20),
+            int(fraction * 100),
+        ))
+
+    download_file(url, dst=fobj, callback=callback)
+
     fobj.seek(0)
     zf = zipfile.ZipFile(fobj)
-
-    httpf.close()
 
     return zf
 

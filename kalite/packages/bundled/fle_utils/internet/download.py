@@ -34,22 +34,23 @@ def download_file(url, dst=None, callback=None, max_retries=5):
         callback = callback or _nullhook
     else:
         callback = callback or _nullhook
+    
     dst = dst or tempfile.mkstemp()[1]
-
     
     from requests.adapters import HTTPAdapter
 
     s = requests.Session()
     
     # Define the way that we do retries.
-    # retries = 100
-    # backoff = 0.3
-    # 0.3 * (2 ^ (20 - 1)) = 6.8 seconds
+    # retries = 25
+    # backoff = 0.2
+    # sum(b * (2 ^ (r - 1)) for r in range(1,26))
+    # = 60 seconds total
     retries = Retry(
         total=max_retries,
         connect=max_retries,
         read=max_retries,
-        backoff_factor=0.3,
+        backoff_factor=0.2,
     )
     
     s.mount('http://', HTTPAdapter(max_retries=retries))
@@ -69,18 +70,21 @@ def download_file(url, dst=None, callback=None, max_retries=5):
     # If a destination is set, then we'll write a file and send back updates
     if dst:
         chunk_size = 1024
-        with open(dst, 'wb') as fd:
-            for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):
-                fd.write(chunk)
-                bytes_fetched = chunk_number * chunk_size
-                if 'content-length' not in response.headers:
-                    fraction = 0.0
-                elif int(response.headers['content-length']) == 0:
-                    fraction = 0.0
-                else:
-                    total_size = float(response.headers['content-length'])
-                    fraction = min(float(bytes_fetched) / total_size, 1.0)
-                callback(fraction)
+        if isinstance(dst, basestring):
+            fd = open(dst, 'wb')
+        else:
+            fd = dst
+        for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):
+            fd.write(chunk)
+            bytes_fetched = chunk_number * chunk_size
+            if 'content-length' not in response.headers:
+                fraction = 0.0
+            elif int(response.headers['content-length']) == 0:
+                fraction = 0.0
+            else:
+                total_size = float(response.headers['content-length'])
+                fraction = min(float(bytes_fetched) / total_size, 1.0)
+            callback(fraction)
         # Verify file existence
         if os.path.isfile(dst):
             size_on_disk = os.path.getsize(dst)
