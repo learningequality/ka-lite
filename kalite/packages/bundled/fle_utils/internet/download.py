@@ -29,13 +29,18 @@ def _nullhook(*args, **kwargs):
     pass
 
 
-def download_file(url, dst=None, callback=None, max_retries=5):
+def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
+
+    assert not (dst and fp)
     if sys.stdout.isatty():
         callback = callback or _nullhook
     else:
         callback = callback or _nullhook
     
-    dst = dst or tempfile.mkstemp()[1]
+    # If not called with a file pointer or destination, create a new temporary
+    # file
+    if not (dst or fp):
+        dst = tempfile.mkstemp()[1]
     
     from requests.adapters import HTTPAdapter
 
@@ -69,23 +74,23 @@ def download_file(url, dst=None, callback=None, max_retries=5):
     
     # If a destination is set, then we'll write a file and send back updates
     if dst:
-        chunk_size = 1024 * 50 # 50 KB
-        if isinstance(dst, basestring):
-            fd = open(dst, 'wb')
+        fp = open(dst, 'wb')
+
+    chunk_size = 1024 * 50 # 50 KB
+    for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):
+        fp.write(chunk)
+        bytes_fetched = chunk_number * chunk_size
+        if 'content-length' not in response.headers:
+            fraction = 0.0
+        elif int(response.headers['content-length']) == 0:
+            fraction = 0.0
         else:
-            fd = dst
-        for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):
-            fd.write(chunk)
-            bytes_fetched = chunk_number * chunk_size
-            if 'content-length' not in response.headers:
-                fraction = 0.0
-            elif int(response.headers['content-length']) == 0:
-                fraction = 0.0
-            else:
-                total_size = float(response.headers['content-length'])
-                fraction = min(float(bytes_fetched) / total_size, 1.0)
-            callback(fraction)
-        # Verify file existence
+            total_size = float(response.headers['content-length'])
+            fraction = min(float(bytes_fetched) / total_size, 1.0)
+        callback(fraction)
+    
+    # Verify file existence
+    if dst:
         if os.path.isfile(dst):
             size_on_disk = os.path.getsize(dst)
         else:
