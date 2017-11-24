@@ -19,6 +19,7 @@ from ...download_track import VideoQueue
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -156,25 +157,43 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     # and call it a day!
                     if not os.path.exists(os.path.join(settings.CONTENT_ROOT, "{id}.mp4".format(id=video.get("youtube_id")))):
 
-                        try:
-                            # Download via urllib
-                            download_video(video.get("youtube_id"), callback=progress_callback)
-
-                        except (HTTPError, socket.timeout, ConnectionError) as e:
-                            # Something happened in the HTTP layer, perhaps
-                            # our servers are down or outdated info.. try
-                            # youtube-dl.
-                            logger.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
-
-                            def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
-                                if stats['status'] == "finished":
-                                    percent = 100.
-                                elif stats['status'] == "downloading":
-                                    percent = 100. * stats['downloaded_bytes'] / stats['total_bytes']
-                                else:
-                                    percent = 0.
-                                progress_callback(percent=percent)
-                            scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+                        # Download via urllib
+                        retries = 0
+                        while True:
+                            try:
+                                download_video(video.get("youtube_id"), callback=progress_callback)
+                            except (socket.timeout, ConnectionError):
+                                retries += 1
+                                msg = "Connection error downloading {}, sleeping for 10s, retry number {}".format(video.get("title"))
+                                self.update_stage(
+                                    stage_name=video.get("youtube_id"),
+                                    stage_percent=0.,
+                                    notes=msg
+                                )
+                                logger.info(msg)
+                                time.sleep(10)
+                                continue
+                            except (HTTPError) as e:
+                                # Something happened in the HTTP layer, perhaps
+                                # our servers are down or outdated info.. try
+                                # youtube-dl.
+                                msg = _("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")}
+                                logger.info(msg)
+                                self.update_stage(
+                                    stage_name=video.get("youtube_id"),
+                                    stage_percent=0.,
+                                    notes=msg
+                                )
+                                def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
+                                    if stats['status'] == "finished":
+                                        percent = 100.
+                                    elif stats['status'] == "downloading":
+                                        percent = 100. * stats['downloaded_bytes'] / stats['total_bytes']
+                                    else:
+                                        percent = 0.
+                                    progress_callback(percent=percent)
+                                scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+                                break
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.get("youtube_id"))

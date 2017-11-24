@@ -12,6 +12,11 @@ to read the release notes.
 0.17.4 (unreleased)
 -------------------
 
+Added
+^^^^^
+
+* Progress displayed while downloading content packs :url-issue:`5356`
+
 Bug fixes
 ^^^^^^^^^
 

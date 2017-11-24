@@ -98,13 +98,15 @@ class TestDownload(UpdatesTestCase):
         updated = get_content_item(content_id=self.real_video.id)
         self.assertTrue(updated['available'])
 
-    @mock.patch("requests.adapters.HTTPAdapter.send")
-    def test_download_command_fallback(self, requests_get):
+    @mock.patch("kalite.updates.videos.get_thumbnail_url")
+    @mock.patch("kalite.updates.videos.get_video_url")
+    def test_download_command_fallback(self, get_thumbnail_url, get_video_url):
         """
-        Tests that we download via youtube-dl when `requests` module is patched
-        to fail.
+        Tests that we download via youtube-dl when our servers are down
         """
-        requests_get.side_effect = socket.timeout
+        delete_downloaded_files(self.real_video.youtube_id)
+        get_thumbnail_url.return_value = "https://httpstat.us/500"
+        get_video_url.return_value = "https://httpstat.us/500"
         queue = VideoQueue()
         # Yes this is weird, but the VideoQueue instance will return an
         # instance of a queue that already exists
