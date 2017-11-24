@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 def get_local_video_size(youtube_id, default=None):
     try:
         return os.path.getsize(os.path.join(django_settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
-    except Exception as e:
-        logger.debug(str(e))
+    except (IOError, OSError) as e:
+        logger.exception(e)
         return default
 
 
