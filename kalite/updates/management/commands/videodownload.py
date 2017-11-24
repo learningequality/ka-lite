@@ -2,7 +2,6 @@
 """
 import os
 import socket
-import youtube_dl
 import logging
 
 from functools import partial
@@ -29,25 +28,6 @@ class DownloadCancelled(Exception):
 
     def __str__(self):
         return "Download has been cancelled"
-
-
-def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
-    """
-    Assumes it's in the path; if not, we try to download & install.
-
-    Callback will be called back with a dictionary as the first arg with a bunch of
-    youtube-dl info in it, as specified in the youtube-dl docs.
-    """
-    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
-    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
-    if os.path.exists(video_file_download_path) and not force:
-        return
-
-    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
-    yt_dl.add_default_info_extractors()
-    if callback:
-        yt_dl.add_progress_hook(callback)
-    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -157,11 +137,11 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     # and call it a day!
                     if not os.path.exists(os.path.join(settings.CONTENT_ROOT, "{id}.mp4".format(id=video.get("youtube_id")))):
 
-                        # Download via urllib
                         retries = 0
                         while True:
                             try:
                                 download_video(video.get("youtube_id"), callback=progress_callback)
+                                break
                             except (socket.timeout, ConnectionError):
                                 retries += 1
                                 msg = "Connection error downloading {}, sleeping for 10s, retry number {}".format(video.get("title"))
@@ -173,30 +153,11 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                 logger.info(msg)
                                 time.sleep(10)
                                 continue
-                            except (HTTPError) as e:
-                                # Something happened in the HTTP layer, perhaps
-                                # our servers are down or outdated info.. try
-                                # youtube-dl.
-                                msg = _("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")}
-                                logger.info(msg)
-                                self.update_stage(
-                                    stage_name=video.get("youtube_id"),
-                                    stage_percent=0.,
-                                    notes=msg
-                                )
-                                def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
-                                    if stats['status'] == "finished":
-                                        percent = 100.
-                                    elif stats['status'] == "downloading":
-                                        percent = 100. * stats['downloaded_bytes'] / stats['total_bytes']
-                                    else:
-                                        percent = 0.
-                                    progress_callback(percent=percent)
-                                scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
-                                break
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.get("youtube_id"))
+                    
+                    # Remove from item from the queue
                     video_queue.remove_file(video.get("youtube_id"))
                     self.stdout.write(_("Download is complete!") + "\n")
 
@@ -207,19 +168,40 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     video_queue.clear()
                     failed_youtube_ids.append(video.get("youtube_id"))
 
-                except Exception as e:
-                    logger.error(
-                        "Unhandled exception while downloading {}".format(self.video.get("title"))
+                except (HTTPError, Exception) as e:
+                    if getattr(e, "response", None):
+                        reason = _(
+                            "Got non-OK HTTP status: {status}"
+                        ).format(
+                            status=e.response.status_code
+                        )
+                    else:
+                        reason = _(
+                            "Unhandled request exception: "
+                            "{exception}"
+                        ).format(
+                            exception=str(e),
+                        )
+                    msg = _(
+                        "Skipping '{title}', reason: {reason}"
+                    ).format(
+                        title=video.get('title'),
+                        reason=reason,
                     )
+                    # Inform the user of this problem
+                    self.update_stage(
+                        stage_name=video.get("youtube_id"),
+                        stage_percent=0.,
+                        notes=msg
+                    )
+                    logger.info(msg)
                     logger.exception(e)
-                    # On error, report the error, mark the video as not downloaded,
-                    #   and allow the loop to try other videos.
-                    msg = _("Error downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
-                    self.stderr.write("%s\n" % msg)
-                    # Rather than getting stuck on one video, continue to the next video.
-                    self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
+
+                    # Rather than getting stuck on one video,
+                    # completely remove this item from the queue
                     failed_youtube_ids.append(video.get("youtube_id"))
                     video_queue.remove_file(video.get("youtube_id"))
+
                     continue
 
             # Update

@@ -25,7 +25,6 @@ ifcfg==0.10.1
 importlib==1.0.3
 pbkdf2==1.3
 rsa==3.4.2
-youtube-dl==2015.11.24
 
 django-tastypie-legacy
 requests==2.11.1

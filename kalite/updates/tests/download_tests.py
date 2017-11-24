@@ -1,3 +1,4 @@
+import logging
 import mock
 import os
 import socket
@@ -15,10 +16,20 @@ from requests.exceptions import HTTPError, ConnectionError
 from kalite.updates.models import UpdateProgressLog
 
 
+logger = logging.getLogger(__name__)
+
+
 class TestDownload(UpdatesTestCase):
     """
     Test that topics with exercises are available, others are not.
     """
+
+    def setUp(self):
+        UpdatesTestCase.setUp(self)
+        delete_downloaded_files(self.real_video.youtube_id)
+        annotate_content_models_by_youtube_id(youtube_ids=[self.real_video.youtube_id])
+        updated = get_content_item(content_id=self.real_video.id)
+        self.assertFalse(updated['available'])
 
     def test_simple_download(self):
         """
@@ -26,10 +37,15 @@ class TestDownload(UpdatesTestCase):
         """
         # Download a video that exists for real!
         download_video(self.real_video.youtube_id)
+        # Check that file exists
+        self.assertTrue(os.path.exists(
+            get_video_local_path(self.real_video.youtube_id)
+        ))
         # After downloading the video, annotate the database
         annotate_content_models_by_youtube_id(youtube_ids=[self.real_video.youtube_id])
         # Check that it's been marked available
         updated = get_content_item(content_id=self.real_video.id)
+        logger.error(updated)
         self.assertTrue(updated['available'])
 
     def test_download_unavailable(self):
@@ -42,10 +58,10 @@ class TestDownload(UpdatesTestCase):
             get_video_local_path(self.content_unavailable_item.youtube_id)
         ))
 
-    def test_download_unavailable_youtubedl(self):
+    def test_download_fail_and_skip(self):
         """
-        Tests that falling back to youtube-dl works but we ultimately complete
-        successfully with 0 videos downloaded
+        Tests that trying to download a video file that doesn't work won't
+        make the `videodownload` command break.
         """
         queue = VideoQueue()
         # Yes this is weird, but the VideoQueue instance will return an
@@ -82,45 +98,23 @@ class TestDownload(UpdatesTestCase):
         ))
 
     def test_download_command(self):
-        delete_downloaded_files(self.real_video.youtube_id)
+        """
+        Basic test of the ``videodownload`` command.
+        """
         # Check that it's been marked unavailable
-        updated = get_content_item(content_id=self.real_video.id)
-        annotate_content_models_by_youtube_id(youtube_ids=[self.real_video])
-        self.assertFalse(updated['available'])
         queue = VideoQueue()
         # Yes this is weird, but the VideoQueue instance will return an
         # instance of a queue that already exists
         queue.clear()
         queue.add_files({self.real_video.youtube_id: self.real_video.title}, language="en")
         call_command("videodownload")
-        annotate_content_models_by_youtube_id(youtube_ids=[self.real_video.youtube_id])
         # Check that it's been marked available
         updated = get_content_item(content_id=self.real_video.id)
         self.assertTrue(updated['available'])
 
     @mock.patch("kalite.updates.videos.get_thumbnail_url")
     @mock.patch("kalite.updates.videos.get_video_url")
-    def test_download_command_fallback(self, get_thumbnail_url, get_video_url):
-        """
-        Tests that we download via youtube-dl when our servers are down
-        """
-        delete_downloaded_files(self.real_video.youtube_id)
-        get_thumbnail_url.return_value = "https://httpstat.us/500"
-        get_video_url.return_value = "https://httpstat.us/500"
-        queue = VideoQueue()
-        # Yes this is weird, but the VideoQueue instance will return an
-        # instance of a queue that already exists
-        queue.clear()
-        queue.add_files({self.real_video.youtube_id: self.real_video.title}, language="en")
-        call_command("videodownload")
-        self.assertTrue(os.path.exists(
-            get_video_local_path(self.real_video.youtube_id)
-        ))
-
-    @mock.patch("kalite.updates.videos.get_thumbnail_url")
-    @mock.patch("kalite.updates.videos.get_video_url")
     def test_500_download(self, get_thumbnail_url, get_video_url):
-        delete_downloaded_files(self.real_video.youtube_id)
         get_thumbnail_url.return_value = "https://httpstat.us/500"
         get_video_url.return_value = "https://httpstat.us/500"
         

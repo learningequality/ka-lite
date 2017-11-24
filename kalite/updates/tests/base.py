@@ -22,7 +22,7 @@ def add_test_content_videos(instance, db):
         id=youtube_id,
         youtube_id=youtube_id,
         slug="youtube-vid",
-        path="real/video",
+        path="khan/topic0/topic0-3/real-video",
         parent=random.choice(instance.content_subsubtopics).pk,
     )
     instance.real_video = real_video
