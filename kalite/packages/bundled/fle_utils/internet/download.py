@@ -47,10 +47,12 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     s = requests.Session()
     
     # Define the way that we do retries.
-    # retries = 25
+    # retries = 5
     # backoff = 0.2
-    # sum(b * (2 ^ (r - 1)) for r in range(1,26))
-    # = 60 seconds total
+    # sum(b * (2 ^ (r - 1)) for r in range(1,6))
+    # =2.4 seconds total retry backoff
+    # socket timeout is 20 (see above)
+    # = 102.4 seconds on an unconnected line
     retries = Retry(
         total=max_retries,
         connect=max_retries,

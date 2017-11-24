@@ -19,6 +19,7 @@ from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
 import time
+from kalite.updates.settings import DOWNLOAD_MAX_RETRIES
 
 
 logger = logging.getLogger(__name__)
@@ -144,14 +145,20 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                 break
                             except (socket.timeout, ConnectionError):
                                 retries += 1
-                                msg = "Connection error downloading {}, sleeping for 10s, retry number {}".format(video.get("title"))
+                                msg = _(
+                                    "Pausing download for '{title}', failed {failcnt} times, sleeping for 30s, retry number {retries}"
+                                ).format(
+                                    title=video.get("title"),
+                                    failcnt=DOWNLOAD_MAX_RETRIES,
+                                    retries=retries,
+                                )
                                 self.update_stage(
                                     stage_name=video.get("youtube_id"),
                                     stage_percent=0.,
                                     notes=msg
                                 )
                                 logger.info(msg)
-                                time.sleep(10)
+                                time.sleep(30)
                                 continue
 
                     # If we got here, we downloaded ... somehow :)
@@ -169,6 +176,12 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     failed_youtube_ids.append(video.get("youtube_id"))
 
                 except (HTTPError, Exception) as e:
+                    # Rather than getting stuck on one video,
+                    # completely remove this item from the queue
+                    failed_youtube_ids.append(video.get("youtube_id"))
+                    video_queue.remove_file(video.get("youtube_id"))
+                    logger.exception(e)
+
                     if getattr(e, "response", None):
                         reason = _(
                             "Got non-OK HTTP status: {status}"
@@ -195,13 +208,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
                         notes=msg
                     )
                     logger.info(msg)
-                    logger.exception(e)
-
-                    # Rather than getting stuck on one video,
-                    # completely remove this item from the queue
-                    failed_youtube_ids.append(video.get("youtube_id"))
-                    video_queue.remove_file(video.get("youtube_id"))
-
                     continue
 
             # Update
@@ -211,5 +217,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
             })
 
         except Exception as e:
+            logger.exception(e)
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
             raise
