@@ -21,10 +21,13 @@ from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
 from fle_utils.internet.download import download_file
 import sys
+from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
 
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
-                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
+CONTENT_PACK_URL_TEMPLATE = (
+    "http://pantry.learningequality.org/downloads"
+    "/ka-lite/{version}/content/contentpacks/{langcode}.zip"
+)
 
 
 CACHE_VARS = []
@@ -356,6 +359,15 @@ def delete_language(lang_code):
             else:
                 logger.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
 
+    # Delete the content db of particular language
+    content_db = CONTENT_DATABASE_PATH.format(channel="khan", language=lang_code)
+    if os.path.isfile(content_db):
+        try:
+            os.unlink(content_db)
+        except OSError as e:
+            if e.errno != 2:    # Only ignore error: No Such File or Directory
+                raise
+
     invalidate_web_cache()
 
 
@@ -380,7 +392,13 @@ def translate_block(language):
     translation.deactivate()
 
 
-def download_content_pack(fobj, lang, minimal=False, callback=None):
+def get_content_pack_url(lang):
+    return CONTENT_PACK_URL_TEMPLATE.format(
+        version=SHORTVERSION,
+        langcode=lang,
+    )
+
+def download_content_pack(fobj, lang, callback=None):
     """Given a file object where the content pack lang will be stored, return a
     zipfile object pointing to the content pack.
 
@@ -388,11 +406,7 @@ def download_content_pack(fobj, lang, minimal=False, callback=None):
     contentpack.
 
     """
-    url = CONTENT_PACK_URL_TEMPLATE.format(
-        version=SHORTVERSION,
-        langcode=lang,
-        suffix="-minimal" if minimal else "",
-    )
+    url = get_content_pack_url(lang)
 
     logger.info("Downloading content pack from {}".format(url))
 
@@ -407,7 +421,6 @@ def download_content_pack(fobj, lang, minimal=False, callback=None):
 
     download_file(url, fp=fobj, callback=_callback)
 
-    fobj.seek(0)
     zf = zipfile.ZipFile(fobj)
 
     return zf

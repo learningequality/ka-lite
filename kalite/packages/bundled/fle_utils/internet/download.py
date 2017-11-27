@@ -2,7 +2,6 @@ import logging
 import os
 import requests
 import socket
-import sys
 import tempfile
 
 
@@ -32,16 +31,17 @@ def _nullhook(*args, **kwargs):
 def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
 
     assert not (dst and fp)
-    if sys.stdout.isatty():
-        callback = callback or _nullhook
-    else:
-        callback = callback or _nullhook
+
+    callback = callback or _nullhook
     
     # If not called with a file pointer or destination, create a new temporary
-    # file
+    # file    
+    # If a destination is set, then we'll write a file and send back updates
+    if dst:
+        fp = open(dst, 'wb')
     if not (dst or fp):
-        dst = tempfile.mkstemp()[1]
-    
+        fp, dst = tempfile.mkstemp()[1]
+
     from requests.adapters import HTTPAdapter
 
     s = requests.Session()
@@ -73,10 +73,6 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     )
     
     response.raise_for_status()
-    
-    # If a destination is set, then we'll write a file and send back updates
-    if dst:
-        fp = open(dst, 'wb')
 
     chunk_size = 1024 * 50 # 50 KB
     for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):
@@ -90,7 +86,11 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
             total_size = float(response.headers['content-length'])
             fraction = min(float(bytes_fetched) / total_size, 1.0)
         callback(fraction)
-    
+
+    # Many operations expect a file pointer at 0 after having written the file
+    # successfully. For instance if it's passed on to a ZipFile object.
+    fp.seek(0)
+
     # Verify file existence
     if dst:
         if os.path.isfile(dst):
