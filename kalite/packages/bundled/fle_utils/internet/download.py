@@ -6,6 +6,7 @@ import tempfile
 
 
 from requests.packages.urllib3.util.retry import Retry
+from requests.exceptions import HTTPError
 
 
 socket.setdefaulttimeout(20)
@@ -33,14 +34,6 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     assert not (dst and fp)
 
     callback = callback or _nullhook
-    
-    # If not called with a file pointer or destination, create a new temporary
-    # file    
-    # If a destination is set, then we'll write a file and send back updates
-    if dst:
-        fp = open(dst, 'wb')
-    if not (dst or fp):
-        fp, dst = tempfile.mkstemp()[1]
 
     from requests.adapters import HTTPAdapter
 
@@ -73,6 +66,16 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     )
     
     response.raise_for_status()
+
+    
+    # Don't do this things until passed the raise_for_status() point
+    # If not called with a file pointer or destination, create a new temporary
+    # file
+    # If a destination is set, then we'll write a file and send back updates
+    if dst:
+        fp = open(dst, 'wb')
+    if not (dst or fp):
+        fp, dst = tempfile.mkstemp()[1]
 
     chunk_size = 1024 * 50 # 50 KB
     for chunk_number, chunk in enumerate(response.iter_content(chunk_size)):

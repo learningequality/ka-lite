@@ -145,10 +145,8 @@ def delete_downloaded_files(youtube_id):
     download_path = django_settings.CONTENT_ROOT
     files_deleted = 0
     for filepath in glob.glob(os.path.join(download_path, youtube_id + ".*")):
-        try:
+        if os.path.isfile(filepath):
             os.remove(filepath)
             files_deleted += 1
-        except OSError:
-            pass
     if files_deleted:
         return True
