@@ -23,7 +23,7 @@
     "devDependencies": {
         "jison" : "0.4.13",
         "cheerio": "0.19.0",
-        "uglify-js": "2.4.20",
+        "uglify-js": "2.6.0",
         "jshint": "2.7.0"
     }
 }

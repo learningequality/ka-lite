@@ -133,8 +133,11 @@ def set_database(function):
             except DoesNotExist:
                 output = None
 
-            except OperationalError:
-                logging.error("No content database file found")
+            except OperationalError as e:
+                logging.error(
+                    "Content DB error: Perhaps content database file found? "
+                    "Exception: {e}".format(e=str(e))
+                )
                 raise
         db.close()
 
@@ -161,8 +164,11 @@ def parse_data(function):
                     output = map(unparse_model_data, output.dicts())
                 else:
                     output = [item for item in output.dicts()]
-            except (TypeError, OperationalError):
-                logging.warn("No content database file found")
+            except (TypeError, OperationalError) as e:
+                logging.error(
+                    "Content DB error: Perhaps content database file found? "
+                    "Exception: {e}".format(e=str(e))
+                )
                 output = []
         return output
     return wrapper

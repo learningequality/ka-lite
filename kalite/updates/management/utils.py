@@ -1,14 +1,18 @@
 """
 """
+import logging
+
 from datetime import datetime
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from ..models import UpdateProgressLog
 from fle_utils.django_utils.command import LocaleAwareCommand
 from functools import wraps
+
+
+logger = logging.getLogger(__name__)
 
 
 def skip_if_no_progress_log(func):
@@ -62,7 +66,7 @@ class UpdatesCommand(LocaleAwareCommand):
     @skip_if_no_progress_log
     def display_notes(self, notes, ignore_same=True):
         if notes and (not ignore_same or notes != self.progress_log.notes):
-            logging.info(notes)
+            logger.info(notes)
 
     @skip_if_no_progress_log
     def ended(self):
@@ -131,6 +135,8 @@ class UpdatesDynamicCommand(UpdatesCommand):
 
     @skip_if_no_progress_log
     def check_if_cancel_requested(self):
+        if self.progress_log.id:
+            self.progress_log = UpdateProgressLog.objects.get(id=self.progress_log.id)
         if self.progress_log.cancel_requested:
             self.progress_log.end_time = datetime.now()
             self.progress_log.save()
@@ -172,6 +178,9 @@ class UpdatesStaticCommand(UpdatesCommand):
 
     @skip_if_no_progress_log
     def update_stage(self, stage_percent, stage_status=None, notes=None):
+        """
+        :param: stage_percent: 0.0 - 1.0 (so not actually percent!?)
+        """
         self.display_notes(notes)
         self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1], stage_percent=stage_percent, stage_status=stage_status, notes=notes)
 
