@@ -152,11 +152,16 @@ class Command(UpdatesDynamicCommand, CronCommand):
                                     failcnt=DOWNLOAD_MAX_RETRIES,
                                     retries=retries,
                                 )
-                                self.update_stage(
-                                    stage_name=video.get("youtube_id"),
-                                    stage_percent=0.,
-                                    notes=msg
-                                )
+                                try:
+                                    self.update_stage(
+                                        stage_name=video.get("youtube_id"),
+                                        stage_percent=0.,
+                                        notes=msg
+                                    )
+                                except AssertionError:
+                                    # Raised by update_stage when the video
+                                    # download job has ended
+                                    raise DownloadCancelled()
                                 logger.info(msg)
                                 time.sleep(30)
                                 continue
@@ -171,9 +176,9 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     annotate_content_models_by_youtube_id(youtube_ids=[video.get("youtube_id")], language=video.get("language"))
 
                 except DownloadCancelled:
-                    # Cancellation event
                     video_queue.clear()
                     failed_youtube_ids.append(video.get("youtube_id"))
+                    break
 
                 except (HTTPError, Exception) as e:
                     # Rather than getting stuck on one video,

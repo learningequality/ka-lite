@@ -401,10 +401,6 @@ def get_content_pack_url(lang):
 def download_content_pack(fobj, lang, callback=None):
     """Given a file object where the content pack lang will be stored, return a
     zipfile object pointing to the content pack.
-
-    If minimal is set to True, append the "-minimal" flag when downloading the
-    contentpack.
-
     """
     url = get_content_pack_url(lang)
 

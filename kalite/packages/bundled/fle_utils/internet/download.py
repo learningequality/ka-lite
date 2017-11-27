@@ -6,10 +6,10 @@ import tempfile
 
 
 from requests.packages.urllib3.util.retry import Retry
-from requests.exceptions import HTTPError
+from kalite.updates.settings import DOWNLOAD_SOCKET_TIMEOUT
 
 
-socket.setdefaulttimeout(20)
+socket.setdefaulttimeout(DOWNLOAD_SOCKET_TIMEOUT)
 
 
 logger = logging.getLogger(__name__)
@@ -58,16 +58,21 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     # Assuming the KA Lite version is included in user agent because of an
     # intention to create stats on learningequality.org
     from kalite.version import user_agent
+    
+    # Notice that we deliberate aren't using the ``timeout`` kwarg here, we
+    # will allow the stream to hang forever when a connection is disrupted
+    # but a download has already started. This is to not have to write "resume"
+    # logic on top of our retry logic.
     response = s.get(
         url,
         allow_redirects=True,
         stream=True,
+        # timeout=DOWNLOAD_SOCKET_TIMEOUT,
         headers={"user-agent": user_agent()}
     )
     
     response.raise_for_status()
 
-    
     # Don't do this things until passed the raise_for_status() point
     # If not called with a file pointer or destination, create a new temporary
     # file
@@ -95,6 +100,7 @@ def download_file(url, dst=None, callback=None, fp=None, max_retries=5):
     fp.seek(0)
 
     # Verify file existence
+    dst = fp.name or None
     if dst:
         if os.path.isfile(dst):
             size_on_disk = os.path.getsize(dst)
