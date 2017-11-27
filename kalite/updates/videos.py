@@ -88,23 +88,14 @@ def download_video(youtube_id, extension="mp4", callback=None):
         )
     )
 
+    # Download video
     try:
-        # Download video
         download_file(
             url,
             dst=filepath,
             callback=callback_percent_proxy(callback, end_percent=95),
             max_retries=settings.DOWNLOAD_MAX_RETRIES
         )
-
-        # Download thumbnail
-        download_file(
-            thumb_url,
-            dst=thumb_filepath,
-            callback=callback_percent_proxy(callback, start_percent=95, end_percent=100),
-            max_retries=settings.DOWNLOAD_MAX_RETRIES
-        )
-
     except HTTPError as e:
         logger.error(
             "HTTP status {status} for URL: {url}".format(
@@ -115,7 +106,7 @@ def download_video(youtube_id, extension="mp4", callback=None):
         raise
 
     except (socket.timeout, IOError) as e:
-        logger.info("Network error for URL: {url}, exception: {exc}".format(
+        logger.error("Network error for URL: {url}, exception: {exc}".format(
             url=url,
             exc=str(e)
         ))
@@ -126,6 +117,28 @@ def download_video(youtube_id, extension="mp4", callback=None):
         logger.exception(e)
         delete_downloaded_files(youtube_id)
         raise
+
+    # Download thumbnail - don't fail if it doesn't succeed, because at this
+    # stage, we know that the video has been downloaded.
+    try:
+        download_file(
+            thumb_url,
+            dst=thumb_filepath,
+            callback=callback_percent_proxy(callback, start_percent=95, end_percent=100),
+            max_retries=settings.DOWNLOAD_MAX_RETRIES
+        )
+    except HTTPError as e:
+        logger.error(
+            "HTTP status {status} for URL: {url}".format(
+                status=e.response.status_code,
+                url=e.response.url,
+            )
+        )
+    except (socket.timeout, IOError) as e:
+        logger.error("Network error for URL: {url}, exception: {exc}".format(
+            url=url,
+            exc=str(e)
+        ))
 
 
 def delete_downloaded_files(youtube_id):
