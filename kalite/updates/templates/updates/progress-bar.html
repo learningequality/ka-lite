@@ -1,13 +1,5 @@
 {% load i18n %}
 
-{% block headcss %}
-<style>
-#stage-summary {
-    margin-top: 20px;
-}
-</style>
-{% endblock headcss %}
-
 <div class="progress-section">
     <!-- stage progress -->
     <h4 class="progress-text">
@@ -18,7 +10,7 @@
     <div class="progressbar progressbar-current"></div>
 
     <!-- process progress -->
-    <h4 id="stage-summary">
+    <h4 id="stage-summary" style="margin-top: 20px">
     </h4>
     <div class="progressbar progressbar-overall"></div>
 </div>

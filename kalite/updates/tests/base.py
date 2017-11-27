@@ -5,7 +5,7 @@ from kalite.topic_tools.content_models import set_database, Item
 
 
 # Some small videos from the content database 2017-11-13
-TEST_YOUTUBE_IDS = ["riXcZT2ICjA", "_7aUxFzTG5w"]
+TEST_YOUTUBE_IDS = ["9P80OLC6wKY", "zaGUlwslGGg"]
 
 
 @set_database
@@ -22,7 +22,7 @@ def add_test_content_videos(instance, db):
         id=youtube_id,
         youtube_id=youtube_id,
         slug="youtube-vid",
-        path="real/video",
+        path="khan/topic0/topic0-3/real-video",
         parent=random.choice(instance.content_subsubtopics).pk,
     )
     instance.real_video = real_video

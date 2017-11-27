@@ -1,8 +1,8 @@
 import errno
+import logging
 import os
 import re
 import shutil
-import urllib
 import zipfile
 from distutils.version import LooseVersion
 from fle_utils.internet.webcache import invalidate_web_cache
@@ -19,17 +19,24 @@ from kalite.topic_tools import settings as topic_settings
 
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
+from fle_utils.internet.download import download_file
+import sys
+from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
 
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
-                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
+CONTENT_PACK_URL_TEMPLATE = (
+    "http://pantry.learningequality.org/downloads"
+    "/ka-lite/{version}/content/contentpacks/{langcode}.zip"
+)
 
 
 CACHE_VARS = []
 
 
 from django.conf import settings
-logging = settings.LOG
+
+
+logger = logging.getLogger(__name__)
 
 
 class LanguageNotFoundError(Exception):
@@ -98,7 +105,7 @@ def get_code2lang_map(lang_code=None, force=False):
     global CODE2LANG_MAP
 
     if force or not CODE2LANG_MAP:
-        lmap = softload_json(settings.LANG_LOOKUP_FILEPATH, logger=logging.debug)
+        lmap = softload_json(settings.LANG_LOOKUP_FILEPATH, logger=logger.debug)
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
@@ -228,12 +235,12 @@ def _get_installed_language_packs():
                 metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % lcode_to_ietf(django_disk_code))
                 lang_meta = softload_json(metadata_filepath, raises=True)
 
-                logging.debug("Found language pack %s" % (django_disk_code))
+                logger.debug("Found language pack %s" % (django_disk_code))
             except IOError as e:
                 if e.errno == errno.ENOENT:
-                    logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
+                    logger.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
                 else:
-                    logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
+                    logger.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
                 continue
 
             installed_language_packs.append(lang_meta)
@@ -273,9 +280,9 @@ def update_jsi18n_file(code="en"):
         try:
             icu_js = open(os.path.join(path, code, "%s_icu.js" % code), "r").read()
         except IOError:
-            logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
+            logger.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
     output_js = response.content + "\n" + icu_js
-    logging.info("Writing i18nized js file to {0}".format(output_file))
+    logger.info("Writing i18nized js file to {0}".format(output_file))
     with open(output_file, "w") as fp:
         fp.write(output_js)
     translation.deactivate()
@@ -309,7 +316,7 @@ def select_best_available_language(target_code, available_codes=None):
             store_cache = True
             available_codes = get_installed_language_packs().keys()
 
-    # logging.debug("choosing best language among %s" % (available_codes))
+    # logger.debug("choosing best language among %s" % (available_codes))
 
     # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
@@ -329,7 +336,7 @@ def select_best_available_language(target_code, available_codes=None):
         raise RuntimeError("No languages found")
 
     # if actual_code != target_code:
-    #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    #    logger.debug("Requested code %s, got code %s" % (target_code, actual_code))
 
     # Store in cache when available_codes are not set
     if store_cache:
@@ -345,12 +352,21 @@ def delete_language(lang_code):
     for langpack_resource_path in langpack_resource_paths:
         try:
             shutil.rmtree(langpack_resource_path)
-            logging.info("Deleted language pack resource path: %s" % langpack_resource_path)
+            logger.info("Deleted language pack resource path: %s" % langpack_resource_path)
         except OSError as e:
             if e.errno != 2:    # Only ignore error: No Such File or Directory
                 raise
             else:
-                logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
+                logger.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
+
+    # Delete the content db of particular language
+    content_db = CONTENT_DATABASE_PATH.format(channel="khan", language=lang_code)
+    if os.path.isfile(content_db):
+        try:
+            os.unlink(content_db)
+        except OSError as e:
+            if e.errno != 2:    # Only ignore error: No Such File or Directory
+                raise
 
     invalidate_web_cache()
 
@@ -361,7 +377,7 @@ def set_request_language(request, lang_code):
     lang_code = select_best_available_language(lang_code)  # output is in django_lang format
 
     if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
-        logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
+        logger.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
         # Just in case we have a db-backed session, don't write unless we have to.
         request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
 
@@ -376,28 +392,32 @@ def translate_block(language):
     translation.deactivate()
 
 
-def download_content_pack(fobj, lang, minimal=False):
-    """Given a file object where the content pack lang will be stored, return a
-    zipfile object pointing to the content pack.
-
-    If minimal is set to True, append the "-minimal" flag when downloading the
-    contentpack.
-
-    """
-    url = CONTENT_PACK_URL_TEMPLATE.format(
+def get_content_pack_url(lang):
+    return CONTENT_PACK_URL_TEMPLATE.format(
         version=SHORTVERSION,
         langcode=lang,
-        suffix="-minimal" if minimal else "",
     )
 
-    logging.info("Downloading content pack from {}".format(url))
-    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+def download_content_pack(fobj, lang, callback=None):
+    """Given a file object where the content pack lang will be stored, return a
+    zipfile object pointing to the content pack.
+    """
+    url = get_content_pack_url(lang)
 
-    shutil.copyfileobj(httpf, fobj)
-    fobj.seek(0)
+    logger.info("Downloading content pack from {}".format(url))
+
+    def _callback(fraction):
+        sys.stdout.write("\rProgress: [{}{}] ({}%)".format(
+            "=" * (int(fraction * 100) / 2),
+            " " * (50 - int(fraction * 100) / 2),
+            int(fraction * 100),
+        ))
+        if callback:
+            callback(fraction)
+
+    download_file(url, fp=fobj, callback=_callback)
+
     zf = zipfile.ZipFile(fobj)
-
-    httpf.close()
 
     return zf
 
