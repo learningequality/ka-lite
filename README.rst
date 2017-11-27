@@ -9,7 +9,7 @@ by `Learning Equality <https://learningequality.org/>`__
    :target: https://circleci.com/gh/learningequality/ka-lite/tree/develop
 
 .. |Coverage Status| image:: http://codecov.io/github/learningequality/ka-lite/coverage.svg?branch=develop
-  :target: http://codecov.io/github/learningequality/kolibri?branch=develop
+  :target: http://codecov.io/github/learningequality/ka-lite?branch=develop
 
 .. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
    :target: http://ka-lite.readthedocs.org/
