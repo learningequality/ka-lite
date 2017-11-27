@@ -135,6 +135,8 @@ class UpdatesDynamicCommand(UpdatesCommand):
 
     @skip_if_no_progress_log
     def check_if_cancel_requested(self):
+        if self.progress_log.id:
+            self.progress_log = UpdateProgressLog.objects.get(id=self.progress_log.id)
         if self.progress_log.cancel_requested:
             self.progress_log.end_time = datetime.now()
             self.progress_log.save()
