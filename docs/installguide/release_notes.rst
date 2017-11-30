@@ -37,11 +37,6 @@ Developers
 
 * Do not use `npm clean`, now requires npm>=5 for building on unclean systems :url-issue:`5519`
 
-Contents
-^^^^^^^^
-
-* Resized video torrent set for English rebuilt with missing videos
-
 
 Known issues
 ^^^^^^^^^^^^
