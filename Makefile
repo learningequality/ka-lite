@@ -142,3 +142,6 @@ dockerenvbuild: dockerwriteversion
 
 dockerenvdist: dockerwriteversion
 	docker run -v $$PWD/dist:/kalitedist learningequality/kalite:$$(cat kalite/VERSION)
+
+dockerdebianbuild: dockerwriteversion
+	docker run -it learningequality/kalite:latest /bin/bash /kalite/.buildkite/build_debian.sh
