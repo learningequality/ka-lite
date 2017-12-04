@@ -127,6 +127,10 @@ dist: clean docs assets
 	python setup.py bdist_wheel --static  --no-clean
 	ls -l dist
 
+pex:
+	pex -m kalite dist/ka_lite_static*.whl --disable-cache -o dist/ka-lit-static$$(git describe).pex
+	ls -l dist
+
 install: clean
 	python setup.py install
 
