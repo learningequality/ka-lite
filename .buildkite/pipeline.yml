@@ -4,5 +4,10 @@ steps:
 
   - wait
 
-  - label: Build the python packages and windows installer
-    command: mkdir -p dist && .buildkite/build_and_upload_artifact.sh && docker container prune -f
+  - label: Build python packages
+    command: mkdir -p dist && .buildkite/build_whl.sh && docker container prune -f
+  
+  - wait
+
+  - label: Build windows installer
+    command: .buildkite/build_windows_installer.sh
