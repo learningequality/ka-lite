@@ -11,3 +11,8 @@ steps:
 
   - label: Build windows installer
     command: .buildkite/build_windows_installer.sh
+
+  - wait
+
+  - label: Upload artifacts
+  - command: .buildkite/setup_and_upload_artifacts.sh && docker image prune -f
