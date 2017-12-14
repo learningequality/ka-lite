@@ -128,7 +128,7 @@ dist: clean docs assets
 	ls -l dist
 
 pex:
-	pex -m kalite dist/ka_lite_static*.whl --disable-cache -o dist/ka-lit-static$$(git describe).pex
+	pex -m kalite dist/ka_lite_static*.whl --disable-cache -o dist/ka-lite-static$$(git describe).pex
 	ls -l dist
 
 install: clean
