@@ -168,14 +168,14 @@ def upload_artifacts():
         logging.info("Uploading file {filename}".format(filename=artifact.get("name")))
 
         if is_release:
-            blob = bucket.blob("kalite-{release_dir}-{build_id}-{filename}".format(
+            blob = bucket.blob("kalite/{release_dir}/{build_id}/{filename}".format(
                 release_dir=RELEASE_DIR,
                 build_id=BUILD_ID,
                 filename=artifact.get("name")
             ))
         else:
-            blob = bucket.blob("kalite-buildkite-build_{release_dir}-{build_id}-{filename}".format(
-                release_dir=RELEASE_DIR, 
+            blob = bucket.blob("kalite/buildkite/build-{issue_id}/{build_id}/{filename}".format(
+                issue_id=ISSUE_ID,
                 build_id=BUILD_ID, 
                 filename=artifact.get("name")
             ))
@@ -185,7 +185,7 @@ def upload_artifacts():
         artifact.update({'media_url': blob.media_link})
 
     html = create_status_report_html(artifacts)
-    blob = bucket.blob("kalite-{release_dir}-{build_id}".format(release_dir=RELEASE_DIR, build_id=BUILD_ID))
+    blob = bucket.blob("kalite/{release_dir}/{build_id}/report.html".format(release_dir=RELEASE_DIR, build_id=BUILD_ID))
     blob.upload_from_string(html, content_type='text/html')
     blob.make_public()
 
