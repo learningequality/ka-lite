@@ -14,8 +14,8 @@ to read the release notes.
 This version is available as the current ``develop`` branch on Github.
 
 
-0.17.4 (unreleased)
--------------------
+0.17.4b2
+--------
 
 Added
 ^^^^^
@@ -41,11 +41,6 @@ Developers
 ^^^^^^^^^^
 
 * Do not use `npm clean`, now requires npm>=5 for building on unclean systems :url-issue:`5519`
-
-Contents
-^^^^^^^^
-
-* Resized video torrent set for English rebuilt with missing videos
 
 
 Known issues
