@@ -223,7 +223,10 @@ def extract_subtitles(zf, lang):
 
     ensure_dir(SUBTITLE_DEST_DIR)
 
-    subtitles = (s for s in zf.namelist() if SUBTITLE_ZIP_DIR in s)
+    def is_subtitle_file(s):
+        return SUBTITLE_ZIP_DIR in s and len(s) > len(SUBTITLE_ZIP_DIR)
+
+    subtitles = (s for s in zf.namelist() if is_subtitle_file(s))
 
     for subtitle in subtitles:
         # files inside zipfiles may come with leading directories in their
