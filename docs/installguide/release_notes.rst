@@ -9,8 +9,8 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
-0.17.4b2
---------
+0.17.4
+------
 
 Added
 ^^^^^
