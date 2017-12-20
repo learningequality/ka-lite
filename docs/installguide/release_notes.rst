@@ -8,6 +8,49 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+
+0.17.4
+------
+
+Added
+^^^^^
+
+* Progress displayed while downloading content packs :url-issue:`5356`
+
+Bug fixes
+^^^^^^^^^
+
+* Video download retry upon connection establishment errors :url-issue:`5528`
+* Resume download if unplugged connection while downloading :url-issue:`5545`
+* Blank videos produced when ``kalite.learningequality.org`` server down :url-issue:`5538`
+* Video download jobs hanging indefinitely after pressing "Cancel" :url-issue:`5545`
+* Also delete content database when deleting a content pack :url-issue:`5545`
+* Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
+
+New Features
+^^^^^^^^^^^^
+
+* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
+
+Developers
+^^^^^^^^^^
+
+* Do not use `npm clean`, now requires npm>=5 for building on unclean systems :url-issue:`5519`
+
+
+Known issues
+^^^^^^^^^^^^
+
+* It isn't possible to cancel video downloads if a video is downloading while
+  the connection is switched off.
+* **Chrome 55-56** has issues scrolling the menus on touch devices. Upgrading to Chrome 57 fixes this. :url-issue:`5407`
+* **Windows** needs at least Python 2.7.11. The Windows installer for KA Lite will install the latest version of Python. If you installed KA Lite in another way, and your Python installation is more than a year old, you probably have to upgrade Python - you can fetch the latest 2.7.12 version `here <https://www.python.org/downloads/windows/>`__.
+* **Windows** installer tray application option "Run on start" does not work, see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__ (also contains `a work-around <https://github.com/learningequality/installers/issues/106#issuecomment-237729680>`__)
+* **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
+* **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
+* A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
+
+
 0.17.3
 ------
 

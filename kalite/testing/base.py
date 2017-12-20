@@ -66,127 +66,126 @@ def teardown_content_db(instance, db):
 def setup_content_db(instance, db):
 
     # Setup the content.db (defaults to the en version)
-    with Using(db, [Item], with_transaction=False):
-        # Root node
-        instance.content_root = Item.create(
-            title="Khan Academy",
-            description="",
-            available=True,
-            files_complete=0,
-            total_files="1",
-            kind="Topic",
-            parent=None,
-            id="khan",
-            slug="khan",
-            path="khan/",
-            extra_fields="{}",
-            youtube_id=None,
-            remote_size=315846064333,
-            sort_order=0
+    # Root node
+    instance.content_root = Item.create(
+        title="Khan Academy",
+        description="",
+        available=True,
+        files_complete=0,
+        total_files="1",
+        kind="Topic",
+        parent=None,
+        id="khan",
+        slug="khan",
+        path="khan/",
+        extra_fields="{}",
+        youtube_id=None,
+        remote_size=315846064333,
+        sort_order=0
+    )
+    for _i in range(4):
+        slug = "topic{}".format(_i)
+        instance.content_subtopics.append(
+            Item.create(
+                title="Subtopic {}".format(_i),
+                description="A subtopic",
+                available=True,
+                files_complete=0,
+                total_files="4",
+                kind="Topic",
+                parent=instance.content_root,
+                id=slug,
+                slug=slug,
+                path="khan/{}/".format(slug),
+                extra_fields="{}",
+                remote_size=1,
+                sort_order=_i,
+            )
         )
+    
+    # Parts of the content recommendation system currently is hard-coded
+    # to look for 3rd level recommendations only and so will fail if we
+    # don't have this level of lookup
+    for subtopic in instance.content_subtopics:
         for _i in range(4):
-            slug = "topic{}".format(_i)
-            instance.content_subtopics.append(
+            slug = "{}-{}".format(subtopic.id, _i)
+            instance.content_subsubtopics.append(
                 Item.create(
-                    title="Subtopic {}".format(_i),
-                    description="A subtopic",
+                    title="{} Subsubtopic {}".format(subtopic.title, _i),
+                    description="A subsubtopic",
                     available=True,
-                    files_complete=0,
+                    files_complete=4,
                     total_files="4",
                     kind="Topic",
-                    parent=instance.content_root,
+                    parent=subtopic,
                     id=slug,
                     slug=slug,
-                    path="khan/{}/".format(slug),
+                    path="{}{}/".format(subtopic.path, slug),
+                    youtube_id=None,
                     extra_fields="{}",
                     remote_size=1,
                     sort_order=_i,
                 )
             )
-        
-        # Parts of the content recommendation system currently is hard-coded
-        # to look for 3rd level recommendations only and so will fail if we
-        # don't have this level of lookup
-        for subtopic in instance.content_subtopics:
-            for _i in range(4):
-                slug = "{}-{}".format(subtopic.id, _i)
-                instance.content_subsubtopics.append(
-                    Item.create(
-                        title="{} Subsubtopic {}".format(subtopic.title, _i),
-                        description="A subsubtopic",
-                        available=True,
-                        files_complete=4,
-                        total_files="4",
-                        kind="Topic",
-                        parent=subtopic,
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(subtopic.path, slug),
-                        youtube_id=None,
-                        extra_fields="{}",
-                        remote_size=1,
-                        sort_order=_i,
-                    )
-                )
 
-        # We need at least 10 exercises in some of the tests to generate enough
-        # data etc.
-        # ...and we need at least some exercises in each sub-subtopic
-        for parent in instance.content_subsubtopics:
-            # Make former created exercise the prerequisite of the next one
-            prerequisite = None
-            for _i in range(4):
-                slug = "{}-exercise-{}".format(parent.id, _i)
-                extra_fields = {}
-                if prerequisite:
-                    extra_fields['prerequisites'] = [prerequisite.id]
-                new_exercise = Item.create(
-                    title="Exercise {} in {}".format(_i, parent.title),
-                    parent=parent,
-                    description="Solve this",
+    # We need at least 10 exercises in some of the tests to generate enough
+    # data etc.
+    # ...and we need at least some exercises in each sub-subtopic
+    for parent in instance.content_subsubtopics:
+        # Make former created exercise the prerequisite of the next one
+        prerequisite = None
+        for _i in range(4):
+            slug = "{}-exercise-{}".format(parent.id, _i)
+            extra_fields = {}
+            if prerequisite:
+                extra_fields['prerequisites'] = [prerequisite.id]
+            new_exercise = Item.create(
+                title="Exercise {} in {}".format(_i, parent.title),
+                parent=parent,
+                description="Solve this",
+                available=True,
+                kind="Exercise",
+                id=slug,
+                slug=slug,
+                path="{}{}/".format(parent.path, slug),
+                sort_order=_i,
+                **extra_fields
+            )
+            instance.content_exercises.append(new_exercise)
+            prerequisite = new_exercise
+    # Add some videos, too, even though files don't exist
+    for parent in instance.content_subsubtopics:
+        for _i in range(4):
+            slug = "{}-video-{}".format(parent.pk, _i)
+            instance.content_videos.append(
+                Item.create(
+                    title="Video {} in {}".format(_i, parent.title),
+                    parent=random.choice(instance.content_subsubtopics),
+                    description="Watch this",
                     available=True,
-                    kind="Exercise",
+                    kind="Video",
                     id=slug,
                     slug=slug,
                     path="{}{}/".format(parent.path, slug),
-                    sort_order=_i,
-                    **extra_fields
+                    extra_fields={
+                        "subtitle_urls": [],
+                        "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
+                    },
+                    sort_order=_i
                 )
-                instance.content_exercises.append(new_exercise)
-                prerequisite = new_exercise
-        # Add some videos, too, even though files don't exist
-        for parent in instance.content_subsubtopics:
-            for _i in range(4):
-                slug = "{}-video-{}".format(parent.pk, _i)
-                instance.content_videos.append(
-                    Item.create(
-                        title="Video {} in {}".format(_i, parent.title),
-                        parent=random.choice(instance.content_subsubtopics),
-                        description="Watch this",
-                        available=True,
-                        kind="Video",
-                        id=slug,
-                        slug=slug,
-                        path="{}{}/".format(parent.path, slug),
-                        extra_fields={
-                            "subtitle_urls": [],
-                            "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
-                        },
-                        sort_order=_i
-                    )
-                )
+            )
 
-    with Using(db, [Item], with_transaction=False):
-        instance.content_unavailable_item = Item.create(
-            title="Unavailable item",
-            description="baz",
-            available=False,
-            kind="Video",
-            id="unavail123",
-            slug="unavail",
-            path=instance.content_unavailable_content_path,
-            parent=random.choice(instance.content_subsubtopics).pk,
-        )
+    instance.content_unavailable_item = Item.create(
+        title="Unavailable item",
+        description="baz",
+        available=False,
+        kind="Video",
+        id="00000000000",
+        youtube_id="00000000000",
+        slug="unavail",
+        path=instance.content_unavailable_content_path,
+        parent=random.choice(instance.content_subsubtopics).pk,
+    )
     
     instance.content_available_content_path = random.choice(instance.content_exercises).path
 

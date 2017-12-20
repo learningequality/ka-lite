@@ -28,60 +28,66 @@
 
     <div class="container">
 
-        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">
-            <div class="row">
-                <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
-            </div>
-            <div class="row">
-                <p class="button_text">
-                    {% trans "Language packs contain all available translations for the interface and video subtitles." %}
-                </p>
-            </div>
-            <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
-                Assume we are getting something like:
-                [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
-            -->
-            <div class="row">
-                <div id="langpacks">
-                    <span class= "button_style">
-                        <div class="dropdown" id="language-packs">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
-                                {% trans "Select language pack" %}
-                                <span class="caret"></span>
-                            </button>
-                          <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>
-                        </div>
-                    </span>
+        <div class="row">
+          <div class="col-md-7 download-actions-languages get-language vertical-shadow">
+              <div class="row">
+                  <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
+              </div>
+              <div class="row">
+                  <p class="button_text">
+                      {% trans "Language packs contain all available translations for the interface and video subtitles." %}
+                  </p>
+              </div>
+              <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
+                  Assume we are getting something like:
+                  [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
+              -->
+              <div class="row">
+                  <div id="langpacks">
+                      <span class= "button_style">
+                          <div class="dropdown" id="language-packs">
+                              <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
+                                  {% trans "Select language pack" %}
+                                  <span class="caret"></span>
+                              </button>
+                            <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>
+                          </div>
+                      </span>
 
-                    <label for="beta-checkbox">   {% trans "Show beta language packs" %}</label>
-                    <input type="checkbox" id="beta-checkbox">
+                      <label for="beta-checkbox">   {% trans "Show beta language packs" %}</label>
+                      <input type="checkbox" id="beta-checkbox">
 
-                    <button class="btn btn-success btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
-                </div>
-                <div id="langpack-details">
-                    <span id="lp-num-srts"></span><label>&nbsp;{% trans "subtitle(s)" %}</label>
-                    <span id="lp-pct-trans"></span><label>&nbsp;{% trans "translated" %}</label>
-                    <span id="lp-down-size"></span><label>&nbsp;({% trans "to download" %})</label>
-                    <br>
-                    <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
-                    <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
-                </div>
+                      <button class="btn btn-success btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
+                  </div>
+                  <div id="langpack-details">
+                      <span id="lp-num-srts"></span><label>&nbsp;{% trans "subtitle(s)" %}</label>
+                      <span id="lp-pct-trans"></span><label>&nbsp;{% trans "translated" %}</label>
+                      <span id="lp-down-size"></span><label>&nbsp;({% trans "to download" %})</label>
+                      <br>
+                      <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
+                      <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-md-5">
+            <div id="retrievecontentpack-progressbar">
+                {% include "updates/progress-bar.html" %}
             </div>
+          </div>
+
         </div>
 
-        <div id="retrievecontentpack-progressbar">
-            {% include "updates/progress-bar.html" %}
-        </div>
-        <div class="clear"></div>
+        <div class="row">
+          <div id="installed-languages-div" class="vertical-shadow col-sm-12 col-lg-12">
+              <div class="row">
+                  <h4>{% trans "Installed Languages" %}</h4>
+              </div>
 
-        <div id="installed-languages-div" class="vertical-shadow col-sm-12 col-lg-12">
-            <div class="row">
-                <h4>{% trans "Installed Languages" %}</h4>
-            </div>
-
-            <div class="row table-responsive language-table">
-                <table class="installed-languages table"></table>
-            </div>
+              <div class="row table-responsive language-table">
+                  <table class="installed-languages table"></table>
+              </div>
+          </div>
         </div>
 
     </div>

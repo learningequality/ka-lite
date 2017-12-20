@@ -1,5 +1,7 @@
+import logging
 import os
 import shutil
+import socket
 import tempfile
 import zipfile
 
@@ -20,8 +22,10 @@ from kalite.topic_tools import settings as topic_settings
 from kalite.updates.management.utils import UpdatesStaticCommand
 from peewee import SqliteDatabase
 from kalite.topic_tools.content_models import Item, AssessmentItem
+from requests.exceptions import ConnectionError, HTTPError
 
-logging = django_settings.LOG
+
+logger = logging.getLogger(__name__)
 
 
 class Command(UpdatesStaticCommand):
@@ -143,8 +147,22 @@ class Command(UpdatesStaticCommand):
 
         lang = args[1]
 
+        def download_callback(fraction):
+            percent = int(fraction * 100)
+            self.update_stage(
+                fraction,
+                stage_status=_("Downloaded {pct}% of {lang} content pack").format(
+                    pct=percent,
+                    lang=lang,
+                )
+            )
+
         with tempfile.NamedTemporaryFile() as f:
-            zf = download_content_pack(f, lang)
+            try:
+                zf = download_content_pack(f, lang, callback=download_callback)
+            except (socket.error, ConnectionError, HTTPError) as e:
+                self.cancel("Could not download content pack, unable to connect", str(e))
+                return
             self.process_content_pack(zf, lang)
             zf.close()
 
@@ -194,7 +212,7 @@ def extract_catalog_files(zf, lang):
     for zipmo, djangomo in filename_mapping.items():
         zipmof = zf.open(zipmo)
         mopath = os.path.join(modir, djangomo)
-        logging.debug("writing to %s" % mopath)
+        logger.debug("writing to %s" % mopath)
         with open(mopath, "wb") as djangomof:
             shutil.copyfileobj(zipmof, djangomof)
 

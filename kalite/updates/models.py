@@ -1,8 +1,8 @@
 """
 """
+import logging
 import datetime
 
-from django.conf import settings; logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -11,6 +11,9 @@ from django.dispatch import receiver
 
 from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.chronograph.models import Job
+
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateProgressLog(ExtendedModel):
@@ -91,7 +94,7 @@ class UpdateProgressLog(ExtendedModel):
         """
         Delete the current stage--it's reported progress, and contribution to the total # of stages
         """
-        logging.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
+        logger.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
 
         self.stage_percent = 0.
         self.stage_name = None
@@ -112,9 +115,9 @@ class UpdateProgressLog(ExtendedModel):
             return
 
         if self.total_stages:
-            logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
+            logger.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
         else:
-            logging.debug("Setting %s to %d total stages." % (self.process_name, total_stages))
+            logger.debug("Setting %s to %d total stages." % (self.process_name, total_stages))
 
 
         self.total_stages = total_stages
@@ -131,7 +134,7 @@ class UpdateProgressLog(ExtendedModel):
         """
         Stamps end time.
         """
-        logging.info("Cancelling process %s" % (self.process_name))
+        logger.info("Cancelling process %s" % (self.process_name))
 
         self.stage_status = stage_status or "cancelled"
         self.end_time = datetime.datetime.now()
@@ -144,7 +147,7 @@ class UpdateProgressLog(ExtendedModel):
         """
         Completes stage and process percents, stamps end time.
         """
-        logging.debug("Completing process %s" % (self.process_name))
+        logger.debug("Completing process %s" % (self.process_name))
 
         self.stage_percent = 1.
         self.process_percent = 1.

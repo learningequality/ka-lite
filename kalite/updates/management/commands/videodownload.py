@@ -1,40 +1,34 @@
 """
 """
 import os
-import youtube_dl
-import time
+import socket
+import logging
+
 from functools import partial
 from optparse import make_option
 
 from django.conf import settings
-logging = settings.LOG
+from requests.exceptions import HTTPError, ConnectionError
+
 from django.utils.translation import ugettext as _
 
 from kalite.updates.management.utils import UpdatesDynamicCommand
 from ...videos import download_video
 from ...download_track import VideoQueue
 from fle_utils import set_process_priority
-from fle_utils.videos import DownloadCancelled, URLNotFound
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
+import time
+from kalite.updates.settings import DOWNLOAD_MAX_RETRIES
 
-def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
-    """
-    Assumes it's in the path; if not, we try to download & install.
 
-    Callback will be called back with a dictionary as the first arg with a bunch of
-    youtube-dl info in it, as specified in the youtube-dl docs.
-    """
-    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
-    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
-    if os.path.exists(video_file_download_path) and not force:
-        return
+logger = logging.getLogger(__name__)
 
-    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
-    yt_dl.add_default_info_extractors()
-    if callback:
-        yt_dl.add_progress_hook(callback)
-    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
+
+class DownloadCancelled(Exception):
+
+    def __str__(self):
+        return "Download has been cancelled"
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -91,7 +85,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 if percent == 100:
                     self.video = {}
 
-        except DownloadCancelled as de:
+        except DownloadCancelled:
             if self.video:
                 self.stdout.write(_("Download cancelled!") + "\n")
 
@@ -108,7 +102,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
         handled_youtube_ids = []  # stored to deal with caching
         failed_youtube_ids = []  # stored to avoid requerying failures.
 
-        set_process_priority.lowest(logging=settings.LOG)
+        set_process_priority.lowest(logging=logger)
 
         try:
             while True:
@@ -144,57 +138,81 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     # and call it a day!
                     if not os.path.exists(os.path.join(settings.CONTENT_ROOT, "{id}.mp4".format(id=video.get("youtube_id")))):
 
-                        try:
-                            # Download via urllib
-                            download_video(video.get("youtube_id"), callback=progress_callback)
-
-                        except URLNotFound:
-                            # Video was not found on amazon cloud service,
-                            #   either due to a KA mistake, or due to the fact
-                            #   that it's a dubbed video.
-                            #
-                            # We can use youtube-dl to get that video!!
-                            logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
-
-                            def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
-                                if stats['status'] == "finished":
-                                    percent = 100.
-                                elif stats['status'] == "downloading":
-                                    percent = 100. * stats['downloaded_bytes'] / stats['total_bytes']
-                                else:
-                                    percent = 0.
-                                progress_callback(percent=percent)
-                            scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
-
-                        except IOError as e:
-                            logging.exception(e)
-                            failed_youtube_ids.append(video.get("youtube_id"))
-                            video_queue.remove_file(video.get("youtube_id"))
-                            time.sleep(10)
-                            continue
+                        retries = 0
+                        while True:
+                            try:
+                                download_video(video.get("youtube_id"), callback=progress_callback)
+                                break
+                            except (socket.timeout, ConnectionError):
+                                retries += 1
+                                msg = _(
+                                    "Pausing download for '{title}', failed {failcnt} times, sleeping for 30s, retry number {retries}"
+                                ).format(
+                                    title=video.get("title"),
+                                    failcnt=DOWNLOAD_MAX_RETRIES,
+                                    retries=retries,
+                                )
+                                try:
+                                    self.update_stage(
+                                        stage_name=video.get("youtube_id"),
+                                        stage_percent=0.,
+                                        notes=msg
+                                    )
+                                except AssertionError:
+                                    # Raised by update_stage when the video
+                                    # download job has ended
+                                    raise DownloadCancelled()
+                                logger.info(msg)
+                                time.sleep(30)
+                                continue
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.get("youtube_id"))
+                    
+                    # Remove from item from the queue
                     video_queue.remove_file(video.get("youtube_id"))
                     self.stdout.write(_("Download is complete!") + "\n")
 
                     annotate_content_models_by_youtube_id(youtube_ids=[video.get("youtube_id")], language=video.get("language"))
 
                 except DownloadCancelled:
-                    # Cancellation event
                     video_queue.clear()
                     failed_youtube_ids.append(video.get("youtube_id"))
+                    break
 
-                except Exception as e:
-                    # On error, report the error, mark the video as not downloaded,
-                    #   and allow the loop to try other videos.
-                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
-                    self.stderr.write("%s\n" % msg)
-
-                    # Rather than getting stuck on one video, continue to the next video.
-                    self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
+                except (HTTPError, Exception) as e:
+                    # Rather than getting stuck on one video,
+                    # completely remove this item from the queue
                     failed_youtube_ids.append(video.get("youtube_id"))
                     video_queue.remove_file(video.get("youtube_id"))
+                    logger.exception(e)
+
+                    if getattr(e, "response", None):
+                        reason = _(
+                            "Got non-OK HTTP status: {status}"
+                        ).format(
+                            status=e.response.status_code
+                        )
+                    else:
+                        reason = _(
+                            "Unhandled request exception: "
+                            "{exception}"
+                        ).format(
+                            exception=str(e),
+                        )
+                    msg = _(
+                        "Skipping '{title}', reason: {reason}"
+                    ).format(
+                        title=video.get('title'),
+                        reason=reason,
+                    )
+                    # Inform the user of this problem
+                    self.update_stage(
+                        stage_name=video.get("youtube_id"),
+                        stage_percent=0.,
+                        notes=msg
+                    )
+                    logger.info(msg)
                     continue
 
             # Update
@@ -204,5 +222,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
             })
 
         except Exception as e:
+            logger.exception(e)
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
             raise

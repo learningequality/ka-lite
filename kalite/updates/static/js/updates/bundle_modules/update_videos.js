@@ -204,6 +204,7 @@ $(function() {
                 if(server_is_online){
                     base.updatesStart("videodownload", 5000, video_callbacks);
                 } else {
+                    base.updatesStart("videodownload", 10000, video_callbacks);
                     messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
                 }
             });
