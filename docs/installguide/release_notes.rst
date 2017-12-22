@@ -9,6 +9,25 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
+0.17.5 (unreleased)
+-------------------
+
+Added
+^^^^^
+
+* ...
+
+Bug fixes
+^^^^^^^^^
+
+* Retrievecontentpack might fail :url-issue:`5476`
+
+Developers
+^^^^^^^^^^
+
+* ...
+
+
 0.17.4
 ------
 
@@ -16,6 +35,7 @@ Added
 ^^^^^
 
 * Progress displayed while downloading content packs :url-issue:`5356`
+* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
 
 Bug fixes
 ^^^^^^^^^
@@ -27,10 +47,6 @@ Bug fixes
 * Also delete content database when deleting a content pack :url-issue:`5545`
 * Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
 
-New Features
-^^^^^^^^^^^^
-
-* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
 
 Developers
 ^^^^^^^^^^
