@@ -86,7 +86,7 @@ for req in RAW_REQUIREMENTS:
 STATIC_REQUIREMENTS = []
 
 # Decide if the invoked command is a request to do building
-DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel", "bdist_deb", "sdist_dsc")]) and not any([x.startswith("--use-premade-distfile") for x in sys.argv])
+DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel", "bdist_deb", "sdist_dsc", "clean")]) and not any([x.startswith("--use-premade-distfile") for x in sys.argv])
 
 # This is where static packages are automatically installed by pip when running
 # setup.py sdist --static or if a distributed version built by the static
