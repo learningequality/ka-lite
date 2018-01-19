@@ -13,6 +13,11 @@ to read the release notes.
 
 This version is available as the current ``develop`` branch on Github.
 
+Changed
+^^^^^^^
+
+* Improve local IP detection for better user information :url-issue:`5498`
+
 
 0.17.4b2
 --------

@@ -101,20 +101,10 @@ def get_ip_addresses(include_loopback=True):
     You can specify to either include the loopback device (127.0.0.1) or not.
     """
 
-    system = platform.system()
+    ips = [iface.get("inet") for iface in ifcfg.interfaces().values()]
+    ips = filter(ips, lambda x: bool(x))
 
-    if system.lower() in ["linux", "darwin", "macosx"]:
-        # on Linux and OSX, use the ifcfg library to wrap ifconfig
-        ips = [iface.get("inet") for iface in ifcfg.interfaces().values()]
-    elif system.lower() == "windows":
-        # on Windows, run ipconfig and parse the output
-        ipconfig = os.popen("ipconfig /all").read()
-        ips = [match[1] for match in re.findall("IP(v4)? Address[\.\: ]+([\d\.]+)", ipconfig)]
-    else:
-        ips = []
-
-    # remove empty values for adapters without an IP
-    ips = set(ips) - set([None, ""])
+    ips = set(ips)
 
     if include_loopback:
         ips = ips.union(["127.0.0.1"])
