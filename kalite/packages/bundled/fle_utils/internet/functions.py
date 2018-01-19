@@ -93,22 +93,3 @@ def set_query_params(url, param_dict):
     new_query_string = urlencode(query_params, doseq=True)
 
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
-
-
-def get_ip_addresses(include_loopback=True):
-    """Get a list of all the IP addresses for adapters on the local system.
-
-    You can specify to either include the loopback device (127.0.0.1) or not.
-    """
-
-    ips = [iface.get("inet") for iface in ifcfg.interfaces().values()]
-    ips = filter(ips, lambda x: bool(x))
-
-    ips = set(ips)
-
-    if include_loopback:
-        ips = ips.union(["127.0.0.1"])
-    else:
-        ips = ips - set(["127.0.0.1"])
-
-    return list(ips)

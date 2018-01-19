@@ -88,6 +88,7 @@ sys.path = [
 ] + sys.path
 
 import httplib
+import ifcfg
 import re
 import cherrypy
 
@@ -102,7 +103,6 @@ from django.core.management import ManagementUtility, get_commands
 
 from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
-from fle_utils.internet.functions import get_ip_addresses
 
 # Environment variables that are used by django+kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
@@ -357,12 +357,31 @@ def get_pid():
     raise NotRunning(STATUS_UNKNOW)  # Could not determine
 
 
+def get_ip_addresses():
+    """Get a list of all the IP addresses for adapters on the local system.
+
+    You can specify to either include the loopback device (127.0.0.1) or not.
+    """
+
+    ips = [iface.get("inet") for iface in ifcfg.interfaces().values()]
+    ips = filter(lambda x: bool(x), ips)
+
+    ips = set(ips)
+
+    # Remove occurrences of loopback
+    ips = ips - set(["127.0.0.1"])
+
+    return list(ips)
+
+
 def print_server_address(port):
     # Print output to user about where to find the server
-    addresses = get_ip_addresses(include_loopback=False)
+    addresses = get_ip_addresses()
     print("To access KA Lite from another connected computer, try the following address(es):")
     for addr in addresses:
         print("\thttp://%s:%s/\n" % (addr, port))
+    if not addresses:
+        print("Failed to detect this device's external IP address.")
     print("To access KA Lite from this machine, try the following address:")
     print("\thttp://127.0.0.1:%s/" % port)
 

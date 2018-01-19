@@ -5,6 +5,7 @@ Views for the KA Lite app are wide-ranging, and include:
 * Administrative pages
 and more!
 """
+import json
 import sys
 import traceback
 
@@ -23,15 +24,17 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
-from fle_utils.internet.functions import get_ip_addresses, set_query_params
+from fle_utils.internet.functions import set_query_params
+from securesync.api_client import BaseClient
+from securesync.models import Device, SyncSession, Zone
+
+from kalite.cli import get_ip_addresses
+from kalite.distributed.forms import SuperuserForm
 from kalite.i18n.base import outdated_langpacks, get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import search_topic_nodes
-from securesync.api_client import BaseClient
-from securesync.models import Device, SyncSession, Zone
-from kalite.distributed.forms import SuperuserForm
 from kalite.topic_tools.settings import CHANNEL
-import json
+
 
 def check_setup_status(handler):
     """
@@ -128,7 +131,7 @@ def help(request):
 def help_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
-        "ips": get_ip_addresses(include_loopback=False),
+        "ips": get_ip_addresses(),
         "port": settings.USER_FACING_PORT,
     }
     return context
@@ -187,16 +190,12 @@ def search(request):
 
     # Outputs
     query_error = None
-    possible_matches = {}
     hit_max = {}
 
     if query is None:
         query_error = _("Error: query not specified.")
         matches = []
         pages = 0
-
-#    elif len(query) < 3:
-#        query_error = _("Error: query too short.")
 
     else:
         query = query.lower()
@@ -308,7 +307,7 @@ def handler_404(request):
 
 
 def handler_500(request):
-    errortype, value, tb = sys.exc_info()
+    errortype, value, __ = sys.exc_info()
     context = {
         "request": request,
         "errormsg": settings.AJAX_ERROR,
