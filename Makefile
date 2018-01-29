@@ -128,7 +128,7 @@ dist: clean docs assets
 	ls -l dist
 
 pex:
-	pex -m kalite dist/ka_lite_static*.whl --disable-cache -o dist/ka-lite-static$$(git describe).pex
+	pex -m kalite dist/ka_lite_static*.whl --disable-cache -o dist/ka-lite-static$$(python -m kalite --version)-$$(git rev-parse HEAD).pex
 	ls -l dist
 
 install: clean
@@ -137,7 +137,7 @@ install: clean
 dockerwriteversion:
 	python -c "import kalite; print(kalite.__version__)" > kalite/VERSION
 
-dockerenvclean: 
+dockerenvclean:
 	docker container prune -f
 	docker image prune -f
 
