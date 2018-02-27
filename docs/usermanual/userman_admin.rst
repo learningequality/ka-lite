@@ -495,6 +495,7 @@ After you copied in the new video files or changed the ``CONTENT_ROOT`` path, yo
 
 4. Once the scan is completed, video content will be ready for Learners to watch!
 
+.. _adding_languages:
 
 Adding Languages
 ----------------
