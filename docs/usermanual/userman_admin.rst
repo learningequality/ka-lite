@@ -676,6 +676,8 @@ _________________
   institutions where permissions should be reserved for admins.
 * ``USER_LOG_MAX_RECORDS_PER_USER = <max user log records per user> (default = 0 [disabled], -1=unlimited logs)``
   In order to keep local data in the ``UserLog`` model, detailing usage, you can choose the number of ``UserLog`` objects that you wish to retain. These objects are not sync'ed.
+* ``SIMPLIFIED_LOGIN = <True or False> (default = False)``.
+  Switches off passwords in the Learner's login modal.
 
 
 Online synchronization
