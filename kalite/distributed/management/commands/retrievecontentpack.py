@@ -23,6 +23,7 @@ from kalite.updates.management.utils import UpdatesStaticCommand
 from peewee import SqliteDatabase
 from kalite.topic_tools.content_models import Item, AssessmentItem
 from requests.exceptions import ConnectionError, HTTPError
+from fle_utils.django_utils.command import LocaleAwareCommand
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,19 @@ class Command(UpdatesStaticCommand):
 
     """
 
-    option_list = UpdatesStaticCommand.option_list + (
+
+    option_list = LocaleAwareCommand.option_list + (
+        make_option(
+            "", "--background",
+            action="store_true",
+            dest="background",
+            default=False,
+            help=(
+                "Run the command with job scheduler and database-backed "
+                "progress. Used when you retrieve a content pack before "
+                "initializing KA Lite's db."
+            )
+        ),
         make_option(
             "", "--template",
             action="store_true",
@@ -147,6 +160,9 @@ class Command(UpdatesStaticCommand):
 
         lang = args[1]
 
+        # This rather hacky callback will add progress to the database-backed
+        # progress monitoriing, which is terrible for performance on for
+        # instance Raspberry Pi devices.
         def download_callback(fraction):
             percent = int(fraction * 100)
             self.update_stage(

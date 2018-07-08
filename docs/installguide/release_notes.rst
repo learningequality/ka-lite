@@ -9,6 +9,15 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
+0.17.5b1
+--------
+
+Bug fixes
+^^^^^^^^^
+
+* Slow download using ``retrievecontentpack`` on Raspberry Pi :url-issue:`5575`
+
+
 0.17.4
 ------
 
