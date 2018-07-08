@@ -123,6 +123,9 @@ dist: clean docs assets
 	make clean-pyc
 	python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
+	pip install -t kalite/packages/dist -r "requirements.txt"
+	rm -rf kalite/packages/dist/*.dist-info  # pip installs from PyPI will complain if we have more than one dist-info directory.
+	rm -r kalite/packages/dist/man kolibri/dist/bin || true # remove the two folders introduced by pip 10
 	python setup.py sdist --formats=$(format) --static
 	python setup.py bdist_wheel --static  --no-clean
 	ls -l dist
