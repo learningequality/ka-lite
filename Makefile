@@ -97,7 +97,7 @@ assets:
 	rm -rf kalite/database/templates/
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
-	bin/kalite manage retrievecontentpack empty en --foreground --template
+	bin/kalite manage retrievecontentpack empty en --template
 
 msgids:
 	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*/bundles/bundle*.js,*/kalite/*/js/i18n/*.js" ;\
