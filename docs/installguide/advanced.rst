@@ -62,7 +62,7 @@ and if you are connected to the internet, this will also give you automatic upda
 To add the PPA as a repository on an apt-based system, you need to ensure that a few libraries are present, and then add our repository and the public key that packages are signed with::
 
 
-    sudo apt-get install software-properties-common python-software-properties
+    sudo apt-get install dirmngr
     sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite.list'
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
     sudo apt-get update
