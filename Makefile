@@ -97,7 +97,7 @@ assets:
 	rm -rf kalite/database/templates/
 	mkdir -p kalite/database/templates/
 	cp .kalite_dist_tmp/database/data.sqlite kalite/database/templates/
-	bin/kalite manage retrievecontentpack empty en --foreground --template
+	bin/kalite manage retrievecontentpack empty en --template
 
 msgids:
 	export IGNORE_PATTERNS="*/kalite/static-libraries/*,*/LC_MESSAGES/*,*/kalite/packages/dist/*,*/kalite/packages/bundled/django/*,*/kalite/*/bundles/bundle*.js,*/kalite/*/js/i18n/*.js" ;\
@@ -123,6 +123,9 @@ dist: clean docs assets
 	make clean-pyc
 	python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
+	pip install -t kalite/packages/dist -r "requirements.txt"
+	rm -rf kalite/packages/dist/*.dist-info  # pip installs from PyPI will complain if we have more than one dist-info directory.
+	rm -r kalite/packages/dist/man kolibri/dist/bin || true # remove the two folders introduced by pip 10
 	python setup.py sdist --formats=$(format) --static
 	python setup.py bdist_wheel --static  --no-clean
 	ls -l dist
