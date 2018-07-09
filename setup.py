@@ -207,58 +207,9 @@ class my_install_scripts(install_scripts):
 if STATIC_BUILD:
 
     sys.stderr.write(
-        "This is a static build... invoking pip to put static dependencies in "
-        "kalite/packages/dist/\n"
+        "This is a static build... we hope you invoked this build through the "
+        "'make dist' target, because this populates kalite/packages/dist"
     )
-
-    STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, '.pip-downloads')
-    STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, '.pip-temp')
-
-    # Create directory where dynamically created dependencies are put
-    if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
-        os.mkdir(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE)
-
-    # Should remove the temporary directory always
-    if not NO_CLEAN and os.path.exists(STATIC_DIST_PACKAGES_TEMP):
-        print("Removing previous temporary sources for pip {}".format(STATIC_DIST_PACKAGES_TEMP))
-        shutil.rmtree(STATIC_DIST_PACKAGES_TEMP)
-
-    # Install from pip
-
-    # Code modified from this example:
-    # http://threebean.org/blog/2011/06/06/installing-from-pip-inside-python-or-a-simple-pip-api/
-    import pip.commands.install
-
-    # Ensure we get output from pip
-    enable_log_to_stdout('pip.commands.install')
-
-    def install_distributions(distributions):
-        command = pip.commands.install.InstallCommand()
-        opts, ___ = command.parser.parse_args([])
-        opts.target_dir = STATIC_DIST_PACKAGES
-        opts.build_dir = STATIC_DIST_PACKAGES_TEMP
-        opts.download_cache = STATIC_DIST_PACKAGES_DOWNLOAD_CACHE
-        opts.isolated = True
-        opts.ignore_installed = True
-        opts.compile = False
-        opts.ignore_dependencies = False
-        # This is deprecated and will disappear in Pip 10
-        opts.use_wheel = False
-        # The below is not an option, then we skip mimeparse
-        # opts.no_binary = ':all:'  # Do not use any binary files (whl)
-        opts.no_clean = NO_CLEAN
-        command.run(opts, distributions)
-
-    # Install requirements into kalite/packages/dist
-    if DIST_BUILDING_COMMAND:
-        install_distributions(RAW_REQUIREMENTS)
-
-        # Now remove Django because it's bundled. It gets installed as an egg
-        # so unfortunately, the path is a bit dependent on the specific
-        # version installed (we pinned it for reliability in requirements.txt)
-        shutil.rmtree(
-            os.path.join(STATIC_DIST_PACKAGES, "Django-1.5.12-py2.7.egg-info"),
-        )
 
 # It's not a build command with --static or it's not a build command at all
 else:
