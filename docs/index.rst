@@ -46,6 +46,15 @@ Khan Academy content (videos and exercises) from a local server, with
 points and progress-tracking, without needing internet connectivity.
 
 
+Translations
+------------
+
+KA Lite is released in many languages, each with its own subset of Khan Academy contents translated: Polish, Georgian, German, Spanish, Xhosa, Indonesian, Burmese, Swahili, Tamil, Hindi, Portuguese (Brazilian and Portuguese), Bulgarian, Danish, Arabic, Bengali, Kannada, and French. See :ref:`adding_languages`.
+
+Documentation: This documentation is also available
+`in French (PDF) <http://pantry.learningequality.org/downloads/ka-lite/0.17/docs_fr.pdf>`__.
+
+
 Get involved!
 -------------
 

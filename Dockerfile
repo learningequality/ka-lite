@@ -1,11 +1,10 @@
 FROM ubuntu:xenial
 
 # install latest python and nodejs
-RUN apt-get -y update
-RUN apt-get install -y software-properties-common curl
-RUN add-apt-repository ppa:voronov84/andreyv
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get -y update && apt-get install -y python2.7 python-pip git nodejs gettext wget
+RUN apt-get -y update && \
+  apt-get install -y software-properties-common curl && \
+  curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+  apt-get -y update && apt-get install -y python2.7 python-pip git nodejs gettext wget
 
 COPY . /kalite
 VOLUME /kalitedist/

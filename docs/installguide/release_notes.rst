@@ -9,6 +9,16 @@ to read the release notes.
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
 
+0.17.5b1
+--------
+
+Bug fixes
+^^^^^^^^^
+
+* Slow download using ``retrievecontentpack`` on Raspberry Pi :url-issue:`5575`
+* Customized content packs may fail depending on the Zip program used :url-issue:`5476`
+
+
 0.17.4
 ------
 
@@ -16,6 +26,7 @@ Added
 ^^^^^
 
 * Progress displayed while downloading content packs :url-issue:`5356`
+* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
 
 Bug fixes
 ^^^^^^^^^
@@ -27,10 +38,6 @@ Bug fixes
 * Also delete content database when deleting a content pack :url-issue:`5545`
 * Simplified login is now working when there are 1,000 or more users registered in a facility. :url-issue:`5523`
 
-New Features
-^^^^^^^^^^^^
-
-* Customizable welcome message setting ``KALITE_WELCOME_MESSAGE`` displayed to admin users on first login :url-issue:`5522`
 
 Developers
 ^^^^^^^^^^
@@ -41,6 +48,13 @@ Developers
 Known issues
 ^^^^^^^^^^^^
 
+* The English **Math** topic (top-level) contains a number of misplaced
+  subtopics in the 0.17 series. The problem has propagated from upstream data.
+  The misplacement clutters/obstructs the navigation for students, and it has
+  been a priority to fix this in 0.18, released shortly after 0.17.4.
+  But it's recommended to upgrade to 0.18 and download new video contents
+  following from the new content pack (~450 videos). See below for tips on how
+  to install a content pack from a different KA Lite release. :url-issue:`5561`
 * It isn't possible to cancel video downloads if a video is downloading while
   the connection is switched off.
 * **Chrome 55-56** has issues scrolling the menus on touch devices. Upgrading to Chrome 57 fixes this. :url-issue:`5407`
@@ -49,6 +63,17 @@ Known issues
 * **Windows + IE9** One-Click device registration is broken. Work-around: Use a different browser or use manual device registration. :url-issue:`5409`
 * **Firefox 47**: Subtitles are misaligned in the video player. This is fixed by upgrading Firefox.
 * A limited number of exercises with radio buttons have problems displaying :url-issue:`5172`
+
+
+.. tip::
+  It is possible to install a 0.16 content pack in a 0.17 release as a
+  work-around. Download a specific content pack and then install it from
+  command-line. Example::
+    
+    # Download content pack to "en_0.16.zip"
+    $ wget -r -O en_0.16.zip http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/en.zip
+    # Install "en_0.16.zip"
+    $ kalite manage retrievecontentpack local en en_0.16.zip
 
 
 0.17.3
