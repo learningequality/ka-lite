@@ -19,7 +19,6 @@ mkdir -p installer
 echo "Downloading artifacts..."
 buildkite-agent artifact download 'dist/*.pex' dist/
 buildkite-agent artifact download 'dist/*.whl' dist/
-buildkite-agent artifact download 'dist/*.zip' dist/
 buildkite-agent artifact download 'dist/*.tar.gz' dist/
 buildkite-agent artifact download 'installer/*.exe' installer/
 

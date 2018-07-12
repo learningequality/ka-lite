@@ -29,7 +29,11 @@ class UpdatesCommand(LocaleAwareCommand):
     """
     Abstract class for sharing code across Dynamic and Static versions
     """
+    
     option_list = LocaleAwareCommand.option_list + (
+        # WARNING: Because of issues having foreground as a default option, we
+        # are overwriting this with a --background option in
+        # retrievecontentpack
         make_option(
             "", "--foreground",
             action="store_true",
@@ -39,7 +43,8 @@ class UpdatesCommand(LocaleAwareCommand):
                 "Run the command without job scheduler and  database-backed "
                 "progress. Used when you retrieve a content pack before "
                 "initializing KA Lite's db."
-            )),
+            )
+        ),
     )
 
     def __init__(self, process_name=None, *args, **kwargs):
@@ -53,9 +58,10 @@ class UpdatesCommand(LocaleAwareCommand):
         # Should be set by command's handle() method since there's no clear
         # call structure defined. Respected by the methods that update stuff
         # in the database.
-        self.foreground = options["foreground"]
+        self.foreground = options.get("foreground", False)
+        self.background = options.get("background", True)
 
-        if not self.foreground:
+        if not self.foreground and self.background:
             self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
         else:
             self.progress_log = None
