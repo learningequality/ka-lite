@@ -139,8 +139,8 @@ class TestDownload(UpdatesTestCase):
     @mock.patch("kalite.updates.videos.get_thumbnail_url")
     @mock.patch("kalite.updates.videos.get_video_url")
     def test_500_download(self, get_thumbnail_url, get_video_url):
-        get_thumbnail_url.return_value = "https://httpstat.us/500"
-        get_video_url.return_value = "https://httpstat.us/500"
+        get_thumbnail_url.return_value = "http://httpstat.us/500"
+        get_video_url.return_value = "http://httpstat.us/500"
         
         with self.assertRaises(HTTPError):
             download_video(self.real_video.youtube_id)
