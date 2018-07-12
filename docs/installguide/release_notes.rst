@@ -18,6 +18,11 @@ Bug fixes
 * Slow download using ``retrievecontentpack`` on Raspberry Pi :url-issue:`5575`
 * Customized content packs may fail depending on the Zip program used :url-issue:`5476`
 
+Removed
+^^^^^^^
+
+* Removed ``--foreground`` flag from ``retrievecontentpack`` command, the default behaviour is foreground :url-issue:`5575`
+
 
 0.17.4
 ------
