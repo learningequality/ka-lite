@@ -8,6 +8,13 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+0.17.6.dev
+----------
+
+Bug fixes
+^^^^^^^^^
+
+* Fix rare ``GEOSException`` on systems with libgeos :url-issue:`5592`
 
 0.17.5
 ------
