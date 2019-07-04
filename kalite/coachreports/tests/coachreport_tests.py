@@ -4,6 +4,7 @@ import peewee
 
 from django.conf import settings
 logging = settings.LOG
+from mock import patch
 
 from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
@@ -11,6 +12,8 @@ from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 from kalite.topic_tools.content_models import get_content_parents, Item, set_database, create
+from kalite.i18n.api_views import set_default_language
+from django.test.utils import override_settings
 
 
 class ExternalAPITests(FacilityMixins,
@@ -152,6 +155,33 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         self.assertTrue(len(exercises) > 0)
         #checking if the returned list is accurate
         self.assertEqual(exercises[0]["title"], self.exercise1.title)
+
+    @patch('kalite.coachreports.models.get_content_parents')
+    def test_playlist_progress_language(self, mocked_get_content_parents):
+        """
+        Test if there is language argument got passed to get_content_parents() when playlist_progress is requested.
+        """
+        base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress'})
+        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id})
+        resp = self.client.get(url)
+        actual_len = str(mocked_get_content_parents.call_args[1]['language'])
+        assert actual_len
+
+    @patch('kalite.coachreports.models.get_topic_nodes')
+    def test_playlist_progress_detail_language(self, mocked_get_topic_nodes):
+        """
+        This is a very hacky way to test if there is language argument got passed to get_topic_nodes() when playlist_progress_detail is requested.
+        """
+        base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
+        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id, 'playlist_id': self.topic1.id})
+        # It is very tricky to get the endpoint response right with all the truble to login as student.
+        # So for the purpose of this test, I ignore any error caused by the request, just check the argument in get_topic_nodes()
+        try:
+            resp = self.client.get(url)
+        except:
+            pass
+        actual_len = str(mocked_get_topic_nodes.call_args[1]['language'])
+        assert actual_len
 
 
 class LearnerLogAPITests(FacilityMixins,

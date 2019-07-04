@@ -31,9 +31,10 @@ import kalite
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
 
 from fle_utils.config.models import Settings
-from fle_utils.general import get_host_name
+from fle_utils.general import get_host_name, ensure_dir
 from fle_utils.platforms import is_windows
-from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE
+from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks
+from kalite.contentload.management.commands.unpack_assessment_zip import should_upgrade_assessment_items
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
@@ -83,6 +84,9 @@ def clean_pyc(path):
         for excess_pyc_file in excess_pyc_files:
             full_path = os.path.join(root, excess_pyc_file)
             os.remove(full_path)
+
+def english_content_pack_and_assessment_resources_are_current():
+    return not should_upgrade_assessment_items() and ("en" not in [lp["code"] for lp in outdated_langpacks()])
 
 
 def validate_username(username):
@@ -374,7 +378,7 @@ class Command(BaseCommand):
                     "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
                 shutil.move(database_file, dest_file)
 
-        if settings.DB_TEMPLATE_DEFAULT and not database_exists:
+        if settings.DB_TEMPLATE_DEFAULT and not database_exists and os.path.exists(settings.DB_TEMPLATE_DEFAULT):
             print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
             shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
@@ -384,15 +388,16 @@ class Command(BaseCommand):
         Settings.set("database_version", VERSION)
 
         # Copy all content item db templates
-        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
-            if file_name.endswith("sqlite"):
-                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
-                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
-                if install_clean or not os.path.exists(dest_database):
-                    print("Copying {} to {}".format(template_path, dest_database))
-                    shutil.copy(template_path, dest_database)
-                else:
-                    print("Skipping {}".format(template_path))
+        if os.path.exists(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+                if file_name.endswith("sqlite"):
+                    template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                    dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                    if install_clean or not os.path.exists(dest_database):
+                        print("Copying {} to {}".format(template_path, dest_database))
+                        shutil.copy(template_path, dest_database)
+                    else:
+                        print("Skipping {}".format(template_path))
 
         # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
@@ -416,26 +421,32 @@ class Command(BaseCommand):
                 logging.info("Deleting old assessment items")
                 shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
 
-            if writable_assessment_items and options['force-assessment-item-dl']:
-                call_command(
-                    "retrievecontentpack", "download", "en")
-            elif options['force-assessment-item-dl']:
-                raise RuntimeError(
-                    "Got force-assessment-item-dl but directory not writable")
-            elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            if options['force-assessment-item-dl']:  # user wants to force a new download; do it if we can, else error
+                if writable_assessment_items:
+                    call_command("retrievecontentpack", "download", "en")
+                else:
+                    raise RuntimeError("Got force-assessment-item-dl but directory not writable")
+            elif english_content_pack_and_assessment_resources_are_current():
+                logging.warning("English content pack is already up-to-date; skipping download and configuration.")
+            elif not writable_assessment_items:  # skip if we're not going to be able to unpack it anyway
+                logging.warning("Assessment item directory not writable; skipping content pack download.")
+            elif settings.RUNNING_IN_TRAVIS:  # skip if we're running on Travis
+                logging.warning("Running in Travis; skipping content pack download.")
+            elif not options['interactive']:  # skip if we're not running in interactive mode (and it wasn't forced)
+                logging.warning("Not running in interactive mode; skipping content pack download.")
+            else:  # if we get this far, then we need to ask the user whether/how they want to get the content pack
                 print(
-                    "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
+                    "\nIn order to access many of the available exercises, you need to load a content pack for the latest version.")
                 print(
-                    "If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
+                    "If you have an Internet connection, you can download the needed package. Warning: this may take a long time!")
                 print(
-                    "If you have already downloaded the assessment items package, you can specify the file in the next step.")
-                print("Otherwise, we will download it from {url}.".format(
-                    url=CONTENTPACK_URL))
+                    "If you have already downloaded the content pack, you can specify the location of the file in the next step.")
+                print("Otherwise, we will download it from {url}.".format(url=CONTENTPACK_URL))
 
-                if raw_input_yn("Do you wish to download the content pack now?"):
+                if raw_input_yn("Do you wish to download and install the content pack now?"):
                     ass_item_filename = CONTENTPACK_URL
                     retrieval_method = "download"
-                elif raw_input_yn("Have you already downloaded the content pack?"):
+                elif raw_input_yn("Do you have a local copy of the content pack already downloaded that you want to install?"):
                     ass_item_filename = get_assessment_items_filename()
                     retrieval_method = "local"
                 else:
@@ -444,15 +455,9 @@ class Command(BaseCommand):
 
                 if not ass_item_filename:
                     logging.warning(
-                        "No content pack given. You will need to download and unpack it later.")
+                        "No content pack given. You will need to download and install it later.")
                 else:
                     call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename, foreground=True)
-
-            elif options['interactive']:
-                logging.warning(
-                    "Assessment item directory not writable, skipping download.")
-            else:
-                print("Found bundled assessment items")
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -476,7 +481,17 @@ class Command(BaseCommand):
 
         # Now deploy the static files
         logging.info("Copying static media...")
-        call_command("collectstatic", interactive=False, verbosity=0)
+        ensure_dir(settings.STATIC_ROOT)
+
+        # The following file ignores have to be preserved from a
+        # collectstatic(clear=True), due to being bundled with content packs,
+        # and we thus have now way of getting them back.
+        collectstatic_ignores = [
+            "*.vtt", "*.srt",              # subtitle files come with language packs -- don't delete
+            "*/perseus/ke/exercises/*", # exercises come with language packs, and we have no way to replicate
+        ]
+        call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
+                     clear=True)
         call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env

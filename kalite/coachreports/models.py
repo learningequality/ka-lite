@@ -64,7 +64,7 @@ class PlaylistProgress(PlaylistProgressParent):
         video_ids = list(set([vid_log["video_id"] for vid_log in user_vid_logs]))
 
         # Build a list of playlists for which the user has at least one data point
-        user_playlists = get_content_parents(ids=exercise_ids+video_ids)
+        user_playlists = get_content_parents(ids=exercise_ids+video_ids, language=language)
 
         # Store stats for each playlist
         user_progress = list()
@@ -161,7 +161,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
         progress_details = list()
-        for leaf_node in get_topic_nodes(parent=playlist_id):
+        for leaf_node in get_topic_nodes(parent=playlist_id, language=language):
             entity_id = leaf_node.get("id")
             kind = leaf_node.get("kind")
 

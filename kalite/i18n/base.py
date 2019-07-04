@@ -5,6 +5,7 @@ import shutil
 import urllib
 import zipfile
 from collections_local_copy import OrderedDict
+from distutils.version import LooseVersion
 from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.http import HttpRequest
@@ -35,8 +36,7 @@ class LanguageNotFoundError(Exception):
 
 
 def get_localized_exercise_dirpath(lang_code):
-    ka_lang_code = lang_code.lower()
-    return os.path.join(settings.USER_STATIC_FILES, "js", "distributed", "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
+    return os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke", "exercises", lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -72,11 +72,11 @@ def get_langcode_map(lang_name=None, force=False):
     return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 
-def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
+def get_subtitle_url(youtube_id, code):
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
 
 
-def get_srt_path(lang_code=None, youtube_id=None):
+def get_subtitle_file_path(lang_code=None, youtube_id=None):
     """Both central and distributed servers must make these available
     at a web-accessible location.
 
@@ -89,7 +89,7 @@ def get_srt_path(lang_code=None, youtube_id=None):
     if lang_code:
         srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
     if youtube_id:
-        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+        srt_path = os.path.join(srt_path, youtube_id + ".vtt")
 
     return srt_path
 
@@ -166,6 +166,23 @@ def convert_language_code_format(lang_code, for_django=True):
     return lang_code
 
 
+def outdated_langpacks():
+    """
+    Function that returns a list of languages (full metadata) that needs to be
+    upgraded to the latest version. Returns an empty list if all languages are
+    upgraded to this release's version.
+    """
+
+    langpacks = get_installed_language_packs(force=True)
+
+    for langpack in langpacks.itervalues():
+        langpackversion = LooseVersion(langpack.get("software_version") or SHORTVERSION)
+        current_software_version = LooseVersion(SHORTVERSION)
+
+        if current_software_version > langpackversion:
+            yield langpack
+
+
 INSTALLED_LANGUAGES_CACHE = None
 CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
 def get_installed_language_packs(force=False):
@@ -182,7 +199,7 @@ def _get_installed_language_packs():
     # There's always English...
     installed_language_packs = [{
         'code': 'en',
-        'software_version': VERSION,
+        'software_version': SHORTVERSION,
         'language_pack_version': 0,
         'percent_translated': 100,
         'subtitle_count': 0,
@@ -322,7 +339,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code) ]
 
     for langpack_resource_path in langpack_resource_paths:
         try:

@@ -20,7 +20,7 @@ from django.db import connections
 from django.db.transaction import TransactionManagementError
 from peewee import Using
 
-from kalite.i18n.base import get_srt_path, get_srt_url
+from kalite.i18n.base import get_subtitle_file_path, get_subtitle_url
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
 from kalite.topic_tools.content_models import Item, set_database, annotate_content_models, create, get, \
@@ -67,8 +67,10 @@ def setup_content_paths(context, db):
     # It then updates the items with these paths with their update dicts, and then propagates
     # availability changes up the topic tree - this means that we can alter the availability of one item
     # and make all its parent topics available so that it is navigable to in integration tests.
-    annotate_content_models(db=db, iterator_content_items=lambda ids: [(
-        context.available_content_path, {"available": True})])
+    def iterator_content_items(ids=None, channel="khan", language="en"):
+        return [(context.available_content_path, {"available": True})]
+
+    annotate_content_models(db=db, iterator_content_items=iterator_content_items)
 
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
@@ -270,7 +272,7 @@ def _make_video(context):
         "slug": "video_with_subtitles",
         "path": "khan/video_with_subtitles",
         "extra_fields": {
-            "subtitle_urls": [{"url": get_srt_url(youtube_id=youtube_id, code=lang_code),
+            "subtitle_urls": [{"url": get_subtitle_url(youtube_id=youtube_id, code=lang_code),
                                "code": lang_code,
                                "name": "English"}],
             "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
@@ -282,7 +284,7 @@ def _make_video(context):
     delete_instances(ids=[item_dict["id"]])
     context.video = create(item_dict)
 
-    subtitle_path = get_srt_path(lang_code=lang_code, youtube_id=youtube_id)
+    subtitle_path = get_subtitle_file_path(lang_code=lang_code, youtube_id=youtube_id)
     with open(subtitle_path, "w") as f:
         f.write("foo")
     context._subtitle_file_path = subtitle_path

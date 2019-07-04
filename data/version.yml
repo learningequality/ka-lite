@@ -1,8 +1,48 @@
+0.16.3:
+  release_date: "2016/04/25"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Fix for 'nix based systems with unconventional kernel versioning (#5087)
+    students: []
+    coaches: []
+    admins: []
+
+0.16.2:
+  release_date: "2016/04/12"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Fix attempt log filtering (#5082)
+    students: []
+    coaches: []
+    admins: []
+
+0.16.1:
+  release_date: "2016/04/04"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Tweaks to our documentation (#5067)
+      - Refactor assessment item asking logic in the setup command (#5065)
+      - Properly copy over docs pages while preserving content pack assets (#5074)
+    students: []
+    coaches: []
+    admins: []
+
 0.16.0:
-  release_date:
+  release_date: "2016/04/01"
   git_commit: ""
   new_features:
-    all: []
+    all:
+      - New content pack format.
+      - Faster startup time.
+      - New inline help feature (BETA).
+      - A few UI tweaks.
+      - A lot of bugfixes.
     students: []
     coaches: []
     admins: []

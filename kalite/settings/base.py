@@ -109,6 +109,12 @@ LOGGING = {
     }
 }
 
+# Disable the logging output on Windows, as it's broken, and was causing problems.
+# See: https://github.com/learningequality/ka-lite/issues/5030
+# TODO(jamalex): if we can get logging working properly on Windows, this can be removed
+if os.name == "nt":
+    LOGGING["handlers"]["console"]["class"] = "django.utils.log.NullHandler"
+
 
 ###################################################
 # RUNNING FROM STATIC SOURCE DIR?

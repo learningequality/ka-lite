@@ -7,7 +7,7 @@ from kalite.shared.utils import open_json_or_yml
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
 MAJOR_VERSION = "0"
 MINOR_VERSION = "16"
-PATCH_VERSION = "0"
+PATCH_VERSION = "3"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 

@@ -69,18 +69,19 @@ the rest of your environment, you can run::
 Portable tarballs / zip files with setup.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Adequate to the online source, you can fetch a zip/tarball directly from
-`PyPi <https://pypi.python.org/pypi/ka-lite-static>`.
-Do this for the sake of carrying KA Lite on an offline media for use on systems
-that are not capable of installing the .exe/.dmg/.deb formats.
+If you can't install KA Lite on systems with the standard Windows/Mac/Linux installers,
+you can fetch the KA Lite python package from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`_.
 
-A .tar.gz or .zip is unpacked and from command line inside the unpacked
-directory, run::
+To unpack the package for installation, run::
+
+   $> tar -xf ka-lite-static-0.16.0.tar.gz
+
+Once it's unpacked, install it by entering the extracted directory and running::
 
     $> sudo python setup.py install.
 
-Beware that the PyPi sources do not contain assessment items, you need to
-`download khan_assessment.zip manually <http://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip>`_ (~350 MB).
+Beware that the PyPi sources do not contain assessment items, so you need to
+`download the contentpack en.zip manually <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/en.zip>`_ (~650 MB).
 
 
 Specific system setups

@@ -29,76 +29,78 @@ If you choose to register online, these important terms will help you better und
 
 Running the KA Lite Server
 --------------------------
-At the very end of the setup, you have been prompted to run kalite. Make note of the command to run the server, which was also mentioned. Usually it's just ``kalite start``.
+At the very end of the setup you are prompted to run KA Lite. Make note of the command needed to run the server - usually just ``kalite start``.
 
 
 Windows or OSX behind a Firewall
 ________________________________
 
-During the process, your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
+When you start KA Lite your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
 
 .. image:: acceptconnections.png
     :align: center
 
-Please allow the app to run. This will make it possible for the KA Lite application to be accessible.
+Please allow the app to run. This will make it possible for the KA Lite application to be accessible by other computers in your local network.
 
 
 Accessing KA Lite
 -------------------
-Once the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice.
+Once the server has started, you will be given two IP addresses that you can copy and paste into a web browser to to access KA Lite.
 
-In order to access KA Lite from another machine, please enter the IP address that does *not* start with http://127.0.0.1:8008 into the web browser on that machine.
+* To access KA Lite from the same machine where the server is installed use the http://127.0.0.1:8008 IP address.
+* In order to access KA Lite from other machines in your local network, use the second IP address (different from the above) listed in Terminal after running `kalite start`.
 
 
 Setting up KA Lite
 ------------------
-Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time.
+Once you have successfully installed KA Lite, the installation script will give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time.
 
-Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process.
+    #. Copy and paste the URL into a web browser. The KA Lite application should show up.
+    #. Login to KA Lite using the username and password you created during the installation process.
+
+    * If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser`` in your Terminal.
 
 .. screenshot::
     :navigation-steps: LOGIN admin superpassword
     :focus: #id_username | Enter your username and password using this form!
     :class: screenshot
 
-* If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser``  and then follow the instructions.
-
-Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
+Once you’ve logged in, the next step in the setup process is to register your device with the KA Lite Hub.
 
 Registering Your Device with the Hub
 ____________________________________
 
 By registering your device with FLE, you can sync data back with our central data hub. This is useful for many reasons:
 
-    #. a project administrator can manage user accounts and view usage data from afar, without needing to physically visit the offline device.
-    #. usage data syncing back can inform the FLE team of multiple users in a certain geographic region, and we can connect people that might be able to help one another
-    #. it helps FLE and our partners understand where and how the software is being used, so we can keep adding features that support you!
+    #. The Project administrator can manage user accounts and view usage data from afar, without the need to physically visit the offline device.
+    #. Syncing back usage data can inform the FLE team of multiple users in a certain geographic region, and we can connect people that might be able to help one another.
+    #. It helps FLE and our partners understand where and how the software is being used, so we can keep adding features that support you!
 
 You will have two options:
 
-    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, you can rerun the setup command by navigating to the folder KA Lite is in and rerunning the setup command). |first| |one-click|
+    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use.
+    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account.
 
-    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account. |long-register|
+.. warning:: If you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, navigate to the folder KA Lite is installed and re-run the setup command).
 
-
-.. |first| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/
     :navigation-steps:
-    :focus: li a.not-registered-only | Click here to register!
+    :focus: li>a.not-registered-only | Click here to register!
     :class: screenshot
 
-.. |one-click| screenshot::
+.. screenshot::
     :user-role: admin
-    :url: /management/zone/
-    :navigation-steps: .not-registered-only click
+    :url: /securesync/register/
+    :navigation-steps:
     :focus: #one-click-register | Click here for one-click registration!
     :class: screenshot
 
-.. |long-register| screenshot::
+.. screenshot::
     :user-role: admin
-    :url: /management/zone/
-    :navigation-steps: .not-registered-only click
+    :url: /securesync/register/
+    :navigation-steps:
     :focus: #online-register | Or here for online access!
     :class: screenshot
 
@@ -108,8 +110,8 @@ ______________________________________________________
 .. NOTE::
     You will need Internet access in order to perform these steps.
 
-#. Log into KA Lite with the username and password that you set during set-up.
-#. If you have not already registered your device, you will be redirected to a page that shows you your options. Click the "Register with an online account now!" button to get started with the registration process.
+#. Log into KA Lite with the username and password that you chose during setup.
+#. If you have not already registered your device, you will be redirected to a page that displays your options. Click the "Register with an online account now!" button to get started with the registration process.
 
 .. screenshot::
     :user-role: admin
@@ -118,23 +120,23 @@ ______________________________________________________
     :focus: #online-register
     :class: screenshot
 
-If you do not see this page, click on the "Manage" tab. At the top of this page, you should see a link to register your device. It should like like the following:
+If you do not see this page, click on the "Manage" tab. At the top of the page you should see a link similar to this, offering to register your device:
 
 .. image:: registermessage.png
     :align: center
 
-You will be prompted to log in with your central server login credentials. Please note that these credentials are different from your login credentials created during set-up. Click on the "Sign up here" link, and you will be redirected to a page that prompts you to create an account on the central server.
+You will be prompted to log in with your central server login credentials. Please note that these credentials are different from your login credentials created during setup. Click on the "Sign up here" link, and you will be redirected to a page that prompts you to create an account on the central server.
 
 .. image:: signup.png
     :align: center
     :class: screenshot
 
-Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied.
+Once you have filled out the form and submitted it, you will be sent an activation link to the email address you supplied.
 
 
 Post Registration Setup
 -----------------------
-Now that you have registered successfully, it's time to configure your local KA Lite installation to suit your needs. If any terms like 'facility' or 'device' become confusing, feel free to reference the `Administrator Glossary`_ for a quick reminder.
+Now that you have registered successfully, it's time to configure your local KA Lite installation to suit your needs. If any terms like 'facility' or 'device' become unclear, check the `Administrator Glossary`_ for a quick reminder.
 
 Create a Facility
 -----------------
@@ -187,6 +189,7 @@ Delete a Facility
 
 4. Find the facility you would like to delete, and click the trash can icon to delete the facility.
 
+.. image:: trash_facility.png
 .. |trash-icon-highlight| screenshot::
     :user-role: admin
     :url: /management/zone/None/
@@ -259,7 +262,7 @@ _____________________________
     :focus: #delete-learners-btn
     :class: screenshot
 
-7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+7. You will be prompted to confirm your decision to delete. Press "OK" to proceed.
 
 Adding Coaches
 ______________
@@ -312,7 +315,7 @@ ____________________________
     :focus: #delete-coaches
     :class: screenshot
 
-7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+7. You will be prompted to confirm your decision to delete. Press "OK" to proceed.
 
 Adding a Group
 ______________
@@ -341,7 +344,7 @@ You can create groups within a facility. Each group can represent a classroom, a
     :focus: input.submit
     :class: screenshot
 
-8. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
+8. You should be redirected back to the Facility page. If the group was successfully created, you will see it listed under the "Learner Groups" section.
 
 Deleting a Group
 ________________
@@ -359,7 +362,7 @@ ________________
     :focus: .delete-group
     :class: screenshot
 
-7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+7. You will be prompted to confirm your decision to delete. Press "OK" to proceed.
 
 Moving a User to a New Group
 ____________________________
@@ -427,13 +430,13 @@ _____________________
 
 Allowing Other Users to Connect
 --------------------------------
-In order for other users to be able to connect to the KA Lite server with a different machine, you will need to give them an IP address with which to access the software. This should be different from the IP address given to you during setup (127.0.0.1:8008).
+In order for other users to be able to connect with the KA Lite from different computers, you will need to give them an IP address with which to access the software. The rest of the users should use the second IP address, different from the one you use (usually 127.0.0.1:8008 received during setup), to connect with KA Lite.
 
 
 Downloading Videos
 ------------------
 
-Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend skipping to `Downloading Videos in Bulk`_ .
+Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend using the `Downloading Videos in Bulk`_  option.
 
 
 Downloading Individual Videos
@@ -446,14 +449,13 @@ After registering your device:
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/
+    :url: /update/videos/
     :navigation-steps:
-    :focus: li.video
     :class: screenshot
 
 3. View subtopics by clicking on the subject of your choice. You can close them by clicking on the subject again.
 4. Mark the content you wish to download by clicking the checkbox to the left of the content name.
-5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
+5. Click the the first "Download n new selected video(s)" button (colored green) in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
 .. _bulk-video-downloads:
@@ -461,69 +463,54 @@ After registering your device:
 Downloading Videos in Bulk
 __________________________
 
-The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
+The full set of videos, if downloaded through the KA Lite interface, will occupy more than 150GB.
 If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
-the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.15/content/>`_.
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.16/content/>`_.
 
-Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
+Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, that
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
 On Windows, navigate to something like ``C:\Documents and Settings\<username>\.kalite\content``.
 
-.. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
-          you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
-          define a folder where your videos are downloaded to. Remember that you may want
-          to move the contents of your old ``content/`` folder.
+.. note:: If the drive where your ``.kalite/`` folder is located does not have enough free disk space,
+          you can change the path of the ``CONTENT_ROOT`` in your `Configuration Settings`_, and
+          define a different folder where your want to store videos. Remember to move the files
+          from your old ``/content/`` folder into the new one.
 
-.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
-          file browser, you have to enable showing hidden files and folders.
+.. note:: The ``.kalite`` folder may be hidden on some systems, so you have to enable showing hidden
+          files and folders in your file browser.
 
-When you have copied in the files, to register them with KA Lite, follow the following steps.
+After you copied in the new video files or changed the ``CONTENT_ROOT`` path, you need to register those changes with KA Lite:
 
 1. Click the "Manage" tab at the top of the page.
 2. Click on the "Videos" tab.
+3. Click the "Scan content folder for videos" button (third one, colored blue) in the top left box of the page.
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/
+    :url: /update/videos/
     :navigation-steps:
-    :focus: li.video
+    :focus: #scan-videos | Click this to search your video folder for previously downloaded videos!
     :class: screenshot
 
-3. Click the blue "Scan content folder for videos" button in the top left box of the page.
 4. Once the scan is completed, video content will be ready for Learners to watch!
 
 
-Adding assessment items (exercises)
-___________________________________
+Adding Languages
+----------------
 
-If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
+KA Lite content is offered in several languages. If your language is available you can download the **contentpack** for it with all the available subtitles and user interface translations. After you download and install the **contentpack** for a desired language, KA Lite will give you the option to download individual dubbed videos from that language's Khan Academy YouTube channel. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
 
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip -f``
+.. warning:: If you are upgrading from a previous KA Lite version, you **MUST** update all the languages you had previously **AND** restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
+.. note:: If you are working on a fresh installation of version 0.16, you do not need to restart the server after downloading **contentpacks** in other languages.
 
-
-Language Packs
---------------
-
-KA Lite supports internationalization. You can download language packs for your language if it is available. A language pack comes with all the available subtitles and user interface translations for that language. When it is installed, KA Lite will give you the option to download individual dubbed videos from the language's Khan Academy YouTube channel.
-
-.. warning:: Remember that you **MUST** restart your server after every language pack download or update. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 Download Language Packs
 _______________________
 To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
-
-.. screenshot::
-    :user-role: admin
-    :url: /management/zone/
-    :navigation-steps:
-    :focus: li.languages
-    :class: screenshot
-
 2. Select the language pack you wish to download by selecting from the drop-down menu.
 
 .. screenshot::
@@ -544,7 +531,7 @@ To download language packs:
     :class: screenshot
     :registered: true
 
-4. Once the download finishes, you can see your language pack in the list of installed packs, but you **MUST** restart your server to make them available for your users. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
+4. Once the download finishes, you can see your language in the "Installed Languages". If you are upgrading from a previous version of KA Lite, you **MUST** restart your server to make the new content/language pack available for your users. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 5. After the server restart, learners and coaches will be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default".
 
@@ -560,17 +547,19 @@ To delete language packs:
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
-    :focus: .delete-language-button button | Use the buttons in this column to delete language packs.
+    :focus: .delete-language-button>button:first | Use the buttons in this column to delete language packs.
     :class: screenshot
     :registered: true
 
 .. _restarting-your-server:
 
-Restarting Your Server
-----------------------
-If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up.
 
-This process varies, depending on which OS you are running the KA Lite Server on.
+Restarting your server
+----------------------
+
+When you make configuration changes such as changing the filepath for your video content, you may need to restart your server for changes to take effect. Remember that this will cause KA Lite to become inaccessible to users until the server is running again, but it will not delete any user accounts or information that you have configured during setup.
+
+Restart process varies depending on the OS you are running the KA Lite server on.
 
 Restarting Your Server: Windows
 _______________________________
@@ -627,8 +616,8 @@ put your custom settings, and KA Lite will load them automatically.
 You can also run the ``kalite`` with a completely different Python settings
 module by specifying ``kalite <command> --settings=my_settings_module``.
 
-.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
-          file browser, you have to enable showing hidden files and folders.
+.. note:: The ``.kalite`` folder may be hidden on some systems, so you have to enable showing hidden
+          files and folders in your file browser.
 
 
 Changing base settings
@@ -655,21 +644,6 @@ ____________________
   This is the path that KA Lite will use to look for KA Lite video files to play.
   Change the path to another local directory to get video files from that directory.
   NB! Directory has to be writable for the user running the server in order to download videos.
-
-.. warning::
-    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
-    have downloaded your own assessment items** and you want to keep the
-    read-only assessment_items database (~50 MB) together
-    with your other media contents (for portability). Example::
-
-      from kalite.project.settings.base import *
-      CONTENT_ROOT = '/example'
-      DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
-
-* ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
-  ``(default=https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip)``
-  This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
-  ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
 * ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``
   You can set this to be the local time zone for your installation. Choices can be found here.
 * ``LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")``

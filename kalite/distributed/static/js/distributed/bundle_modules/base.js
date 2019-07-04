@@ -47,7 +47,7 @@ require("../../../css/distributed/khan-lite.less");
 $(function(){
 
     if (!Modernizr.canvas) {
-        $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatilibity.js");
+        $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatibility.js");
     }
 
     attachfastclick(document.body);

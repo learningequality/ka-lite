@@ -395,18 +395,24 @@ def get_topic_contents(kinds=None, topic_id=None, **kwargs):
 
 
 @set_database
-def get_download_youtube_ids(paths=None, **kwargs):
+def get_download_youtube_ids(paths=None, downloaded=False, **kwargs):
     """
     Convenience function for taking a list of content ids and returning
     all associated youtube_ids for downloads, regardless of whether the input
     paths are paths for content nodes or topic nodes
     :param paths: A list of paths to nodes - used to ensure uniqueness.
+    :param downloaded: Boolean to select whether to return files that have been downloaded already or not.
     :return: A unique list of youtube_ids as strings.
     """
     if paths:
         youtube_ids = dict()
         for path in paths:
             selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
+
+            if downloaded:
+                selector &= Item.files_complete > 0
+            else:
+                selector &= Item.files_complete == 0
 
             youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
@@ -587,7 +593,7 @@ def update_item(update=None, path=None, **kwargs):
             item.save()
 
 
-def iterator_content_items(ids=None, **kwargs):
+def iterator_content_items(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by ids,
     run update content availability on that item and then yield the
@@ -601,13 +607,13 @@ def iterator_content_items(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
 
 
-def iterator_content_items_by_youtube_id(ids=None, **kwargs):
+def iterator_content_items_by_youtube_id(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by youtube ids,
     run update content availability on that item and then yield the
@@ -621,7 +627,7 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
@@ -661,7 +667,7 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
 
     db = kwargs.get("db")
     if db:
-        content_models = iterator_content_items(ids=ids)
+        content_models = iterator_content_items(ids=ids, channel=channel, language=language)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
                 if not node.parent:
