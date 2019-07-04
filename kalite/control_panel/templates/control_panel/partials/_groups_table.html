@@ -87,8 +87,8 @@
                                     <td>{{ group.total_logins }}</td>
                                     <td>{{ group.total_hours|floatformat }} {% trans "hour(s)" %}</td>
                                     <td>{{ group.total_videos }}</td>
-                                    <td>{{ group.total_exercises }}</td>
-                                    <td>{{ group.pct_mastery|percent:1 }}</td> 
+                                    <td>{{ group.total_exercises_completed }}</td>
+                                    <td>{{ group.pct_mastery|floatformat:1 }}%</td> 
                                 </tr>
                                 {% endif %}
                             {% endfor %}

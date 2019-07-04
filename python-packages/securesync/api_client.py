@@ -26,17 +26,33 @@ class BaseClient(object):
             return self.url + "/securesync/api/" + path
 
     def post(self, path, payload={}, *args, **kwargs):
+
+        from kalite.version import user_agent
+
         if self.verbose:
             print "CLIENT: post %s" % path
-        return requests.post(self.path_to_url(path), data=json.dumps(payload))
+        return requests.post(
+            self.path_to_url(path),
+            data=json.dumps(payload),
+            headers={"user-agent": user_agent()}
+        )
 
     def get(self, path, payload={}, *args, **kwargs):
+
+        from kalite.version import user_agent
+
         # add a random parameter to ensure the request is not cached
         payload["_"] = uuid.uuid4().hex
         query = urllib.urlencode(payload)
         if self.verbose:
             logging.debug("CLIENT: get %s" % path)
-        return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
+        kwargs['headers'] = kwargs.get('headers', {})
+        kwargs['headers']["user-agent"] = user_agent()
+        return requests.get(
+            self.path_to_url(path) + "?" + query,
+            *args,
+            **kwargs
+        )
 
     def test_connection(self):
         try:

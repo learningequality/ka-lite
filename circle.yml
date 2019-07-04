@@ -19,16 +19,26 @@ dependencies:
 test:
   override:
     - make assets
+    - make docs
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
         background: true
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - case $CIRCLE_NODE_INDEX in 0) make test-bdd ;; 1) make test-nobdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*" kalitectl.py manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*,*/migrations/*" kalitectl.py manage test --no-bdd;; esac:
         parallel: true
     # TODO: replace below with "make lint" when we're pep8
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:
     - killall --wait sc  # wait for Sauce Connect to close the tunnel
+    - bash <(curl -s https://codecov.io/bash)
+
+notify:
+  webhooks:
+    - url: https://coveralls.io/webhook?repo_token=YWMKkAVqIigWxX8XerfykVab17vEKmdXO
+
+general:
+  artifacts:
+    - 'coverage'

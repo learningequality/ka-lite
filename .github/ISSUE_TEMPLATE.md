@@ -2,25 +2,19 @@
 
 *Briefly describe what this is about*
 
+## System information
 
-## Branch or installer method
+*Please specify the KA Lite version you were using and your operating system!*
 
-*Please specify if you are using the current `develop` branch or which installation source you were using when the issue occurred.*
-
- - Installer: Windows/OSX/Debian (?)
- - Version: 0.15.1 (?)
-
-or:
-
- - Branch: develop (?)
-
+ - Operating system: ?
+ - Version: 0.16.?
+ - Browser: ?
 
 ## Traceback or relevant snippet from server.log
 
 ```
 INSERT TRACEBACK, LOG MESSAGES ETC. HERE
 ```
-
 
 ## How to reproduce
 
@@ -34,4 +28,4 @@ INSERT TRACEBACK, LOG MESSAGES ETC. HERE
 
 ## Real-life consequences (anything community should be aware, for instance how it affects your deployment)
 
-*If applicaple*
+*If applicable*

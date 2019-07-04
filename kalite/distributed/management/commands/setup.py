@@ -33,7 +33,8 @@ from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMEN
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name, ensure_dir
 from fle_utils.platforms import is_windows
-from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks
+from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks,\
+    reset_content_db
 from kalite.contentload.management.commands.unpack_assessment_zip import should_upgrade_assessment_items
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
@@ -256,11 +257,8 @@ class Command(BaseCommand):
                 "--------------------------------------------------------------------------------")
             raw_input("Press [enter] to continue...")
 
-        # Tried not to be os-specific, but ... hey. :-/
-        # benjaoming: This doesn't work, why is 502 hard coded!? Root is normally
-        # '0' And let's not care about stuff like this, people can be free to
-        # run this as root if they want :)
-        if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
+        # Assuming uid '0' is always root
+        if not is_windows() and hasattr(os, "getuid") and os.getuid() == 0:
             print(
                 "-------------------------------------------------------------------")
             print("WARNING: You are installing KA-Lite as root user!")
@@ -388,16 +386,7 @@ class Command(BaseCommand):
         Settings.set("database_version", VERSION)
 
         # Copy all content item db templates
-        if os.path.exists(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
-            for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
-                if file_name.endswith("sqlite"):
-                    template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
-                    dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
-                    if install_clean or not os.path.exists(dest_database):
-                        print("Copying {} to {}".format(template_path, dest_database))
-                        shutil.copy(template_path, dest_database)
-                    else:
-                        print("Skipping {}".format(template_path))
+        reset_content_db(force=install_clean)
 
         # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
@@ -487,8 +476,8 @@ class Command(BaseCommand):
         # collectstatic(clear=True), due to being bundled with content packs,
         # and we thus have now way of getting them back.
         collectstatic_ignores = [
-            "*.vtt", "*.srt",              # subtitle files come with language packs -- don't delete
-            "*/perseus/ke/exercises/*", # exercises come with language packs, and we have no way to replicate
+            "*.vtt", "*.srt",  # subtitle files come with language packs -- don't delete
+            "*/perseus/ke/exercises/*",  # exercises come with language packs, and we have no way to replicate
         ]
         call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=collectstatic_ignores,
                      clear=True)

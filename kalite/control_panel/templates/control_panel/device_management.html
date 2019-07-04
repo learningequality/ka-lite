@@ -134,7 +134,6 @@
                     <thead>
                         <tr class="header-footer-bg">
                             <th width="250px">{% trans "Sync Date" %}</th>
-                            <th width="250px">{% trans "Device IP Address" %}</th>
                             <th width="200px">{% trans "# Models Uploaded" %}</th>
                             <th width="200px">{% trans "# Models Downloaded" %}</th>
                             <th width="200px">{% trans "# Errors" %}</th>
@@ -144,7 +143,6 @@
                     {% for sync_session in session_pages %}
                         <tr>
                             <td>{{ sync_session.timestamp }}</td>
-                            <td>{{ sync_session.ip }}</td>
                             <td>{{ sync_session.models_uploaded }}</td>
                             <td>{{ sync_session.models_downloaded }}</td>
                             <td>{{ sync_session.errors }}</td>

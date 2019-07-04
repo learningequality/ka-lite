@@ -191,6 +191,7 @@ def data_export(request):
         "all_zones_url": all_zones_url,
         "org": org,
         "zone": zone,
+        "is_facility_user": "true" if "facility_user" in request.session else "false",
     }
 
     return context
@@ -440,15 +441,16 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     group_data = OrderedDict()
 
     # Make queries efficiently
-    exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
+    exercise_logs = ExerciseLog.objects.filter(user__in=users)
     video_logs = VideoLog.objects.filter(user__in=users, total_seconds_watched__gt=0)
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
-    login_logs = login_logs.filter(total_seconds__gt=0)
+    login_logs = login_logs.filter(total_seconds__gte=0)
     if period_start:
-        exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
-        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+        exercise_logs = exercise_logs.filter(
+            completion_timestamp__gte=period_start)
+        video_logs = video_logs.filter(latest_activity_timestamp__gte=period_start)
     if period_end:
         # MUST: Fix the midnight bug where period end covers up to the prior day only because
         # period end is datetime(year, month, day, hour=0, minute=0), meaning midnight of previous day.
@@ -457,11 +459,11 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         #   So to fix this, we change it to '2014-12-01 23:59.999999'.
         period_end = dateutil.parser.parse(period_end)
         period_end = period_end + dateutil.relativedelta.relativedelta(days=+1, microseconds=-1)
-        exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+        exercise_logs = exercise_logs.filter(latest_activity_timestamp__lte=period_end)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
     if period_start and period_end:
-        exercise_logs = exercise_logs.filter(Q(completion_timestamp__gte=period_start) &
-                                             Q(completion_timestamp__lte=period_end))
+        exercise_logs = exercise_logs.filter(Q(latest_activity_timestamp__gte=period_start) &
+                                             Q(latest_activity_timestamp__lte=period_end))
 
         q1 = Q(completion_timestamp__isnull=False) & \
             Q(completion_timestamp__gte=period_start) & \
@@ -472,9 +474,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
         login_logs = login_logs.filter(login_q1)
     # Force results in a single query
-    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk", "streak_progress"))
+    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk", "streak_progress", "complete"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
-    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
+    login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk", "count"))
 
     for user in users:
         user_data[user.pk] = OrderedDict()
@@ -489,6 +491,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         user_data[user.pk]["total_hours"] = 0  # login_stats["total_seconds__sum"] or 0)/3600.
 
         user_data[user.pk]["total_exercises"] = 0
+        user_data[user.pk]["exercises_completed"] = 0
         user_data[user.pk]["pct_mastery"] = 0.
         user_data[user.pk]["exercises_mastered"] = []
 
@@ -497,9 +500,11 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
 
     for elog in exercise_logs:
-        user_data[elog["user__pk"]]["total_exercises"] += 1
         user_data[elog["user__pk"]]["pct_mastery"] += elog["streak_progress"]
-        user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
+        user_data[elog["user__pk"]]["total_exercises"] += 1
+        if elog["complete"]:
+            user_data[elog["user__pk"]]["exercises_completed"] += 1
+            user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
 
     for vlog in video_logs:
         user_data[vlog["user__pk"]]["total_videos"] += 1
@@ -510,7 +515,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_report_views"] += 1
         elif llog["activity_type"] == UserLog.get_activity_int("login"):
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
-            user_data[llog["user__pk"]]["total_logins"] += 1
+            user_data[llog["user__pk"]]["total_logins"] += llog["count"]
 
     for group in list(groups) + [None] * (group_id == None or group_id == UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
@@ -525,6 +530,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             "total_users": 0,
             "total_videos": 0,
             "total_exercises": 0,
+            "total_exercises_completed": 0,
             "pct_mastery": 0,
         }
 
@@ -540,6 +546,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]
         group_data[group_pk]["total_videos"] += user_data[user.pk]["total_videos"]
         group_data[group_pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
+        group_data[group_pk]["total_exercises_completed"] += user_data[user.pk]["exercises_completed"]
 
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] = total_mastery_so_far / group_data[group_pk]["total_users"]

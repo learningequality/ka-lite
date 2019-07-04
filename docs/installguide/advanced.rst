@@ -4,42 +4,9 @@ Advanced installation options
 =============================
 
 .. note::
-    Every time you install or update kalite, you should (re)run ``kalite manage setup``
-    to setup the database and download assessment items (video descriptions,
-    exercises etc.).
-
-
-.. _ppa-installation:
-
-Debian/Ubuntu: Subscribe to updates through a PPA
-_________________________________________________
-
-We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
-and if you are connected to the internet, this will also give you automatic updates::
-
-    sudo apt-get install software-properties-common python-software-properties
-    sudo add-apt-repository ppa:learningequality/ka-lite
-    sudo apt-get update
-    sudo apt-get install ka-lite
-
-
-.. _gtk-installation:
-
-User interface for Debian/Ubuntu
-__________________________________
-
-Make sure you have the PPA added, then run::
-
-    sudo apt-get install ka-lite-gtk
-
-
-.. _development-installation:
-
-Development
-___________
-A guide recommending how to install KA Lite for development is available in
-:ref:`development-environment`.
-
+    Every time you install or update kalite, you should (re)run
+    ``kalite manage setup`` to setup the database and download content packs
+    (exercise texts, images, translations etc.).
 
 
 .. _pip-installation:
@@ -72,16 +39,54 @@ Portable tarballs / zip files with setup.py
 If you can't install KA Lite on systems with the standard Windows/Mac/Linux installers,
 you can fetch the KA Lite python package from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`_.
 
-To unpack the package for installation, run::
+To unpack the package for installation, run:
 
-   $> tar -xf ka-lite-static-0.16.0.tar.gz
+.. parsed-literal::
+
+   $> tar -xf ka-lite-static-|release|.tar.gz
 
 Once it's unpacked, install it by entering the extracted directory and running::
 
-    $> sudo python setup.py install.
+    $> sudo python setup.py install
 
 Beware that the PyPi sources do not contain assessment items, so you need to
-`download the contentpack en.zip manually <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/en.zip>`_ (~650 MB).
+:url-pantry:`download the contentpack en.zip manually <content/contentpacks/en.zip>` (>700 MB)..
+
+
+.. _ppa-installation:
+
+Debian/Ubuntu: Subscribe to updates through a PPA
+_________________________________________________
+
+We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
+and if you are connected to the internet, this will also give you automatic updates.
+
+On Ubuntu, do this::
+
+    sudo apt-get install software-properties-common python-software-properties
+    sudo su -c 'echo "deb http://ppa.launchpad.net/learningequality/ka-lite/ubuntu xenial main" > /etc/apt/sources.list.d/ka-lite'
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 74F88ADB3194DD81
+    sudo apt-get update
+    sudo apt-get install ka-lite
+
+
+.. _gtk-installation:
+
+User interface for Debian/Ubuntu
+__________________________________
+
+Make sure you have the PPA added, then run::
+
+    sudo apt-get install ka-lite-gtk
+
+
+.. _development-installation:
+
+Development
+___________
+A guide recommending how to install KA Lite for development is available in
+:ref:`development-environment`.
+
 
 
 Specific system setups
@@ -152,8 +157,12 @@ installation: ::
         ServerName kalite.com
         DocumentRoot /var/www/html/
 
-        Alias /static /var/www/.kalite/static
-        Alias /media /var/www/.kalite/media
+        <Directory />
+            Require all granted
+        </Directory>
+
+        Alias /static /var/www/.kalite/httpsrv/static
+        Alias /media /var/www/.kalite/httpsrv/media
 
         WSGIScriptAlias / /usr/lib/python2.7/dist-packages/kalite/project/wsgi.py
 
@@ -166,18 +175,23 @@ installation: ::
     </VirtualHost>
 
 
+.. note::
+    It's recommended that you install ``ka-lite-static`` in a virtualenv.
+    If you are using Apache+mod_wsgi, you should copy & modify ``wsgi.py``
+    to reflect the path of your venv.
+
+
 If you are using uwsgi+Nginx, this is the critical part of your uwsgi
 configuration, provided that you have installed kalite from PyPi or .deb: ::
 
     module = kalite.project.wsgi
 
 
-Remember that kalite runs in user space and creates data files in that user's
+Remember that KA Lite runs in user space and creates data files in that user's
 home directory. A normal Debian/Ubuntu system has a www-data user for Apache
 which is the default user for mod_wsgi and will create database files, static
 files etc. for kalite in ``/var/www/.kalite/``. If you run it as another user,
 it may be located somewhere else.
-
 
 .. note:: Log in as the Django application server's user, e.g. www-data and
     initialize the kalite static files and database before anything you can
@@ -188,3 +202,4 @@ Example of setting up kalite for the www-data user: ::
     $> sudo su -s /bin/bash www-data
     $> kalite manage setup
     $> exit
+

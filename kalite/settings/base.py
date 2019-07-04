@@ -281,7 +281,7 @@ else:
 # database with assessment items.
 
 # Content path-related settings
-CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
+CONTENT_ROOT = os.path.realpath(os.getenv('KALITE_CONTENT_ROOT', getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content'))))
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
@@ -340,20 +340,21 @@ USE_I18N = getattr(local_settings, "USE_I18N", True)
 USE_L10N = getattr(local_settings, "USE_L10N", False)
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY_FILE = getattr(local_settings,
-                          "SECRET_KEY_FILE",
-                          os.path.join(USER_DATA_ROOT, "secretkey.txt"))
-
-
+SECRET_KEY_FILE = getattr(
+    local_settings,
+    "SECRET_KEY_FILE",
+    os.path.join(USER_DATA_ROOT, "secretkey.txt")
+)
 try:
     with open(SECRET_KEY_FILE) as f:
         SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
-except Exception as e:
-    sys.stderr.write("Error reading secret key file. Generating one now. Error was: %s\n" % e)
+except IOError:
+    sys.stderr.write("Generating a new secret key file {}...\n\n".format(SECRET_KEY_FILE))
 
     from ._utils import generate_secret_key, cache_secret_key
     SECRET_KEY = generate_secret_key()
     cache_secret_key(SECRET_KEY, SECRET_KEY_FILE)
+
 
 LANGUAGE_COOKIE_NAME = "django_language"
 
@@ -529,6 +530,9 @@ LOGOUT_URL = "/securesync/api/user/logout/"
 
 # 18 threads seems a sweet spot
 CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
+
+# PRAGMAs to pass to SQLite when we first open the content DBs for reading. Used mostly for optimizations.
+CONTENT_DB_SQLITE_PRAGMAS = []
 
 ########################
 # After all settings, but before config packages,

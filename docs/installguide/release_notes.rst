@@ -1,6 +1,191 @@
 Release Notes
 =============
 
+.. warning::
+
+0.16.9
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Test improvements: Avoid test failure due to race condition :url-issue:`5252`
+ * Activating simplified login results in blank login modal :url-issue:`5255`
+
+Known issues
+^^^^^^^^^^^^
+
+ * Windows installer tray application option "Run on start" does not work see
+   `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+ * If you are upgrading from 0.15 on a Windows system, you have to manually locate
+   ``python-packages\requests``, typically in
+   ``C:\Python27\share\kalite\python-packages\requests`` and delete it (after
+   completing the installation process). Otherwise video download breaks.
+   :url-issue:`5263`
+
+
+**Paper cuts**
+
+ * Old versions of ``pip`` installer breaks because of ``requests`` library downgrade. :url-issue:`5264`
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+
+
+0.16.8
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211`
+ * Confusing and harmless "error" message removed from first-runs :url-issue:`5236`
+ * Tests now run several minutes faster and are more reliable :url-issue:`5242`
+
+
+Known issues
+^^^^^^^^^^^^
+
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+
+**Paper cuts**
+
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+
+
+0.16.7
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) :url-issue:`5157`
+ * Mastery percentage wrongly displayed on learner stats page :url-issue:`5181`
+ * Speed up content scanning for up to 10x speedup when scanning big video directories, meaning content scanning drops from hours to minutes :url-issue:`5201`
+ * Lockdown fix for user logins :url-issue:`5202`
+ * Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs <http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. :url-issue:`5225`
+ * Put max-height CSS rule on navbar logo :url-issue:`5206`
+ * Submit correct HTTP ``user-agent`` for learningequality.org stats :url-issue:`5226`
+ * Broken legacy assessment item download fixed (affects mainly some Debian packages) :url-issue:`5214`
+ * Fix automatic CI tests so they now run (development issue, not related to deployments) :url-issue:`5201`
+ * Added automatic coverage reports (development issue, not related to deployments) :url-issue:`5230`
+ * Running ``setup`` command as root will give a warning + prompt, because we don't advice running as root. :url-issue:`5032`
+ * **Docs updates**: Tested and updated Apache/Nginx WSGI guide, updated PPA setup to work on Debian/Raspbian
+ * **Content packs**: Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
+
+Known issues
+^^^^^^^^^^^^
+
+ * Mac OSX installer version (based on pyrun) crashes :url-issue:`5211` - will be fixed in 0.16.8
+ * Windows installer tray application option "Run on start" does not work see `learningequality/installers#106 <https://github.com/learningequality/installers/issues/106>`__
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Writing to ``server.log`` is disabled on Windows :url-issue:`5057`
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+ * Installing on Windows 8, 32bit is reported to take ~1 hour before eventually finishing.
+
+
+0.16.6
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Content packs updated, bulk of broken exercises fixed and all languages rebuilt (and should be re-downloaded), pay attention to a couple of known issues!
+ * Allow logins during LOCKDOWN :url-issue:`5117`
+ * Remove RPI warning message about max number of concurrent downloads, there's no longer a limit on small platforms :url-issue:`4982`
+ * Make ROOT_DATA_PATH consider the KALITE_DIR environment variable :url-issue:`5143`
+ * Restore downloading on RPI w/ m2crypto: Unbundle requests and use requests.get instead of urllib.urlretrieve :url-issue:`5138`
+ * Docs: Add warning message on KA Lite windows application docs :url-issue:`5137`
+ * Treat socket.error as if no server is running :url-issue:`5135` 
+ * Docs: Connect to ka-lite on IRC #ka-lite (Freenode) - :url-issue:`5127`
+ * Notify student when all exercises in a series are completed (level has been mastered) :url-issue:`4875`
+ * Use current year in parts of footer :url-issue:`5112`
+ * Handle socket.error: Fix some cases where KA Lite fails to start due to a previous unclean shutdown :url-issue:`5132`
+ * **Content packs** 1800 outdated questions (assessment items) inside exercises (English version) used to cause problems due to their widgets and have been removed - not only by KA Lite, but also on KhanAcademy.org. This does not affect the number of exercises and there are still 29,839 assessment items left, so it's not a big concern! :url-issue:`5131`
+
+Known issues
+^^^^^^^^^^^^
+
+Please note that issues with **content packs** are not related to the software
+itself but are being fixed and updated along side our release.
+
+Watch individual issues on Github or
+`dev@learningequality.org <https://groups.google.com/a/learningequality.org/forum/#!forum/dev>`__
+for announcements and updates.
+
+ * **Content packs** ~1700 dubbed videos are missing in Non-English versions of the content packs, making the following languages have empty content databases: Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. These issues can be tracked in `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. :url-issue:`5120`
+ * Learner is not notified of mastery level, exercises keep displaying :url-issue:`4875`
+ * Login counts and session times in Learner progress reports are wrong :url-issue:`5157`
+ * Browsers on Windows XP are experiencing issues with SVG images :url-issue:`5140`
+ * Exercise "Measure area with unit squares" is broken :url-issue:`5130`
+ * VTT Subtitles are broken in Epiphany browser :url-issue:`5125`
+ * Viewing subtitles on Ubuntu requires ubuntu-restricted-extras :url-issue:`4993`
+ * Individual Student Progress Report may take a long time to load :url-issue:`5106`
+ * Button "Show Keypad" may be missing on some exercises due to upstream data API issue :url-issue:`5103`
+ * Writing to server.log is disabled on Windows :url-issue:`5057`
+
+
+0.16.5
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Missing fonts for some icons and math symbols :url-issue:`5110`
+
+0.16.4
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Update Perseus JS modules resulting in many broken exercises :url-issue:`5105` :url-issue:`5036` :url-issue:`5099`
+ * Fix broken unpacking of legacy assessment items zip :url-issue:`5108`
+
+0.16.3
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Fix for 'nix based systems with unconventional kernel versioning :url-issue:`5087`
+
+0.16.2
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Fix attempt log filtering :url-issue:`5082`
+
+
+0.16.1
+------
+
+Bug fixes
+^^^^^^^^^
+
+ * Tweaks to our documentation :url-issue:`5067`
+ * Refactor assessment item asking logic in the setup command :url-issue:`5065`
+ * Properly copy over docs pages while preserving content pack assets :url-issue:`5074`
+      
+
 0.16.0
 ------
 

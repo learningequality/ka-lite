@@ -49,12 +49,15 @@ I would like to download the videos for KA Lite via BitTorrent, is this possible
 
 Yes! Please see the instructions for ":ref:`bulk-video-downloads`".
 
+
+.. _content_pack_retrieve_offline:
+
 How can I install a language pack without a reliable internet connection?
 -------------------------------------------------------------------------
 
 In version 0.16 we changed the proces for making KA Lite available in other languages. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
 
-You can download from our server the new `contentpacks for all the languages <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/>`_, and carry around the zip file to computers you want to install the contentpack to.
+You can download from our server the new :url-pantry:`contentpacks for all the languages <content/contentpacks/>`, and carry around the zip file to computers you want to install the contentpack to.
 
 Once you have downloaded the contentpack for install on a computer without a reliable internet access, use the following command::
 

@@ -27,6 +27,7 @@ For interacting with the API:
 * get
 * request
 """
+import logging
 import json
 import urllib
 
@@ -52,6 +53,11 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 30
+# When checking for something we don't expect to be found, add extra time for
+# scripts or whatever to complete
+MAX_WAIT_FOR_UNEXPECTED_ELEMENT = 1
+
+logger = logging.getLogger(__name__)
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
@@ -71,7 +77,7 @@ def rgba_to_hex(rgba_string):
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 
-def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
+def _assert_no_element_by(context, by, value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Raises a TimeoutException if the element is *still* found after wait_time seconds.
 
@@ -81,12 +87,16 @@ def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
     :param wait_time: The wait time in seconds.
     :return: Nothing, or raises a TimeoutException.
     """
-    WebDriverWait(context.browser, wait_time).until_not(
-        EC.presence_of_element_located((by, value))
-    )
+    try:
+        WebDriverWait(context.browser, wait_time).until(
+            EC.presence_of_element_located((by, value))
+        )
+    except TimeoutException:
+        return True
+    raise KALiteTimeout
 
 
-def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_id(context, _id, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
@@ -95,7 +105,7 @@ def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
     _assert_no_element_by(context, By.ID, _id, wait_time)
 
 
-def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
@@ -104,7 +114,7 @@ def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOA
     _assert_no_element_by(context, By.CSS_SELECTOR, css_value, wait_time)
 
 
-def assert_no_element_by_xpath_selector(context, xpath, wait_time=MAX_PAGE_LOAD_TIME):
+def assert_no_element_by_xpath_selector(context, xpath, wait_time=MAX_WAIT_FOR_UNEXPECTED_ELEMENT):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
@@ -150,17 +160,20 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
     try:
-        if elem.get_attribute("id"):
-            by = (By.ID, elem.get_attribute("id"))
-        elif elem.get_attribute("class"):
-            by = (By.CLASS_NAME, elem.get_attribute("class"))
-        else:
-            assert False, "No way to select element."
+        if not elem.is_displayed():
+            return True
     except StaleElementReferenceException:
         return True
+
+    def displayed_condition(driver):
+        try:
+            return not elem.is_displayed()
+        except StaleElementReferenceException:
+            return True
+
     try:
         WebDriverWait(context.browser, wait_time).until(
-            EC.invisibility_of_element_located(by)
+            displayed_condition
         )
         return True
     except TimeoutException:
@@ -397,7 +410,10 @@ def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
 
 def logout(context):
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
-    get(context, url)
+    context.browser.get(build_url(context, url))
+    pre_element = find_css_with_wait(context, "pre")
+    json_response_text = pre_element.text
+    assert "success" in json_response_text and "true" in json_response_text
 
 
 def post(context, url, data=""):
@@ -421,7 +437,7 @@ def get(context, url, data=""):
 
     Returns the response.
     """
-    return request(context, url, method="GET", data=data)
+    return request(context, url, method="GET", data=data, api_call=api_call)
 
 
 def request(context, url, method="GET", data=""):
@@ -459,7 +475,11 @@ def request(context, url, method="GET", data=""):
             req.send('{data}');
         """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
     )
-    context_wm.browser_wait_for_js_condition("window.FLAG")
+    try:
+        context_wm.browser_wait_for_js_condition("window.FLAG")
+    except KALiteTimeout:
+        logger.error("Timed out waiting on URL: {}".format(url))
+        raise
     resp = context.browser.execute_script("return window.DATA")
     return resp
 

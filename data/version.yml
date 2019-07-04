@@ -1,3 +1,98 @@
+0.16.9:
+  release_date: "2016/09/05"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+       - Learner is not notified of mastery level, exercises keep displaying #4875
+       - Activating simplified login results in blank login modal #5255
+    students: []
+    coaches: []
+    admins: []
+
+0.16.8:
+  release_date: "2016/08/05"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+       - Mac OSX installer version (based on pyrun) crashes #5211
+       - Confusing and harmless "error" message removed from first-runs #5236
+       - Tests now run several minutes faster and are more reliable #5242
+    students: []
+    coaches: []
+    admins: []
+
+0.16.7:
+  release_date: "2016/08/01"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+       - Restore learner stats: Correctly display login count and aggregate login durations (previously uncollected data!) #5157
+       - Mastery percentage wrongly displayed on learner stats page #5181
+       - Speed up content scanning for up to 10x speedup when scanning big video directories, meaning content scanning drops from hours to minutes #5201
+       - Lockdown fix for user logins #5202
+       - Initial "pragma" support for SQLite and setting ``CONTENT_DB_SQLITE_PRAGMAS``. Use this to improve performance, such as allocating more memory for caching. `Peewee docs<http://docs.peewee-orm.com/en/latest/peewee/database.html#pragma-statements>`__. #5225
+       - Put max-height CSS rule on navbar logo #5206
+       - Submit correct HTTP ``user-agent`` for learningequality.org stats #5226
+       - Broken legacy assessment item download fixed (affects mainly some Debian packages) #5214
+       - Fix automatic CI tests so they now run (development issue, not related to deployments) #5201
+       - Added automatic coverage reports (development issue, not related to deployments) #5230
+       - Running ``setup`` command as root will give a warning + prompt, because we don't advice running as root. #5032
+       - Docs updates. Tested and updated Apache/Nginx WSGI guide, updated PPA setup to work on Debian/Raspbian
+       - Content packs. Added ~1700 dubbed videos in Non-English versions of the content packs, populating content databases and thus adding language support for - Burmese, Indonesian, Kannada, Swahili, Tamil, Xhosa, Zulu. `content-pack-maker#28 <https://github.com/fle-internal/content-pack-maker/issues/28>`__. #5120
+    students: []
+    coaches: []
+    admins: []
+
+
+0.16.6:
+  release_date: "2016/06/14"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Content packs updated, bulk of broken exercises fixed and all languages rebuilt (and should be re-downloaded), pay attention to a couple of known issues!
+      - Allow logins during LOCKDOWN #5117
+      - Remove RPI warning message about max number of concurrent downloads, there's no longer a limit on small platforms #4982
+      - Make ROOT_DATA_PATH consider the KALITE_DIR environment variable #5143
+      - Restore downloading on RPI w/ m2crypto. Unbundle requests and use requests.get instead of urllib.urlretrieve #5138
+      - Docs. Add warning message on KA Lite windows application docs #5137
+      - Treat socket.error as if no server is running #5135
+      - Docs. Connect to ka-lite on IRC #ka-lite (Freenode) - #5127
+      - Notify student when all exercises in a series are completed (level has been mastered) #4875
+      - Use current year in parts of footer #5112
+      - Handle socket.error. Fix some cases where KA Lite fails to start due to a previous unclean shutdown #5132
+    students: []
+    coaches: []
+    admins: []
+
+
+0.16.5:
+  release_date: "2016/05/02"
+  git_commit: "cfcedf2"
+  new_features: []
+  bugs_fixed:
+    all:
+      - Missing fonts for some icons and math symbols #5110
+    students: []
+    coaches: []
+    admins: []
+
+
+0.16.4:
+  release_date: "2016/04/29"
+  git_commit: ""
+  new_features: []
+  bugs_fixed:
+    all:
+      - Update Perseus JS modules resulting in many broken exercises ( #5105 #5036 #5099 )
+      - Fix broken unpacking of legacy assessment items zip ( #5108 )
+    students: []
+    coaches: []
+    admins: []
+
 0.16.3:
   release_date: "2016/04/25"
   git_commit: ""
