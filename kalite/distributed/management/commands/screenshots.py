@@ -226,6 +226,9 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         # After initializing the server (with setUp) and a browser, set the language
         self.set_session_language(kwargs['language'])
 
+        # After initializing the server (with setUp) and a browser, set the language
+        self.set_session_language(kwargs['language'])
+
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
