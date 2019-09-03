@@ -14,6 +14,9 @@ require("browsernizr/test/canvas");
 require("browsernizr/test/touchevents");
 var Modernizr = require("browsernizr");
 
+// Expose this as a global object for use in central server inline JS.
+global.getCookie = require("utils/get_cookie");
+
 global.$ = $;
 global._ = _;
 global.sessionModel = new SessionModel();
