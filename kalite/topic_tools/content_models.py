@@ -692,7 +692,8 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
                 available = any(child.available for child in children)
                 total_files = sum(child.total_files for child in children)
                 files_complete = sum(child.files_complete for child in children)
-                child_remote = sum(child.remote_size for child in children if (not (child.available and child.kind == "Topic") or (child.kind == "Topic")))
+                # Summarize all topics, and all available non-topics
+                child_remote = sum(child.remote_size for child in children if ((child.available and child.kind != "Topic") or child.kind == "Topic"))
                 child_on_disk = sum(child.size_on_disk for child in children)
 
                 # ensure files_complete doesn't go above total_files; can be removed after fix is in for:
