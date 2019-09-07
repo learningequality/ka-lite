@@ -3,7 +3,7 @@
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
 MAJOR_VERSION = "0"
 MINOR_VERSION = "17"
-PATCH_VERSION = "6.dev"
+PATCH_VERSION = "6b1"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
