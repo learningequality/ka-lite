@@ -327,6 +327,7 @@ INSTALLED_APPS = [
     'kalite.inline',
     'kalite.i18n',
     'kalite.control_panel',
+    'kalite.testing',  # A no-op application for Central Server testing
 ]
 
 MIDDLEWARE_CLASSES = [
