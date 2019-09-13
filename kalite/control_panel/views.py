@@ -100,6 +100,7 @@ def zone_management(request, zone_id="None"):
     else:
         devices = Device.objects.filter(devicemetadata__is_own_device=True)
 
+
     for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
         user_activity = UserLogSummary.objects.filter(device=device)
@@ -126,7 +127,11 @@ def zone_management(request, zone_id="None"):
         facilities = Facility.objects.by_zone(context["zone"])
     else:
         facilities = Facility.objects.all()
+
     for facility in list(facilities.order_by("name")):
+
+        user_activity = UserLogSummary.objects.filter(user__facility=facility)
+        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
 
         # Because of
         # https://bugs.python.org/issue10513
@@ -139,8 +144,6 @@ def zone_management(request, zone_id="None"):
             # Doesn't look robust at all
             activity = exercise_activity.order_by("-completion_timestamp")[0:1]
 
-        user_activity = UserLogSummary.objects.filter(user__facility=facility)
-        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
