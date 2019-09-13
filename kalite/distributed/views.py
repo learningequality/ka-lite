@@ -41,6 +41,11 @@ def check_setup_status(handler):
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
 
+        # control_panel and this decorator is also used on the central server,
+        # but this decorator was written assuming the distributed server only.
+        if getattr(settings, "CENTRAL_SERVER", False):
+            return handler(request, *args, **kwargs)
+
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
 

@@ -1,4 +1,5 @@
 """
+THESE VIEWS ARE ALSO USED ON THE CENTRAL SERVER
 """
 import datetime
 import dateutil
