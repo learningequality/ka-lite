@@ -6,7 +6,7 @@
 # ...to explain: Some of the below packages depend on django, if we don't
 # specify a version here, we'll get the latest.
 # See also: https://github.com/learningequality/ka-lite/issues/5419
-django==1.5.12
+django==1.11.23
 
 docopt>=0.6,<0.7
 South==1.0.2
