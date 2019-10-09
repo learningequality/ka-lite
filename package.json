@@ -32,7 +32,7 @@
   "dependencies": {
     "async": "1.4.2",
     "backbone": "1.2.2",
-    "bootstrap": "3.3.5",
+    "bootstrap": "4.3.1",
     "bootstrap-datepicker": "1.4.1",
     "bootstrap-multiselect": "0.9.13-1",
     "browserify": "11.0.1",
