@@ -5,7 +5,7 @@ import socket
 import tempfile
 
 
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 from kalite.updates.settings import DOWNLOAD_SOCKET_TIMEOUT
 
 
