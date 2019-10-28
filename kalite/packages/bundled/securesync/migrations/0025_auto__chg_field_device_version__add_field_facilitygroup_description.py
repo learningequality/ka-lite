@@ -11,18 +11,12 @@ class Migration(SchemaMigration):
 
         # Changing field 'Device.version'
         db.alter_column(u'securesync_device', 'version', self.gf('django.db.models.fields.CharField')(max_length=64))
-        # Adding field 'FacilityGroup.description'
-        db.add_column(u'securesync_facilitygroup', 'description',
-                      self.gf('django.db.models.fields.TextField')(default='', blank=True),
-                      keep_default=False)
 
 
     def backwards(self, orm):
 
         # Changing field 'Device.version'
         db.alter_column(u'securesync_device', 'version', self.gf('django.db.models.fields.CharField')(max_length=9))
-        # Deleting field 'FacilityGroup.description'
-        db.delete_column(u'securesync_facilitygroup', 'description')
 
 
     models = {
