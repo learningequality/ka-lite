@@ -14,7 +14,9 @@ to read the release notes.
 Bug fixes
 ^^^^^^^^^
 
+* Remove *pyc files in ka-lite-static (affected 0.17.5 release)
 * Fix rare ``GEOSException`` on systems with libgeos :url-issue:`5592`
+
 
 0.17.5
 ------
