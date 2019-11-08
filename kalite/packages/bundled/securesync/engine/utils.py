@@ -64,7 +64,7 @@ def get_device_counters(**kwargs):
 
             # The local device may have items that haven't incremented the device counter,
             #   but instead have deferred until sync time.  Include those!
-            if device.is_own_device():
+            if not getattr(settings, 'CENTRAL_SERVER', False) and device.is_own_device():
                 cnt = 0
                 for Model in _syncing_models:
                     cnt += Model.all_objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()  # include deleted records
