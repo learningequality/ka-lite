@@ -15,6 +15,8 @@ Bug fixes
 ^^^^^^^^^
 
 * Fix rare ``GEOSException`` on systems with libgeos :url-issue:`5592`
+* Sync'ing timeouts fixed :url-issue:`5615`
+* Platform-specific ``*.pyc`` artifacts found in distributed installers, likely harmless :url-issue:`5611`
 
 0.17.5
 ------
