@@ -127,7 +127,11 @@ class BrowserActionMixins(object):
         if num_messages is not None:
             msg = "Make sure there are %d message(s), type='%s'." % \
                   (num_messages, message_type if message_type else "(any)")
-            self.assertEqual(num_messages, len(messages), msg)
+            try:
+                self.assertEqual(num_messages, len(messages), msg)
+            except AssertionError:
+                print("Wrong number of matching messages found in:\n{}".format("\n".join(messages)))
+                raise
 
         for i, message in enumerate(messages):
             if type(contains) == list:
