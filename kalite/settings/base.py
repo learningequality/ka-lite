@@ -106,8 +106,8 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.request': {
-            'handlers': ['null'],
-            'level': 'DEBUG',
+            'handlers': ['console', 'file'],
+            'level': logging.ERROR,
             'propagate': False,
         },
         'kalite': {
@@ -132,7 +132,7 @@ LOGGING = {
         },
         'cherrypy.access': {
             'handlers': ['console', 'file'],
-            'level': LOGGING_LEVEL,
+            'level': logging.ERROR,
             'propagate': False,
         },
         'cherrypy.error': {
@@ -142,7 +142,7 @@ LOGGING = {
         },
         '': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': logging.INFO,
             'propagate': False,
         },
     }
