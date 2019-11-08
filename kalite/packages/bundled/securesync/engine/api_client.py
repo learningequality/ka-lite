@@ -21,11 +21,14 @@ class SyncClient(BaseClient):
     session = None
 
     def post(self, path, payload={}, *args, **kwargs):
+        kwargs.setdefault("timeout", 120)
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
         return super(SyncClient, self).post(path, payload, *args, **kwargs)
 
     def get(self, path, payload={}, *args, **kwargs):
+        # Set a high timeout since the server can be heavily loaded at times
+        kwargs.setdefault("timeout", 120)
         if self.session and self.session.client_nonce:
             payload["client_nonce"] = self.session.client_nonce
         # add a random parameter to ensure the request is not cached
@@ -145,7 +148,10 @@ class SyncClient(BaseClient):
 
     def get_server_device_counters(self):
         r = self.get("device/counters")
-        data = json.loads(r.content or "{}")
+        try:
+            data = json.loads(r.content or "{}")
+        except ValueError:
+            raise Exception("Did not receive proper JSON data from server. URL: {}\n\nActual data:\n\n{}".format(r.url, r.content))
         if "error" in data:
             raise Exception("Server error in retrieving counters: " + data["error"])
         return data.get("device_counters", {})
