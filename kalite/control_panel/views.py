@@ -180,7 +180,7 @@ def data_export(request):
 
     if settings.CENTRAL_SERVER:
         # TODO(dylanjbarth and benjaoming): this looks awful
-        from central.models import Organization
+        from centralserver.central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()
