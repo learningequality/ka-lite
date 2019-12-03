@@ -49,7 +49,7 @@ def check_setup_status(handler):
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe(_("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server.") % reverse("register_public_key")))
-            elif not request.session["facility_exists"]:
+            elif not request.session.get("facility_exists", None):
                 zone_id = (Zone.objects.all() and Zone.objects.all()[0].id) or "None"
                 messages.warning(request, mark_safe(_("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility.") % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
@@ -57,7 +57,7 @@ def check_setup_status(handler):
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
-            elif not request.session["facility_exists"]:
+            elif not request.session.get("facility_exists", None):
                 zone = Device.get_own_device().get_zone()
                 zone_id = "None" if not zone else zone.id
                 redirect_url = reverse("add_facility", kwargs={"zone_id": zone_id})
