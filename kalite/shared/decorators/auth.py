@@ -20,7 +20,7 @@ def skip_central(decorator):
     if settings.CENTRAL_SERVER:
         return blank_wrapper
     
-    return lambda *a,**kw: decorator(*a **kw)
+    return lambda *a,**kw: decorator(*a, **kw)
 
 
 def get_user_from_request(handler=None, request=None, *args, **kwargs):
