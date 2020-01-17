@@ -135,7 +135,7 @@ def set_database(function):
 
             except OperationalError as e:
                 logging.error(
-                    "Content DB error: Perhaps content database file found? "
+                    "Content DB error: Perhaps content database file not found? "
                     "Exception: {e}".format(e=str(e))
                 )
                 raise
