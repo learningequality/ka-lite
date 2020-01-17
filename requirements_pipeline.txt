@@ -1,3 +1,9 @@
-requests<2.3
+# Use the requests that we get from github3 >=2.18
+# requests<2.3
 github3.py>=0.9.6,<1.4
-gcloud
+gcloud<0.20
+
+googleapis-common-protos<1.52
+
+# 44 stops supporting Py 3.4
+setuptools<44
