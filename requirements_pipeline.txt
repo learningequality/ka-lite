@@ -7,3 +7,6 @@ googleapis-common-protos<1.52
 
 # 44 stops supporting Py 3.4
 setuptools<44
+
+# https://github.com/googleapis/google-api-python-client/issues/803
+httplib2<0.16
