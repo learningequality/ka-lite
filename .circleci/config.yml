@@ -1,0 +1,58 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:2.7.17-stretch-node-browsers
+    steps:
+      - checkout
+      - run: pip install -r requirements_sphinx.txt
+      - run: pip install -e .
+      - run: make assets
+      - run: make docs
+      - run: wget -O geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux6>
+      - run: gunzip -c geckodriver.tar.gz | tar xopf -
+      - run: chmod +x geckodriver
+      - run: sudo mv geckodriver /home/ubuntu/bin
+
+  test-cli:
+    docker:
+      - image: circleci/python:2.7.17-stretch-node-browsers
+    parallelism: 1
+    steps:
+      - checkout
+      - run: .circleci/script.sh
+      - run: kalite start --traceback -v2
+      - run: sleep 6s  # Necessary for server to be ready
+      - run: kalite status
+      - run: kalite stop --traceback -v2
+
+
+  test-unit-bdd:
+    docker:
+      - image: circleci/python:2.7.17-stretch-node-browsers
+    parallelism: 2
+    steps:
+      - checkout
+      - run: case $CIRCLE_NODE_INDEX in 0) coverage run bin/kalite manage test --bdd-only ;; 1) coverage run bin/kalite manage test --no-bdd;; esac
+      - run: bash <(curl -s https://codecov.io/bash)
+    environment:
+      PATH: "$PATH:/home/ubuntu/bin"
+
+  test-lint:
+    docker:
+      - image: circleci/python:2.7.17-stretch-node-browsers
+    parallelism: 1
+    steps:
+      - checkout
+      - run: npm install -g jshint
+      - run: jshint kalite/*/static/js/*/
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test-cli
+      - test-unit-bdd
+      - test-lint
