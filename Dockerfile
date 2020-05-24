@@ -18,7 +18,7 @@ RUN pip install pip --upgrade && pip install virtualenv && virtualenv /kalite/ka
 RUN $PIP install -r /kalite/requirements_dev.txt \
 	&& $PIP install -r /kalite/requirements_sphinx.txt \
 	&& $PIP install -e /kalite/. \
-	&& $PIP install pex
+	&& $PIP install pex\<2.1
 
 # Override the PATH to add the path of our virtualenv python binaries first so it's python executes instead of
 # the system python.
