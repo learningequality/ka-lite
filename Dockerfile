@@ -13,7 +13,7 @@ VOLUME /kalitedist/
 ENV PIP=/kalite/kalite_env/bin/pip
 
 # for mounting the whl files into other docker containers
-RUN pip install virtualenv && virtualenv /kalite/kalite_env  --python=python2.7
+RUN pip install pip --upgrade && pip install virtualenv && virtualenv /kalite/kalite_env  --python=python2.7
 
 RUN $PIP install -r /kalite/requirements_dev.txt \
 	&& $PIP install -r /kalite/requirements_sphinx.txt \
