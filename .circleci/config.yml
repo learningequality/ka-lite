@@ -17,7 +17,7 @@ jobs:
       - run: wget -O geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.10.0/geckodriver-v0.10.0-linux64.tar.gz
       - run: gunzip -c geckodriver.tar.gz | tar xopf -
       - run: chmod +x geckodriver
-      - run: sudo mv geckodriver /home/ubuntu/bin
+      - run: sudo mv geckodriver /usr/local/bin
 
   test-cli:
     docker:
@@ -40,8 +40,6 @@ jobs:
       - checkout
       - run: case $CIRCLE_NODE_INDEX in 0) coverage run bin/kalite manage test --bdd-only ;; 1) coverage run bin/kalite manage test --no-bdd;; esac
       - run: bash <(curl -s https://codecov.io/bash)
-    environment:
-      PATH: "$PATH:/home/ubuntu/bin"
 
   test-lint:
     docker:
