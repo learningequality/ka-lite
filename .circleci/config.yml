@@ -4,7 +4,7 @@ jobs:
   build-test:
     working_directory: ~/kalite
     docker:
-      - image: circleci/python:2.7.17-stretch-node-browsers
+      - image: circleci/python:2.7-browsers:firefox
     steps:
       - checkout
       - run: pip install -r requirements_sphinx.txt
