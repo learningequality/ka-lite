@@ -4,8 +4,14 @@ jobs:
   build-test:
     working_directory: ~/kalite
     docker:
-      - image: circleci/python:2.7-browsers:firefox
+      - image: circleci/python:2.7-stretch-node-browsers
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: true
+          install-geckodriver: true
+          install-chrome: false
+          firefox-version: "54.0"
+          geckodriver-version: "v0.10.0"
       - checkout
       - run: pip install -r requirements_sphinx.txt
       - run: pip install -e .
@@ -34,6 +40,8 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash)
           when: always # Uploads code coverage results, pass or fail
 
+orbs:
+  browser-tools: circleci/browser-tools@1.0.0
 
 workflows:
   version: 2
