@@ -57,6 +57,12 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test-cli
-      - test-unit-bdd
-      - test-lint
+      - test-cli:
+          requires:
+            - build
+      - test-unit-bdd:
+          requires:
+            - build
+      - test-lint:
+          requires:
+            - build
