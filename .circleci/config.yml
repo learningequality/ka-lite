@@ -1,7 +1,8 @@
 version: 2.1
 
 jobs:
-  build:
+  build-test:
+    working_directory: ~/kalite
     docker:
       - image: circleci/python:2.7.17-stretch-node-browsers
     steps:
@@ -18,49 +19,23 @@ jobs:
       - run: gunzip -c geckodriver.tar.gz | tar xopf -
       - run: chmod +x geckodriver
       - run: sudo mv geckodriver /usr/local/bin
-
-  test-cli:
-    docker:
-      - image: circleci/python:2.7.17-stretch-node-browsers
-    parallelism: 1
-    steps:
-      - checkout
-      - run: .circleci/script.sh
       - run: kalite start --traceback -v2
       - run: sleep 6s  # Necessary for server to be ready
       - run: kalite status
       - run: kalite stop --traceback -v2
-
-
-  test-unit-bdd:
-    docker:
-      - image: circleci/python:2.7.17-stretch-node-browsers
-    parallelism: 2
-    steps:
-      - checkout
-      - run: case $CIRCLE_NODE_INDEX in 0) coverage run bin/kalite manage test --bdd-only ;; 1) coverage run bin/kalite manage test --no-bdd;; esac
+      - run: coverage run bin/kalite manage test --bdd-only
+      - run: coverage run bin/kalite manage test --no-bdd
       - run: bash <(curl -s https://codecov.io/bash)
-
-  test-lint:
-    docker:
-      - image: circleci/python:2.7.17-stretch-node-browsers
-    parallelism: 1
-    steps:
-      - checkout
       - run: npm install -g jshint
       - run: jshint kalite/*/static/js/*/
+      - run:
+          name: Upload CodeCov.io Data
+          command: bash <(curl -s https://codecov.io/bash)
+          when: always # Uploads code coverage results, pass or fail
+
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test-cli:
-          requires:
-            - build
-      - test-unit-bdd:
-          requires:
-            - build
-      - test-lint:
-          requires:
-            - build
+      - build-test
