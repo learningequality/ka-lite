@@ -4,7 +4,7 @@ FROM ubuntu:bionic
 RUN apt-get -y update && \
   apt-get install -y software-properties-common curl && \
   curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
-  apt-get -y update && apt-get install -y python2.7 python-pip git gettext wget "nodejs=6.17*"
+  apt-get -y update && apt-get install -y python2.7 python-pip git gettext wget "nodejs=6*"
 
 COPY . /kalite
 VOLUME /kalitedist/
