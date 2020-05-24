@@ -20,7 +20,7 @@ jobs:
       - run: chmod +x geckodriver
       - run: sudo mv geckodriver /usr/local/bin
       - run: kalite start --traceback -v2
-      - run: sleep 6s  # Necessary for server to be ready
+      - run: sleep 10s  # Necessary for server to be ready
       - run: kalite status
       - run: kalite stop --traceback -v2
       - run: coverage run bin/kalite manage test --bdd-only
