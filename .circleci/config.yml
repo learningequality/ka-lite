@@ -10,8 +10,8 @@ jobs:
           install-firefox: true
           install-geckodriver: true
           install-chrome: false
-          firefox-version: "55.0"
-          geckodriver-version: "v0.10.0"
+#          firefox-version: "60.0"
+#          geckodriver-version: "v0.10.0"
       - checkout
       - run: pip install -r requirements_sphinx.txt
       - run: pip install -e .
