@@ -7,7 +7,6 @@ import logging
 import os
 import tempfile
 import shutil
-import sauceclient as sc
 import socket
 
 from ssl import SSLError
@@ -73,6 +72,8 @@ def setup_sauce_browser(context):
     :param context: the behave context
     :return: none, but has side effects. Adds properties "sauce" and "browser" to context.
     """
+    import sauceclient as sc
+
     # based on http://saucelabs.com/examples/example.py
     username = os.environ.get('SAUCE_USERNAME')
     access_key = os.environ.get('SAUCE_ACCESS_KEY')
