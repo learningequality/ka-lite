@@ -1,6 +1,7 @@
 -r requirements.txt
 behave==1.2.4
-selenium<3
+# Tested w/ FF 76 and geckodriver 0.26.0
+selenium>=3.141.0,<4
 unittest2==0.7.1
 mock==1.0.1
 coverage>=4
