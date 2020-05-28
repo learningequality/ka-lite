@@ -30,8 +30,8 @@ jobs:
       - run: sleep 10s  # Necessary for server to be ready
       - run: kalite status
       - run: kalite stop --traceback -v2
-      - run: coverage run bin/kalite manage test --bdd-only
       - run: coverage run bin/kalite manage test --no-bdd
+      - run: coverage run bin/kalite manage test --bdd-only
       - run: bash <(curl -s https://codecov.io/bash)
       - run: npm install -g jshint
       - run: jshint kalite/*/static/js/*/
