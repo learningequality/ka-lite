@@ -22,6 +22,7 @@ jobs:
       - run: make assets
       - run: make docs
       - run: firefox -v
+      - run: coverage run bin/kalite manage setup --noinput --traceback
       - run: coverage run bin/kalite start --traceback -v2
       - run: sleep 10s  # Necessary for server to be ready
       - run: coverage run bin/kalite status
