@@ -57,7 +57,7 @@ def register_device(request):
         # that what should be proper exception namespacing in code being called isn't correctly catching this exception
         msg = "\n\n".join([request.body, client_device._hashable_representation(), "Exception: %s" % e, str(type(e)), client_device.signed_by_id, client_device.id, str(request)])
         send_mail("Exception while verifying client device", msg, "kalite@learningequality.org", ["errors@learningequality.org"])
-        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key!", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
+        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
 
     try:
         zone = register_self_registered_device(client_device, models, data)

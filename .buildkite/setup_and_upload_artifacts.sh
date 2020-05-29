@@ -7,10 +7,13 @@ PIP="$SCRIPTPATH/env/bin/pip"
 PYTHON="$SCRIPTPATH/env/bin/python"
 
 echo "Creating virtualenv..."
-virtualenv -p python3 env
+# This specifies 3.5 because of broken old server
+virtualenv -p python3.5 env
 
+$PIP freeze
+$PIP install setuptools\<44
 echo "Installing requirements..."
-$PIP install -r requirements_pipeline.txt
+$PIP install -r requirements_pipeline.txt --upgrade
 
 echo "Preparing artifact directories"
 mkdir -p dist

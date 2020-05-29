@@ -133,7 +133,7 @@ def register_public_key_server(request):
         #   at least they can proceed directly.
         if request.user.organization_set.count() == 0:
             # Localizing central-only import
-            from central.models import Organization
+            from centralserver.central.models import Organization
             org = Organization(name="Your organization", owner=request.user)
             org.save()
             org.add_member(request.user)

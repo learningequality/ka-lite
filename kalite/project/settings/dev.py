@@ -30,7 +30,7 @@ LOG.setLevel(logging.DEBUG)
 logging.basicConfig()
 
 SECURESYNC_PROTOCOL = "http"
-CENTRAL_SERVER_HOST = "staging.%s" % CENTRAL_SERVER_DOMAIN
+CENTRAL_SERVER_HOST = "staging.kalite.%s" % CENTRAL_SERVER_DOMAIN
 CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 
 # Force DeprecationWarning to show in DEBUG

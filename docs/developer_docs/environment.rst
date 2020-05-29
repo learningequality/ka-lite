@@ -3,46 +3,97 @@
 Getting started
 ===============
 
-.. warning::  These directions may be out of date! This page needs to be consolidated with the `Getting Started page on our wiki <https://github.com/learningequality/ka-lite/wiki/Getting-started>`_.
+.. tip:: Find additional knowledge in `Getting Started on our Github Wiki <https://github.com/learningequality/ka-lite/wiki/Getting-started>`_.
 
-Recommended setup
-_________________
+KA Lite is discontinued and thus contains several legacy and end-of-life. It is recommended that you set up your development environment in a virtual machine, for instance using `Virtualbox <https://www.virtualbox.org/>`__.
 
+Ubuntu 18.04 LTS
+________________
 
-KA Lite is like a normal django project, if you have done Django before, you will recognize most of these steps.
+To avoid walking down an uncertain path when you set up this project, consider using Ubuntu 18.04 LTS in a virtual machine.
 
-#. Check out the project from our `github`_
-#. Create a virtual environment "kalite" that you will work in::
-     
-     sudo pip install virtualenvwrapper
-     mkvirtualenv kalite
-     workon kalite
+These steps are largely based on the ``Dockerfile`` from the repository's root.
 
-#. Install kalite in your virtualenv in "editable" mode, meaning that the source is just linked::
-     
-     cd path/to/repo
-     pip install -e .
+#. Install prerequisits. The development environment needs Python 2.7, pip and curl.
 
-#. Install additional development tools::
-     
-     pip install -r requirements_dev.txt
+   .. code-block:: bash
+   
+      sudo apt install python2.7 curl python3-pip git make
 
-#. Build static assets such as javascript::
-     
-     make assets
+#. Add the nodejs 6.x repo and install it.
+
+   .. code-block:: bash
+
+      # Get the key and add the repo
+      wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+      echo 'deb https://deb.nodesource.com/node_6.x bionic main' | sudo tee /etc/apt/sources.list.d/nodesource.list
+
+      # Overrule the newer version shipped by Ubuntu
+      printf "Package: *\nPin: origin deb.nodesource.com\nPin-Priority: 600" | sudo tee /etc/apt/preferences.d/nodejs
+
+      # Update and install
+      sudo apt update
+      sudo apt install nodejs
+
+#. Fork the project on `github`_, clone the git repository
+
+      git clone git@github.com:USERNAME/ka-lite.git
+      cd ka-lite
+
+#. Create a virtual environment and activate it:
+
+   .. code-block:: bash
+
+      pip3 install virtualenv
+      virtualenv -p python2.7 venv
+      
+      # Activate the virtualenv - you need to do that everytime you open a new command line
+      source venv/bin/activate
+
+#. Install a development version of KA Lite inside the virtual environment:
+
+   .. code-block:: bash
+
+      pip install -e .
+
+#. Install development requirements:
+
+   .. code-block:: bash
+
+      # Development
+      pip install -r requirements_dev.txt
+      # Building docs
+      pip install -r requirements_sphinx.txt
+      # Test requirements
+      pip install -r requirements_test.txt
+
+#. Install JavaScript (nodejs) libraries and build them:
+
+   .. code-block:: bash
+
+      make assets
+
+#. You are now ready to run KA Lite. You can run a foreground version of the HTTP server like this:
+
+   .. code-block:: bash
+
+      kalite start --foreground
 
 #. Run the setup, which will bootstrap the database::
      
+   .. code-block:: bash
+
      kalite manage setup
 
 #. Run a development server and use development settings like this::
      
+   .. code-block:: bash
+
      kalite manage runserver --settings=kalite.project.settings.dev
-  
 
-You can also change your ``~/.kalite/settings.py`` to point to ``kalite.project.settings.dev`` by default, then you do not have to specify `--settings=...` every time you run kalite.
+.. tip:: You can also change your ``~/.kalite/settings.py`` to point to ``kalite.project.settings.dev`` by default, then you do not have to specify `--settings=...` every time you run kalite.
 
-Now, every time you work on your development environment, just remember to switch on your virtual environment with ``workon kalite``.
+Every time you work on your development environment, remember to switch on your virtual environment with ``source venv/bin/activate``. You can use `virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`__ for more convenient ways of managing virtual envs.
 
 .. _github: https://github.com/learningequality/ka-lite
 
@@ -50,7 +101,7 @@ Now, every time you work on your development environment, just remember to switc
 Static vs. Dynamic version
 __________________________
 
-Apart from Python itself, KA Lite depends on a couple of python applications,
+Apart from Python itself, KA Lite depends on a couple of Python applications,
 mainly from the Django ecosystem. These dependencies can be installed in two ways:
 
 * **Dynamic**: Means dependencies are automatically installed through
@@ -79,10 +130,9 @@ Running tests
 _____________
 
 
-On Circle CI, we run Selenium 2.53.6 because it works in their environment. However,
-for more recent versions of Firefox, you need to upgrade Selenium::
+Ensure that you install the test requirements::
 
-    pip install selenium\<3.5 --upgrade
+    pip install -r requirements_test.txt
 
 To run all of the tests (this is slow)::
 

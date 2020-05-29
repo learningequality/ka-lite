@@ -41,6 +41,11 @@ def check_setup_status(handler):
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
 
+        # control_panel and this decorator is also used on the central server,
+        # but this decorator was written assuming the distributed server only.
+        if getattr(settings, "CENTRAL_SERVER", False):
+            return handler(request, *args, **kwargs)
+
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
 
@@ -49,7 +54,7 @@ def check_setup_status(handler):
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe(_("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server.") % reverse("register_public_key")))
-            elif not request.session["facility_exists"]:
+            elif not request.session.get("facility_exists", None):
                 zone_id = (Zone.objects.all() and Zone.objects.all()[0].id) or "None"
                 messages.warning(request, mark_safe(_("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility.") % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
@@ -57,7 +62,7 @@ def check_setup_status(handler):
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
-            elif not request.session["facility_exists"]:
+            elif not request.session.get("facility_exists", None):
                 zone = Device.get_own_device().get_zone()
                 zone_id = "None" if not zone else zone.id
                 redirect_url = reverse("add_facility", kwargs={"zone_id": zone_id})

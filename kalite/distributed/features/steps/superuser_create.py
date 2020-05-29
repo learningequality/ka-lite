@@ -141,7 +141,7 @@ def is_border_red(context, field_id):
     border = find_id_with_wait(context, field_id)
 
     def condition(browser):
-        border_color = border.value_of_css_property('border-color')
+        border_color = border.value_of_css_property('border-top-color')
         return border_color == 'rgb(169, 68, 66)'
     try:
         WebDriverWait(context.browser, 1).until(

@@ -1,4 +1,5 @@
 """
+THESE VIEWS ARE ALSO USED ON THE CENTRAL SERVER
 """
 import datetime
 import dateutil
@@ -30,7 +31,8 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data,\
+    skip_central
 from kalite.version import VERSION
 from kalite import PACKAGE_PATH
 from kalite.distributed.views import check_setup_status
@@ -76,7 +78,7 @@ def process_zone_form(request, zone_id):
 
 
 @require_authorized_admin
-@check_setup_status
+@skip_central(check_setup_status)
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
@@ -97,6 +99,7 @@ def zone_management(request, zone_id="None"):
         devices = Device.objects.filter(devicezone__zone=context["zone"])
     else:
         devices = Device.objects.filter(devicemetadata__is_own_device=True)
+
 
     for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
@@ -124,7 +127,11 @@ def zone_management(request, zone_id="None"):
         facilities = Facility.objects.by_zone(context["zone"])
     else:
         facilities = Facility.objects.all()
+
     for facility in list(facilities.order_by("name")):
+
+        user_activity = UserLogSummary.objects.filter(user__facility=facility)
+        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
 
         # Because of
         # https://bugs.python.org/issue10513
@@ -137,8 +144,6 @@ def zone_management(request, zone_id="None"):
             # Doesn't look robust at all
             activity = exercise_activity.order_by("-completion_timestamp")[0:1]
 
-        user_activity = UserLogSummary.objects.filter(user__facility=facility)
-        exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
@@ -180,7 +185,7 @@ def data_export(request):
 
     if settings.CENTRAL_SERVER:
         # TODO(dylanjbarth and benjaoming): this looks awful
-        from central.models import Organization
+        from centralserver.central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()
