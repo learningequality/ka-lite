@@ -8,6 +8,7 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+
 0.17.6.dev
 ----------
 
@@ -18,6 +19,7 @@ Bug fixes
 * Fix rare ``GEOSException`` on systems with libgeos :url-issue:`5592`
 * Sync'ing timeouts fixed :url-issue:`5615`
 * Platform-specific ``*.pyc`` artifacts found in distributed installers, likely harmless :url-issue:`5611`
+* Add a note about ad-blockers blocking One-Click Device Registration :url-issue:`5619`
 
 
 0.17.5
