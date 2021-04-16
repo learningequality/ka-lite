@@ -1,6 +1,7 @@
 -r requirements_test.txt
-sphinx
-sphinx_rtd_theme
+sphinx==1.8.5
+sphinx_rtd_theme==0.4.3
+sphinx-autobuild==0.7.1
 sphinx-intl
 # Required by screenshots.py to take screenshots in headless manner
 pyvirtualdisplay

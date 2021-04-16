@@ -112,11 +112,6 @@ Bug fixes
   previously downloaded content packs, provided that you use an installer that does not
   bundle the English content pack (Debian/Ubuntu packages or `pip`).
 
-  If you are downloading videos from torrent (see: :ref:`bulk-video-downloads`), you
-  should re-use the target directory of your previously downloaded videos, then only
-  396 videos need to be downloaded.
-
-
 Bug fixes
 ^^^^^^^^^
 
