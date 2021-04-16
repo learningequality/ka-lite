@@ -54,7 +54,7 @@ Videos are not playing?
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Presuming that you have videos on your ``.kalite/content`` folder from a
-previous version of KA Lite or from a torrent, make sure you have checked the
+previous version of KA Lite, make sure you have checked the
 following common problems:
 
  * Have you pressed "Scan videos" on the ``Manage->Videos`` page?
