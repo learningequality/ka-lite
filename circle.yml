@@ -9,6 +9,7 @@ dependencies:
     - "node_modules"
   override:
     - pip install -r requirements_sphinx.txt
+    - pip install codecov
     - pip install -e .
     - make assets
     - make docs
@@ -30,5 +31,5 @@ test:
     - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:
-    - bash <(curl -s https://codecov.io/bash):
+    - codecov:
         parallel: true
