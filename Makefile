@@ -117,13 +117,13 @@ sdist: clean docs assets
 	python setup.py sdist --formats=$(format) --static
 	python setup.py sdist --formats=$(format)
 
-dist: clean docs assets 
+dist: clean docs assets
 	# Building assets currently creates pyc files in the source dirs,
 	# so we should delete those...
 	make clean-pyc
 	python setup.py sdist --formats=$(format)
 	python setup.py bdist_wheel
-	pip install -t kalite/packages/dist -r "requirements.txt"
+	pip install -t kalite/packages/dist -r "requirements.txt" --no-compile
 	rm -rf kalite/packages/dist/*.dist-info  # pip installs from PyPI will complain if we have more than one dist-info directory.
 	rm -r kalite/packages/dist/man kolibri/dist/bin || true # remove the two folders introduced by pip 10
 	python setup.py sdist --formats=$(format) --static

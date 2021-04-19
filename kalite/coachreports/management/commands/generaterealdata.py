@@ -424,7 +424,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         latest_activity_timestamp=date_completed,
                     )
                     try:
-                        vlog.save()  # avoid userlog issues
+                        vlog.save(generated_test_data=True)  # avoid userlog issues
                     except Exception as e:
                         logging.error("Error saving video log: %s" % e)
                         continue

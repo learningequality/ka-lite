@@ -1,3 +1,12 @@
-requests==2.10.0
-github3.py==0.9.6
-gcloud
+# Use the requests that we get from github3 >=2.18
+# requests<2.3
+github3.py>=0.9.6,<1.4
+gcloud<0.20
+
+googleapis-common-protos<1.52
+
+# 44 stops supporting Py 3.4
+setuptools<44
+
+# https://github.com/googleapis/google-api-python-client/issues/803
+httplib2<0.16

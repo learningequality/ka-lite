@@ -436,7 +436,7 @@ In order for other users to be able to connect with the KA Lite from different c
 Downloading Videos
 ------------------
 
-Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend using the `Downloading Videos in Bulk`_  option.
+Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need.
 
 
 Downloading Individual Videos
@@ -458,42 +458,6 @@ After registering your device:
 5. Click the the first "Download n new selected video(s)" button (colored green) in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
-.. _bulk-video-downloads:
-
-Downloading Videos in Bulk
-__________________________
-
-The full set of videos, if downloaded through the KA Lite interface, will occupy more than 150GB.
-If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
-the videos, :url-pantry:`download and open the appropriate torrent file <content/>`.
-
-Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, that
-is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
-
-On Windows, navigate to something like ``C:\Documents and Settings\<username>\.kalite\content``.
-
-.. note:: If the drive where your ``.kalite/`` folder is located does not have enough free disk space,
-          you can change the path of the ``CONTENT_ROOT`` in your `Configuration Settings`_, and
-          define a different folder where your want to store videos. Remember to move the files
-          from your old ``/content/`` folder into the new one.
-
-.. note:: The ``.kalite`` folder may be hidden on some systems, so you have to enable showing hidden
-          files and folders in your file browser.
-
-After you copied in the new video files or changed the ``CONTENT_ROOT`` path, you need to register those changes with KA Lite:
-
-1. Click the "Manage" tab at the top of the page.
-2. Click on the "Videos" tab.
-3. Click the "Scan content folder for videos" button (third one, colored blue) in the top left box of the page.
-
-.. screenshot::
-    :user-role: admin
-    :url: /update/videos/
-    :navigation-steps:
-    :focus: #scan-videos | Click this to search your video folder for previously downloaded videos!
-    :class: screenshot
-
-4. Once the scan is completed, video content will be ready for Learners to watch!
 
 .. _adding_languages:
 

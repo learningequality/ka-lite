@@ -30,7 +30,16 @@ class CSPMiddleware:
         if getattr(settings, 'CSP_REPORT_ONLY', False):
             header += '-Report-Only'
 
-        response[header] = "default-src 'self' 'unsafe-eval' 'unsafe-inline' data: *.learningequality.org; img-src data: *; script-src 'self' *.learningequality.org 'unsafe-eval' 'unsafe-inline'"
+        response[header] = "default-src 'self' 'unsafe-eval' 'unsafe-inline' data: *.learningequality.org{append_srcs}; img-src data: *; script-src 'self' *.learningequality.org 'unsafe-eval' 'unsafe-inline'"
+        
+        # Add potentially alternative hosts configured as central server
+        if "learningequality.org" not in settings.CENTRAL_SERVER_HOST:
+            response[header] = response[header].format(
+                append_srcs=" " + settings.CENTRAL_SERVER_HOST
+            )
+        else:
+            response[header] = response[header].format(append_srcs="")
+
         return response
 
 

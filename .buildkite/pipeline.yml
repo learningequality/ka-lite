@@ -12,7 +12,9 @@ steps:
   - label: Build windows installer
     command: .buildkite/build_windows_installer.sh
 
-  - wait
-
-  - label: Upload artifacts
-    command: .buildkite/setup_and_upload_artifacts.sh && docker image prune -f
+# Disable because Vader's virtualenv command is buggy (why?) and artifacts can be
+# found in Buildkite instead
+#  - wait
+#
+#  - label: Upload artifacts
+#    command: .buildkite/setup_and_upload_artifacts.sh && docker image prune -f

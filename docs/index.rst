@@ -9,6 +9,18 @@ KA Lite Documentation
 by `Learning Equality <https://learningequality.org/>`__
 
 
+.. warning:: 
+
+	**KA Lite is no longer under active development**
+
+	Our focus is now on our new learning platform, `Kolibri <https://learningequality.org/kolibri/>`__. If you’re just getting started, we highly recommend using Kolibri instead of KA Lite because it supports more content and will receive regular updates, and more ongoing support.	
+
+  .. figure:: Kolibri-launch.png
+      :align: center
+
+      New users can experience Khan Academy and much more with Kolibri!	
+
+
 Welcome to the KA Lite Documentation page! Here, you will find all the 
 information needed to set up the KA Lite software. Additionally, there's 
 information on how to manage KA Lite and how to perform role-specific 

@@ -12,6 +12,17 @@ from kalite.facility.models import FacilityUser
 from securesync.models import Device, Zone
 
 
+def skip_central(decorator):
+    
+    def blank_wrapper(fn):
+        return fn
+    
+    if settings.CENTRAL_SERVER:
+        return blank_wrapper
+    
+    return lambda *a,**kw: decorator(*a, **kw)
+
+
 def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     Gets ID of requested user (not necessarily the user logged in)

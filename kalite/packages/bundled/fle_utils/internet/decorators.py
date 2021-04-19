@@ -28,7 +28,11 @@ def api_handle_error_with_json(handler):
         except Http404:
             raise
         except Exception as e:
-            logger.error("Error in JSON view: {}".format(request.path))
+            if hasattr(request, 'path'):
+                logger.error("Error in JSON view: {}".format(request.path))
+            else:
+                logger.error("Error in JSON view. Request also has no attribute 'path', so not sure how this got called.")
+                logger.error(request)
             traceback.print_exc()
             return JsonResponseMessageError(_("Unexpected error: %(err)s") % {"err": e}, status=500)
     return api_handle_error_with_json_wrapper_fn

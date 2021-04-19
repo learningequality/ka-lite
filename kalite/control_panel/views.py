@@ -30,7 +30,8 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data,\
+    skip_central
 from kalite.version import VERSION
 from kalite import PACKAGE_PATH
 from kalite.distributed.views import check_setup_status
@@ -76,7 +77,7 @@ def process_zone_form(request, zone_id):
 
 
 @require_authorized_admin
-@check_setup_status
+@skip_central(check_setup_status)
 @render_to("control_panel/zone_management.html")
 def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
@@ -180,7 +181,7 @@ def data_export(request):
 
     if settings.CENTRAL_SERVER:
         # TODO(dylanjbarth and benjaoming): this looks awful
-        from central.models import Organization
+        from centralserver.central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()

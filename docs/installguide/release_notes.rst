@@ -8,6 +8,17 @@ to read the release notes.
   upgrading from ``0.16.x`` to ``0.17.x`` is fine - but upgrading from
   ``0.15.x`` to ``0.17.x`` is not guaranteed to work.
 
+0.17.6.dev
+----------
+
+Bug fixes
+^^^^^^^^^
+
+* Remove ``*pyc`` files in ka-lite-static (affected 0.17.5 release)
+* Fix rare ``GEOSException`` on systems with libgeos :url-issue:`5592`
+* Sync'ing timeouts fixed :url-issue:`5615`
+* Platform-specific ``*.pyc`` artifacts found in distributed installers, likely harmless :url-issue:`5611`
+
 
 0.17.5
 ------
@@ -100,11 +111,6 @@ Bug fixes
   If you are using only English contents, you have the option to stay with
   previously downloaded content packs, provided that you use an installer that does not
   bundle the English content pack (Debian/Ubuntu packages or `pip`).
-
-  If you are downloading videos from torrent (see: :ref:`bulk-video-downloads`), you
-  should re-use the target directory of your previously downloaded videos, then only
-  396 videos need to be downloaded.
-
 
 Bug fixes
 ^^^^^^^^^
