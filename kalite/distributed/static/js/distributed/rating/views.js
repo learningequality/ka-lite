@@ -17,26 +17,51 @@ module.exports = BaseView.extend({
     },
 
     initialize: function(options) {
-        /*
-            Prepare self and subviews.
-        */
-        this.model = options.model || null;
-        _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
-        this.quality_label_values = {
-            1:  gettext("Poor quality"),
-            2:  gettext("Somewhat poor"),
-            3:  gettext("Average"),
-            4:  gettext("Somewhat high"),
-            5:  gettext("High quality")
-        };
-        this.difficulty_label_values = {
-            1:  gettext("Very easy"),
-            2:  gettext("Easy"),
-            3:  gettext("Average"),
-            4:  gettext("Hard"),
-            5:  gettext("Very hard")
-        };
-    },
+    /*
+        Prepare self and subviews.
+        We now defer rendering feedback until after user engagement.
+    */
+    this.model = options.model || null;
+    _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
+
+    this.quality_label_values = {
+        1: gettext("Poor quality"),
+        2: gettext("Somewhat poor"),
+        3: gettext("Average"),
+        4: gettext("Somewhat high"),
+        5: gettext("High quality")
+    };
+    this.difficulty_label_values = {
+        1: gettext("Very easy"),
+        2: gettext("Easy"),
+        3: gettext("Average"),
+        4: gettext("Hard"),
+        5: gettext("Very hard")
+    };
+
+    // ⚡ Wait for user engagement before showing the feedback form
+    const self = this;
+    let engaged = false;
+
+    function triggerFeedback() {
+        if (engaged) return;
+        engaged = true;
+
+        // Only render once engagement is detected
+        self.render();
+
+        // Remove listeners to avoid duplicate triggers
+        document.removeEventListener("click", triggerFeedback);
+        document.removeEventListener("keypress", triggerFeedback);
+        document.removeEventListener("play", triggerFeedback, true);
+    }
+
+    // Listen for the first user interaction
+    document.addEventListener("click", triggerFeedback);
+    document.addEventListener("keypress", triggerFeedback);
+    document.addEventListener("play", triggerFeedback, true);
+},
+
 
     render: function() {
         /*
